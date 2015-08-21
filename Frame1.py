@@ -1,6 +1,7 @@
 #Boa:Frame:Frame1
 
 import os
+import sys
 import wx
 import wx.lib.buttons
 import wx.lib.analogclock
@@ -10,6 +11,7 @@ import win32ui,win32con,pythoncom,win32gui,win32process,win32api
 import ctypes
 import time
 import threading
+import cStringIO
 
 
 global record
@@ -22,26 +24,51 @@ global hm2
 hm2 = pyHook.HookManager()
 
 
+
+def GetMondrianData():
+    return \
+'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00 \x00\x00\x00 \x08\x06\x00\
+\x00\x00szz\xf4\x00\x00\x00\x04sBIT\x08\x08\x08\x08|\x08d\x88\x00\x00\x00qID\
+ATX\x85\xed\xd6;\n\x800\x10E\xd1{\xc5\x8d\xb9r\x97\x16\x0b\xad$\x8a\x82:\x16\
+o\xda\x84pB2\x1f\x81Fa\x8c\x9c\x08\x04Z{\xcf\xa72\xbcv\xfa\xc5\x08 \x80r\x80\
+\xfc\xa2\x0e\x1c\xe4\xba\xfaX\x1d\xd0\xde]S\x07\x02\xd8>\xe1wa-`\x9fQ\xe9\
+\x86\x01\x04\x10\x00\\(Dk\x1b-\x04\xdc\x1d\x07\x14\x98;\x0bS\x7f\x7f\xf9\x13\
+\x04\x10@\xf9X\xbe\x00\xc9 \x14K\xc1<={\x00\x00\x00\x00IEND\xaeB`\x82' 
+
+def GetMondrianImage():
+    stream = cStringIO.StringIO(GetMondrianData())
+    return wx.ImageFromStream(stream)
+
+def GetMondrianBitmap():
+    return wx.BitmapFromImage(GetMondrianImage())
+
+def GetMondrianIcon():
+    icon = wx.EmptyIcon()
+    icon.CopyFromBitmap(GetMondrianBitmap())
+    return icon
+
+
 def create(parent):
     return Frame1(parent)
 
 [wxID_FRAME1, wxID_FRAME1BTRECORD, wxID_FRAME1BTRUN, wxID_FRAME1BUTTON1, 
  wxID_FRAME1PANEL1, wxID_FRAME1SMODE, wxID_FRAME1STATICTEXT1, 
  wxID_FRAME1STATICTEXT2, wxID_FRAME1STATICTEXT3, wxID_FRAME1STATICTEXT4, 
- wxID_FRAME1STIMES, wxID_FRAME1TNUMRD, wxID_FRAME1TSTOP, 
-] = [wx.NewId() for _init_ctrls in range(13)]
+ wxID_FRAME1STIMES, wxID_FRAME1TEXTCTRL1, wxID_FRAME1TEXTCTRL2, 
+ wxID_FRAME1TNUMRD, wxID_FRAME1TSTOP, 
+] = [wx.NewId() for _init_ctrls in range(15)]
 
 class Frame1(wx.Frame):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
         wx.Frame.__init__(self, id=wxID_FRAME1, name='', parent=prnt,
-              pos=wx.Point(506, 283), size=wx.Size(292, 209),
+              pos=wx.Point(506, 283), size=wx.Size(305, 214),
               style=wx.STAY_ON_TOP | wx.DEFAULT_FRAME_STYLE,
               title='Keymouse Go')
-        self.SetClientSize(wx.Size(284, 175))
+        self.SetClientSize(wx.Size(289, 176))
 
         self.panel1 = wx.Panel(id=wxID_FRAME1PANEL1, name='panel1', parent=self,
-              pos=wx.Point(0, 0), size=wx.Size(284, 175),
+              pos=wx.Point(0, 0), size=wx.Size(289, 176),
               style=wx.NO_3D | wx.CAPTION)
 
         self.btrecord = wx.Button(id=wxID_FRAME1BTRECORD, label='Record Script',
@@ -50,7 +77,7 @@ class Frame1(wx.Frame):
         self.btrecord.Bind(wx.EVT_BUTTON, self.OnBtrecordButton,
               id=wxID_FRAME1BTRECORD)
 
-        self.btrun = wx.Button(id=wxID_FRAME1BTRUN, label='Run Script (F8)',
+        self.btrun = wx.Button(id=wxID_FRAME1BTRUN, label='Run Script (F9)',
               name='btrun', parent=self.panel1, pos=wx.Point(16, 128),
               size=wx.Size(256, 24), style=0)
         self.btrun.Bind(wx.EVT_BUTTON, self.OnBtrunButton, id=wxID_FRAME1BTRUN)
@@ -106,17 +133,41 @@ class Frame1(wx.Frame):
         self.staticText4.SetFont(wx.Font(9, wx.SWISS, wx.NORMAL, wx.BOLD, False,
               'Tahoma'))
 
+        self.textCtrl1 = wx.TextCtrl(id=wxID_FRAME1TEXTCTRL1, name='textCtrl1',
+              parent=self.panel1, pos=wx.Point(168, 88), size=wx.Size(40, 22),
+              style=0, value='120')
+
+        self.textCtrl2 = wx.TextCtrl(id=wxID_FRAME1TEXTCTRL2, name='textCtrl2',
+              parent=self.panel1, pos=wx.Point(232, 88), size=wx.Size(36, 22),
+              style=0, value='123')
+
     def __init__(self, parent):
         global mself
         mself=self
         
         self._init_ctrls(parent)
 
+        
+        self.SetIcon(GetMondrianIcon())
+        self.taskBarIcon = TaskBarIcon(self) 
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
+        self.Bind(wx.EVT_ICONIZE, self.OnIconfiy)
+
+
         def onKeyboardEvent2(event):
+
+            start_code = 119 #F8
+            stop_code = 123  #F12
             
-            if event.KeyID == 123:  #F12      
+            start_code = int(self.textCtrl1.GetValue())
+            stop_code = int(self.textCtrl2.GetValue())
+            start_code2 = int(self.textCtrl2.GetValue())
+            
+            stop_code = 0
+
+            if event.KeyID == stop_code:
                 mself.tnumrd.SetLabel('breaked')
-            elif event.KeyID == 119:    #F8
+            elif event.KeyID in [start_code, start_code2]:
                 t = ThreadClass()
                 t.start()
                 
@@ -124,6 +175,24 @@ class Frame1(wx.Frame):
             return True
         hm2.KeyUp = onKeyboardEvent2
         hm2.HookKeyboard()
+
+
+
+    def OnHide(self, event):
+        self.Hide()
+        event.Skip()
+        
+        
+    def OnIconfiy(self, event):
+        self.Hide()
+        event.Skip()
+        
+        
+    def OnClose(self, event):
+        self.taskBarIcon.Destroy()
+        self.Destroy()
+        event.Skip()
+
         
 
     def OnButton1Button(self, event):
@@ -214,11 +283,48 @@ class Frame1(wx.Frame):
     def OnSmodeScroll(self, event):
         if self.smode.Value == 0:   #normal mode
             self.btrun.Enabled = True
-            self.btrun.SetLabel('Run Script (F8)')
+            self.btrun.SetLabel('Run Script (F9)')
         else:   #background mode
             self.btrun.Enabled = False
             self.btrun.SetLabel("Move to the title bar and Press F8 to runing")
         event.Skip()
+
+
+
+class TaskBarIcon(wx.TaskBarIcon):
+    ID_About = wx.NewId()
+    ID_Closeshow=wx.NewId()
+    
+    def __init__(self, frame):
+        wx.TaskBarIcon.__init__(self)
+        self.frame = frame
+        self.SetIcon(GetMondrianIcon())
+        self.Bind(wx.EVT_TASKBAR_LEFT_DCLICK, self.OnTaskBarLeftDClick)
+        self.Bind(wx.EVT_MENU, self.OnAbout, id=self.ID_About)
+        self.Bind(wx.EVT_MENU, self.OnCloseshow, id=self.ID_Closeshow)
+
+    def OnTaskBarLeftDClick(self, event):
+        if self.frame.IsIconized():
+           self.frame.Iconize(False)
+        if not self.frame.IsShown():
+           self.frame.Show(True)
+        self.frame.Raise()
+
+    def OnAbout(self,event):
+        wx.MessageBox('KeymouseGo v1.1', 'KeymouseGo')
+        event.Skip()
+
+    def OnCloseshow(self,event):
+        self.frame.Close(True)
+        event.Skip()
+
+    def CreatePopupMenu(self):
+        menu = wx.Menu()
+        menu.Append(self.ID_About, 'About')
+        menu.Append(self.ID_Closeshow, 'Exit')
+        return menu
+
+
 
 
 class ThreadClass(threading.Thread):
@@ -302,4 +408,3 @@ class ThreadClass(threading.Thread):
             mself.tstop.Shown = False
 
 # end of ThreadClass
-
