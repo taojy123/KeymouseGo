@@ -261,8 +261,8 @@ class Frame1(wx.Frame):
             cname = win32gui.GetClassName(rhwnd)
             dcid = win32gui.GetDlgCtrlID(rhwnd)  
             # print event.Message, event.MessageName
-            interval = event.Time - ttt
-            record.append(['EM', event.MessageName, event.Position, interval])
+            delay = event.Time - ttt
+            record.append(['EM', event.MessageName, event.Position, delay])
             ttt = event.Time
             ts = self.tnumrd.GetLabel()
             ts = ts.replace(' actions recorded','')
@@ -280,8 +280,8 @@ class Frame1(wx.Frame):
             cname = win32gui.GetClassName(rhwnd)
             dcid = win32gui.GetDlgCtrlID(rhwnd)
             # print event.Message, event.MessageName
-            interval = event.Time - ttt
-            record.append(['EK', event.MessageName, (event.KeyID, event.Key), interval])
+            delay = event.Time - ttt
+            record.append(['EK', event.MessageName, (event.KeyID, event.Key), delay])
             # event.Key is useless, just for remark
             ttt = event.Time
             ts = self.tnumrd.GetLabel()
