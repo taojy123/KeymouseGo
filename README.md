@@ -1,4 +1,4 @@
-# KeymouseGo v1.1
+# KeymouseGo v1.2
 
 功能：记录用户的鼠标键盘操作，通过触发按钮自动执行之前记录的操作，可设定执行的次数。
 
@@ -36,4 +36,10 @@
 ----------------------
 
 该软件通过Python语言编写，已编译为win32平台可执行文件，无需安装Python平台及其他模块，请下载 release 版本 https://github.com/taojy123/KeymouseGo/releases ，在windows下直接点击KeymouseGo.exe运行
+
+----------------------
+
+
+
+
 
