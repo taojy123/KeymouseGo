@@ -1,4 +1,4 @@
-# KeymouseGo v1.2
+# KeymouseGo v1.3
 
 功能：记录用户的鼠标键盘操作，通过触发按钮自动执行之前记录的操作，可设定执行的次数，可以理解为 `精简绿色版` 的 `按键精灵`。
 
@@ -9,7 +9,7 @@
 
 该软件通过 `Python` 语言编写，已编译为 `windows` 平台可执行文件，未安装 `Python` 的用户可直接下载 `release` 版本 https://github.com/taojy123/KeymouseGo/releases ，直接点击 `KeymouseGo.exe` 运行
 
-<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/sample.png" width="365">
+<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/sample.png" width="370">
 
 ----------------------
 
@@ -73,6 +73,9 @@
 ----------------------
 
 # 更新说明
+
+## v1.3
++ Bug 修复
 
 ## v1.2
 + UI 更新

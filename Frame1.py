@@ -25,6 +25,7 @@ hm.keyboard_hook = False
 hm.mouse_hook = False
 global hm2
 hm2 = pyHook.HookManager()
+hm2.keyboard_hook = False
 
 
 KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12']
@@ -102,7 +103,6 @@ class Frame1(wx.Frame):
               label=u'If you want to stop it, Press F12', name='tstop',
               parent=self.panel1, pos=wx.Point(25, 332), size=wx.Size(183, 18),
               style=0)
-        self.tstop.SetToolTipString('tstop')
         self.tstop.Show(False)
 
         self.stimes = wx.SpinCtrl(id=wxID_FRAME1STIMES, initial=0, max=1000,
@@ -161,7 +161,6 @@ class Frame1(wx.Frame):
         mself=self
         
         self._init_ctrls(parent)
-
         
         self.SetIcon(GetMondrianIcon())
         self.taskBarIcon = TaskBarIcon(self) 
@@ -384,7 +383,7 @@ class TaskBarIcon(wx.TaskBarIcon):
         self.frame.Raise()
 
     def OnAbout(self,event):
-        wx.MessageBox('KeymouseGo v1.2', 'KeymouseGo')
+        wx.MessageBox('https://github.com/taojy123/KeymouseGo', 'KeymouseGo')
         event.Skip()
 
     def OnCloseshow(self,event):
