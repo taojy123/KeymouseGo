@@ -83,7 +83,7 @@ class Frame1(wx.Frame):
         self.btrecord.Bind(wx.EVT_BUTTON, self.OnBtrecordButton,
               id=wxID_FRAME1BTRECORD)
 
-        self.btrun = wx.Button(id=wxID_FRAME1BTRUN, label=u'\u8fd0\u884c',
+        self.btrun = wx.Button(id=wxID_FRAME1BTRUN, label=u'\u542f\u52a8',
               name='btrun', parent=self.panel1, pos=wx.Point(274, 12),
               size=wx.Size(56, 32), style=0)
         self.btrun.Bind(wx.EVT_BUTTON, self.OnBtrunButton, id=wxID_FRAME1BTRUN)
