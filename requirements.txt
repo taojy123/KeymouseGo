@@ -1,0 +1,4 @@
+#Python27
+pywin32
+wxPython
+pyHook
