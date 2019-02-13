@@ -17,6 +17,9 @@ import json
 import traceback
 
 
+wx.NO_3D = 0
+
+
 global record
 record = []
 global hm
