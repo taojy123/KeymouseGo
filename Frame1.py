@@ -417,7 +417,7 @@ class ThreadClass(threading.Thread):
             return
 
         try:
-            rhwnd = win32gui.WindowFromPoint(win32gui.GetCursorPos())
+            # rhwnd = win32gui.WindowFromPoint(win32gui.GetCursorPos())
             s = file(script_path, 'r').read()
             s = json.loads(s)
             l = len(s)
@@ -496,3 +496,4 @@ class ThreadClass(threading.Thread):
             mself.tstop.Shown = False
 
 # end of ThreadClass
+
