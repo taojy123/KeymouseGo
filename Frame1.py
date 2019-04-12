@@ -258,13 +258,13 @@ class Frame1(wx.Frame):
             if event.MessageName == 'mouse move':
                 return True
             pos = win32gui.GetCursorPos()
-            rhwnd = win32gui.WindowFromPoint(pos)
-            pos = win32gui.ScreenToClient(rhwnd, pos)
-            cname = win32gui.GetClassName(rhwnd)
-            dcid = win32gui.GetDlgCtrlID(rhwnd)  
+            # rhwnd = win32gui.WindowFromPoint(pos)
+            # pos = win32gui.ScreenToClient(rhwnd, pos)
+            # cname = win32gui.GetClassName(rhwnd)
+            # dcid = win32gui.GetDlgCtrlID(rhwnd)  
             # print event.Message, event.MessageName
             delay = event.Time - ttt
-            record.append(['EM', event.MessageName, event.Position, delay])
+            record.append(['EM', event.MessageName, pos, delay])
             ttt = event.Time
             ts = self.tnumrd.GetLabel()
             ts = ts.replace(' actions recorded','')
@@ -277,10 +277,10 @@ class Frame1(wx.Frame):
             global ttt
             if ttt == 0:
                 ttt = event.Time - 1000
-            pos = win32gui.GetCursorPos()
-            rhwnd = win32gui.WindowFromPoint(pos)
-            cname = win32gui.GetClassName(rhwnd)
-            dcid = win32gui.GetDlgCtrlID(rhwnd)
+            # pos = win32gui.GetCursorPos()
+            # rhwnd = win32gui.WindowFromPoint(pos)
+            # cname = win32gui.GetClassName(rhwnd)
+            # dcid = win32gui.GetDlgCtrlID(rhwnd)
             # print event.Message, event.MessageName
             delay = event.Time - ttt
             record.append(['EK', event.MessageName, (event.KeyID, event.Key), delay])
