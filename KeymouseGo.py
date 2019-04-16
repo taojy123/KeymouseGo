@@ -1,16 +1,20 @@
 #!/usr/bin/env python
 #Boa:App:BoaApp
 
+import Frame1
 import wx
 import time
-import Frame1
 import sys
 import json
-import win32ui,win32con,pythoncom,win32gui,win32process,win32api
-import ctypes
+
+from pynput import mouse
+from pynput import keyboard
+from pynput.mouse import Button
+from pynput.keyboard import Key, KeyCode
 
 
-modules ={'Frame1': [1, 'Main frame of Application', u'Frame1.py']}
+modules = {'Frame1': [1, 'Main frame of Application', u'Frame1.py']}
+
 
 class BoaApp(wx.App):
     def OnInit(self):
@@ -25,41 +29,58 @@ def main():
     application.MainLoop()
 
 
-def single_run(script_path, times=1):
+def single_run(script_path, run_times=1):
+
+    # python KeymouseGo.py scripts/0416_2342.txt 10
+    # KeymouseGo.exe scripts\0416_2342.txt
 
     s = file(script_path, 'r').read()
     s = json.loads(s)
-    l = len(s)
+    steps = len(s)
 
-    for j in range(times):
-        
-        for i in range(0, l):
-            
-            time.sleep(s[i][3]/1000.0)
-            
-            if s[i][0]=='EM':
+    mouse_ctl = mouse.Controller()
+    keyboard_ctl = keyboard.Controller()
 
-                ctypes.windll.user32.SetCursorPos(s[i][2][0], s[i][2][1])
-                
-                if s[i][1]=='mouse left down':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
-                elif s[i][1]=='mouse left up':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
-                elif s[i][1]=='mouse right down':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN, 0, 0)
-                elif s[i][1]=='mouse right up':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, 0, 0)
-                    
-            elif s[i][0] =='EK':
+    j = 0
+    while j < run_times or run_times == 0:
+        j += 1
 
-                key_code = s[i][2][0]
-                if key_code >= 160 and key_code <= 165:
-                    key_code = (key_code//2) - 64
+        for i in range(0, steps):
 
-                if s[i][1]=='key down':
-                    win32api.keybd_event(key_code, 0, 0, 0)  
-                elif s[i][1]=='key up':
-                    win32api.keybd_event(key_code, 0, win32con.KEYEVENTF_KEYUP, 0)
+            print s[i]
+
+            event_type = s[i][0]
+            message = s[i][1]
+            delay = s[i][3]
+
+            time.sleep(delay / 1000.0)
+
+            if event_type == 'EM':
+                x, y = s[i][2]
+                mouse_ctl.position = (x, y)
+                if message == 'mouse left down':
+                    mouse_ctl.press(Button.left)
+                elif message == 'mouse left up':
+                    mouse_ctl.release(Button.left)
+                elif message == 'mouse right down':
+                    mouse_ctl.press(Button.right)
+                elif message == 'mouse right up':
+                    mouse_ctl.release(Button.right)
+
+            elif event_type == 'EK':
+                key_name = s[i][2]
+
+                if len(key_name) == 1:
+                    key = key_name
+                else:
+                    key = getattr(Key, key_name)
+
+                if message == 'key down':
+                    keyboard_ctl.press(key)
+                elif message == 'key up':
+                    keyboard_ctl.release(key)
+
+    print 'script run finish!'
 
 
 if __name__ == '__main__':
@@ -68,11 +89,8 @@ if __name__ == '__main__':
 
     if len(sys.argv) > 1:
         script_path = sys.argv[1]
-        try:
-            times = int(times = sys.argv[2])
-        except Exception as e:
-            times = 1
-        single_run(script_path, times)
+        run_times = int(sys.argv[2]) if len(sys.argv) > 2 else 1
+        single_run(script_path, run_times)
     else:
         main()
 

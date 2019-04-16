@@ -3,12 +3,6 @@
 import os
 import sys
 import wx
-import wx.lib.buttons
-import wx.lib.analogclock
-import wx.lib.throbber
-import pyHook
-import win32ui,win32con,pythoncom,win32gui,win32process,win32api
-import ctypes
 import time
 import threading
 import cStringIO
@@ -16,19 +10,13 @@ import datetime
 import json
 import traceback
 
+from pynput import mouse
+from pynput import keyboard
+from pynput.mouse import Button
+from pynput.keyboard import Key, KeyCode
+
 
 wx.NO_3D = 0
-
-
-global record
-record = []
-global hm
-hm = pyHook.HookManager()
-hm.keyboard_hook = False
-hm.mouse_hook = False
-global hm2
-hm2 = pyHook.HookManager()
-hm2.keyboard_hook = False
 
 
 KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12']
@@ -44,12 +32,15 @@ o\xda\x84pB2\x1f\x81Fa\x8c\x9c\x08\x04Z{\xcf\xa72\xbcv\xfa\xc5\x08 \x80r\x80\
 \x86\x01\x04\x10\x00\\(Dk\x1b-\x04\xdc\x1d\x07\x14\x98;\x0bS\x7f\x7f\xf9\x13\
 \x04\x10@\xf9X\xbe\x00\xc9 \x14K\xc1<={\x00\x00\x00\x00IEND\xaeB`\x82' 
 
+
 def GetMondrianImage():
     stream = cStringIO.StringIO(GetMondrianData())
     return wx.ImageFromStream(stream)
 
+
 def GetMondrianBitmap():
     return wx.BitmapFromImage(GetMondrianImage())
+
 
 def GetMondrianIcon():
     icon = wx.EmptyIcon()
@@ -60,6 +51,7 @@ def GetMondrianIcon():
 def create(parent):
     return Frame1(parent)
 
+
 [wxID_FRAME1, wxID_FRAME1BTRECORD, wxID_FRAME1BTRUN, wxID_FRAME1BUTTON1, 
  wxID_FRAME1CHOICE_SCRIPT, wxID_FRAME1CHOICE_START, wxID_FRAME1CHOICE_STOP, 
  wxID_FRAME1PANEL1, wxID_FRAME1STATICTEXT1, wxID_FRAME1STATICTEXT2, 
@@ -67,6 +59,7 @@ def create(parent):
  wxID_FRAME1TEXTCTRL1, wxID_FRAME1TEXTCTRL2, wxID_FRAME1TNUMRD, 
  wxID_FRAME1TSTOP, 
 ] = [wx.NewId() for _init_ctrls in range(17)]
+
 
 class Frame1(wx.Frame):
     def _init_ctrls(self, prnt):
@@ -159,10 +152,7 @@ class Frame1(wx.Frame):
               id=wxID_FRAME1CHOICE_STOP)
 
     def __init__(self, parent):
-        global mself
-        
-        mself=self
-        
+
         self._init_ctrls(parent)
         
         self.SetIcon(GetMondrianIcon())
@@ -180,32 +170,127 @@ class Frame1(wx.Frame):
             self.choice_script.SetSelection(0)
                 
         self.choice_start.SetItems(KEYS)
-        self.choice_start.SetSelection(5)
+        self.choice_start.SetSelection(3)
         
         self.choice_stop.SetItems(KEYS)
-        self.choice_stop.SetSelection(9)
+        self.choice_stop.SetSelection(6)
 
-        def onKeyboardEvent2(event):
+        self.running = False
+        self.recording = False
+        self.record = []
+        self.ttt = self.now_ts
 
-            start_code = 119 #F8
-            stop_code = 123  #F12
-            
-            start_code = int(self.textCtrl1.GetValue())
-            stop_code = int(self.textCtrl2.GetValue())
+        # =========== create mouse listener for record ===========
+        def on_move(x, y):
+            if not self.recording or self.running:
+                return True
 
-            # print(start_code, stop_code, event.KeyID)
+        def on_scroll(x, y, dx, dy):
+            if not self.recording or self.running:
+                return True
 
-            if event.KeyID == start_code:
-                t = ThreadClass()
-                t.start()
-            elif event.KeyID == stop_code:
-                mself.tnumrd.SetLabel('breaked')
-                
+        def on_click(x, y, button, pressed):
+            if not self.recording or self.running:
+                return True
+            print 'mouse click:', x, y, button.name, pressed
+            delay = self.now_ts - self.ttt
+            self.ttt = self.now_ts
+            pos = (x, y)
+            if button.name == 'left':
+                message = 'mouse left '
+            elif button.name == 'right':
+                message = 'mouse right '
+            else:
+                return True
+            if pressed:
+                message += 'down'
+            else:
+                message += 'up'
+            self.record.append(['EM', message, pos, delay])
+            text = self.tnumrd.GetLabel()
+            text = text.replace(' actions recorded','')
+            text = str(eval(text)+1)
+            text = text + ' actions recorded'
+            self.tnumrd.SetLabel(text)
             return True
 
-        hm2.KeyUp = onKeyboardEvent2
-        hm2.HookKeyboard()
-        
+        self.mouse_listener = mouse.Listener(
+            on_move=on_move,
+            on_scroll=on_scroll,
+            on_click=on_click
+        )
+        self.mouse_listener.start()
+
+        # =========== create keyboard listener for record ===========
+        def key_event(key, is_press):
+            if not self.recording or self.running:
+                return True
+
+            if is_press:
+                print 'keyboard press:', key
+                message = 'key down'
+            else:
+                print 'keyboard release:', key
+                message = 'key up'
+
+            if isinstance(key, Key):
+                print 'Key:', key.name, key.value.vk
+                name = key.name
+            elif isinstance(key, KeyCode):
+                print 'KeyCode:', key.char, key.vk
+                name = key.char
+            else:
+                assert False
+
+            delay = self.now_ts - self.ttt
+            self.ttt = self.now_ts
+
+            self.record.append(['EK', message, name, delay])
+
+            text = self.tnumrd.GetLabel()
+            text = text.replace(' actions recorded', '')
+            text = str(eval(text) + 1)
+            text = text + ' actions recorded'
+            self.tnumrd.SetLabel(text)
+            return True
+
+        def on_press(key):
+            if not self.recording:
+                # listen for start/stop script
+                start_name = 'f6'
+                stop_name = 'f9'
+                start_index = self.choice_start.GetSelection()
+                start_name = KEYS[start_index].lower()
+                stop_index = self.choice_stop.GetSelection()
+                stop_name = KEYS[stop_index].lower()
+
+                print start_name, stop_name, key
+
+                if not isinstance(key, Key):
+                    return True
+
+                if key.name == start_name and not self.running:
+                    print 'script start'
+                    t = RunScriptClass(self)
+                    t.start()
+                elif key.name == stop_name and self.running:
+                    print 'script stop'
+                    self.tnumrd.SetLabel('broken')
+
+            return key_event(key, True)
+
+        def on_release(key):
+            return key_event(key, False)
+
+        self.keyboard_listener = keyboard.Listener(
+            on_press=on_press,
+            on_release=on_release)
+        self.keyboard_listener.start()
+
+    @property
+    def now_ts(self):
+        return int(time.time() * 1000)
+
     def get_script_path(self):
         i = self.choice_script.GetSelection()
         if i < 0:
@@ -219,7 +304,7 @@ class Frame1(wx.Frame):
         now = datetime.datetime.now()
         script = '%s.txt' % now.strftime('%m%d_%H%M')
         if script in self.scripts:
-            script = script = '%s.txt' % now.strftime('%m%d_%H%M%S')
+            script = '%s.txt' % now.strftime('%m%d_%H%M%S')
         self.scripts.insert(0, script)
         self.choice_script.SetItems(self.scripts)
         self.choice_script.SetSelection(0)
@@ -233,143 +318,159 @@ class Frame1(wx.Frame):
         self.Hide()
         event.Skip()
         
-        
     def OnClose(self, event):
+        try:
+            self.mouse_listener.stop()
+            self.keyboard_listener.stop()
+        except:
+            pass
         self.taskBarIcon.Destroy()
         self.Destroy()
         event.Skip()
-        
 
     def OnButton1Button(self, event):
         event.Skip()
-        
-        
+
     def OnBtrecordButton(self, event):
-        global record
-        global hm
-        global hm2
-        global ttt
-        ttt = 0
-        
-        def onMouseEvent(event):
-            global ttt
-            if ttt == 0:
-                ttt = event.Time
-            if event.MessageName == 'mouse move':
-                return True
-            pos = win32gui.GetCursorPos()
-            # rhwnd = win32gui.WindowFromPoint(pos)
-            # pos = win32gui.ScreenToClient(rhwnd, pos)
-            # cname = win32gui.GetClassName(rhwnd)
-            # dcid = win32gui.GetDlgCtrlID(rhwnd)  
-            # print event.Message, event.MessageName
-            delay = event.Time - ttt
-            record.append(['EM', event.MessageName, pos, delay])
-            ttt = event.Time
-            ts = self.tnumrd.GetLabel()
-            ts = ts.replace(' actions recorded','')
-            ts = str(eval(ts)+1)
-            ts = ts + ' actions recorded'
-            self.tnumrd.SetLabel(ts)
-            return True
 
-        def onKeyboardEvent(event):
-            global ttt
-            if ttt == 0:
-                ttt = event.Time - 1000
-            # pos = win32gui.GetCursorPos()
-            # rhwnd = win32gui.WindowFromPoint(pos)
-            # cname = win32gui.GetClassName(rhwnd)
-            # dcid = win32gui.GetDlgCtrlID(rhwnd)
-            # print event.Message, event.MessageName
-            delay = event.Time - ttt
-            record.append(['EK', event.MessageName, (event.KeyID, event.Key), delay])
-            # event.Key is useless, just for remark
-            ttt = event.Time
-            ts = self.tnumrd.GetLabel()
-            ts = ts.replace(' actions recorded','')
-            ts = str(eval(ts)+1)
-            ts = ts + ' actions recorded'
-            self.tnumrd.SetLabel(ts)
-            return True
-        
-
-        try:
-            if hm.keyboard_hook and hm.mouse_hook:
-                # stop and save record
-                hm.UnhookMouse()
-                hm.UnhookKeyboard()
-                del record[-2]
-                del record[-1]
-                output = json.dumps(record, indent=1)
-                output = output.replace('\r\n', '\n').replace('\r', '\n')
-                output = output.replace('\n   ', '').replace('\n  ', '')
-                output = output.replace('\n ]', ']')
-                file(self.new_script_path(),'w').write(output)
-                self.btrecord.SetLabel(u'\u5f55\u5236')
-                self.tnumrd.SetLabel('finished')
-                hm2.HookKeyboard()
-            else:
-                # start record  
-                status = self.tnumrd.GetLabel()
-                if 'runing' in status or 'recorded' in status:
-                    return
-                hm2.UnhookKeyboard()
-                record=[]
-                hm.MouseAll = onMouseEvent
-                hm.KeyAll = onKeyboardEvent
-                hm.HookMouse()
-                hm.HookKeyboard()
-                self.btrecord.SetLabel(u'\u7ed3\u675f')
-                self.tnumrd.SetLabel('0 actions recorded')
-                self.choice_script.SetSelection(-1)
-
-        except:
-            print 'record errors'
-            traceback.print_exc()
+        if self.recording:
+            print 'record stop'
+            self.recording = False
+            del self.record[-2]
+            del self.record[-1]
+            output = json.dumps(self.record, indent=1)
+            output = output.replace('\r\n', '\n').replace('\r', '\n')
+            output = output.replace('\n   ', '').replace('\n  ', '')
+            output = output.replace('\n ]', ']')
+            file(self.new_script_path(), 'w').write(output)
+            self.btrecord.SetLabel(u'\u5f55\u5236')
+            self.tnumrd.SetLabel('finished')
+            self.record = []
+        else:
+            print 'record start'
+            self.recording = True
+            self.ttt = self.now_ts
+            status = self.tnumrd.GetLabel()
+            if 'running' in status or 'recorded' in status:
+                return
+            self.btrecord.SetLabel(u'\u7ed3\u675f')
+            self.tnumrd.SetLabel('0 actions recorded')
+            self.choice_script.SetSelection(-1)
+            self.record = []
         
         event.Skip()
 
     def OnBtrunButton(self, event):
-                 
-        t = ThreadClass()
+        print 'script start by btn'
+        t = RunScriptClass(self)
         t.start()
-
-        event.Skip()
-
-
-    def OnSmodeScroll(self, event):
-        # if self.smode.Value == 0:   #normal mode
-        #     self.btrun.Enabled = True
-        #     self.btrun.SetLabel('Run Script (F9)')
-        # else:   #background mode
-        #     self.btrun.Enabled = False
-        #     self.btrun.SetLabel("Move to the title bar and Press F8 to runing")
         event.Skip()
 
     def OnChoice_startChoice(self, event):
-        i = self.choice_start.GetSelection()
-        j = self.choice_stop.GetSelection()
-        if i == j:
-            i = (i+1) % 10
-            self.choice_start.SetSelection(i)
-        self.textCtrl1.SetValue(str(i + 114))
         event.Skip()
 
     def OnChoice_stopChoice(self, event):
-        i = self.choice_start.GetSelection()
-        j = self.choice_stop.GetSelection()
-        if i == j:
-            j = (i+1) % 10
-            self.choice_stop.SetSelection(j)
-        self.textCtrl2.SetValue(str(j + 114))
         event.Skip()
+
+
+class RunScriptClass(threading.Thread):
+
+    def __init__(self, frame):
+        self.frame = frame
+        super(RunScriptClass, self).__init__()
+
+    def run(self):
+
+        status = self.frame.tnumrd.GetLabel()
+        if self.frame.running or self.frame.recording:
+            return
+
+        if 'running' in status or 'recorded' in status:
+            return
+
+        script_path = self.frame.get_script_path()
+        if not script_path:
+            self.frame.tnumrd.SetLabel('script not found, please self.record first!')
+            return
+
+        self.frame.running = True
+
+        try:
+            s = file(script_path, 'r').read()
+            s = json.loads(s)
+            steps = len(s)
+            run_times = self.frame.stimes.Value
+
+            text = '%s running..' % script_path.split('/')[-1].split('\\')[-1]
+            self.frame.tnumrd.SetLabel(text)
+            self.frame.tstop.Shown = True
+
+            mouse_ctl = mouse.Controller()
+            keyboard_ctl = keyboard.Controller()
+
+            j = 0
+            while j < run_times or run_times == 0:
+                j += 1
+
+                if self.frame.tnumrd.GetLabel() == 'broken' or self.frame.tnumrd.GetLabel() == 'finished':
+                    self.frame.running = False
+                    break
+                
+                for i in range(0, steps):
+
+                    print s[i]
+
+                    event_type = s[i][0]
+                    message = s[i][1]
+                    delay = s[i][3]
+                    
+                    time.sleep(delay / 1000.0)
+                    
+                    if self.frame.tnumrd.GetLabel() == 'broken' or self.frame.tnumrd.GetLabel() == 'finished':
+                        break
+                    
+                    if event_type == 'EM':
+                        x, y = s[i][2]
+                        mouse_ctl.position = (x, y)
+                        if message == 'mouse left down':
+                            mouse_ctl.press(Button.left)
+                        elif message == 'mouse left up':
+                            mouse_ctl.release(Button.left)
+                        elif message == 'mouse right down':
+                            mouse_ctl.press(Button.right)
+                        elif message == 'mouse right up':
+                            mouse_ctl.release(Button.right)
+
+                    elif event_type == 'EK':
+                        key_name = s[i][2]
+
+                        if len(key_name) == 1:
+                            key = key_name
+                        else:
+                            key = getattr(Key, key_name)
+
+                        if message == 'key down':
+                            keyboard_ctl.press(key)
+                        elif message == 'key up':
+                            keyboard_ctl.release(key)
+
+            self.frame.tnumrd.SetLabel('finished')
+            self.frame.tstop.Shown = False
+            self.frame.running = False
+            print 'script run finish!'
+            
+        except Exception as e:
+            print 'run error', e
+            traceback.print_exc()
+            self.frame.tnumrd.SetLabel('failed')
+            self.frame.tstop.Shown = False
+            self.frame.running = False
 
 
 class TaskBarIcon(wx.TaskBarIcon):
     ID_About = wx.NewId()
-    ID_Closeshow=wx.NewId()
-    
+    ID_Closeshow = wx.NewId()
+
     def __init__(self, frame):
         wx.TaskBarIcon.__init__(self)
         self.frame = frame
@@ -380,16 +481,16 @@ class TaskBarIcon(wx.TaskBarIcon):
 
     def OnTaskBarLeftDClick(self, event):
         if self.frame.IsIconized():
-           self.frame.Iconize(False)
+            self.frame.Iconize(False)
         if not self.frame.IsShown():
-           self.frame.Show(True)
+            self.frame.Show(True)
         self.frame.Raise()
 
-    def OnAbout(self,event):
+    def OnAbout(self, event):
         wx.MessageBox('https://github.com/taojy123/KeymouseGo', 'KeymouseGo')
         event.Skip()
 
-    def OnCloseshow(self,event):
+    def OnCloseshow(self, event):
         self.frame.Close(True)
         event.Skip()
 
@@ -398,102 +499,4 @@ class TaskBarIcon(wx.TaskBarIcon):
         menu.Append(self.ID_About, 'About')
         menu.Append(self.ID_Closeshow, 'Exit')
         return menu
-
-
-
-
-class ThreadClass(threading.Thread):
-
-
-    def run(self):
-
-        status = mself.tnumrd.GetLabel()
-        if 'runing' in status or 'recorded' in status:
-            return
-
-        script_path = mself.get_script_path()
-        if not script_path:
-            mself.tnumrd.SetLabel('script not found, please record first!')
-            return
-
-        try:
-            # rhwnd = win32gui.WindowFromPoint(win32gui.GetCursorPos())
-            s = file(script_path, 'r').read()
-            s = json.loads(s)
-            l = len(s)
-            mself.tnumrd.SetLabel('%s runing..' % script_path.split('\\')[-1])
-            mself.tstop.Shown = True
-
-            j=0
-            while j < mself.stimes.Value or mself.stimes.Value == 0:
-                if mself.tnumrd.GetLabel() == 'breaked' or mself.tnumrd.GetLabel() == 'finished':
-                    break
-                if mself.stimes.Value != 0:
-                    j=j+1
-                
-                for i in range(0,l):
-                    
-                    time.sleep(s[i][3]/1000.0)
-                    
-                    if mself.tnumrd.GetLabel() == 'breaked' or mself.tnumrd.GetLabel() == 'finished':
-                        break
-                    
-                    if s[i][0]=='EM':
-                        # if mself.smode.Value == 0:  #normal mode
-
-                        ctypes.windll.user32.SetCursorPos(s[i][2][0], s[i][2][1])
-                        
-                        if s[i][1]=='mouse left down':
-                            win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
-                        elif s[i][1]=='mouse left up':
-                            win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
-                        elif s[i][1]=='mouse right down':
-                            win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN, 0, 0)
-                        elif s[i][1]=='mouse right up':
-                            win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, 0, 0)
-                            
-                        # else:   #background mode
-                        #     def _windowEnumerationHandler(hwnd, resultList):
-                        #         resultList.append((hwnd,win32gui.GetClassName(hwnd),win32gui.GetDlgCtrlID(hwnd)))
-                        #     cwindows = []
-                        #     win32gui.EnumChildWindows(rhwnd, _windowEnumerationHandler, cwindows)
-                            
-                        #     for hwnd, ClassName, DlgCtrlID in cwindows:
-                        #         if ClassName == s[i][6]  and DlgCtrlID == s[i][7]:
-                        #             tmp = win32api.MAKELONG(s[i][8][0], s[i][8][1])
-                        #             win32gui.PostMessage(hwnd, win32con.WM_ACTIVATE, win32con.WA_ACTIVE, 0)
-                        #             if s[i][1]=='mouse left down':
-                        #                 win32api.PostMessage(hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, tmp)
-                        #             elif s[i][1]=='mouse left up':
-                        #                 win32api.PostMessage(hwnd, win32con.WM_LBUTTONUP, win32con.MK_LBUTTON, tmp)
-                        #             elif s[i][1]=='mouse right down':
-                        #                 win32api.PostMessage(hwnd, win32con.WM_RBUTTONDOWN, win32con.MK_RBUTTON, tmp)
-                        #             elif s[i][1]=='mouse right up':
-                        #                 win32api.PostMessage(hwnd, win32con.WM_RBUTTONUP, win32con.MK_RBUTTON, tmp)
-                        #             else:
-                        #                 win32api.PostMessage(hwnd, win32con.WM_MOUSEMOVE, 0, tmp)
-                            
-
-                    elif s[i][0] =='EK':
-                        # if mself.smode.Value == 0:  #normal mode
-                        key_code = s[i][2][0]
-                        if key_code >= 160 and key_code <= 165:
-                            key_code = (key_code//2) - 64
-                        if s[i][1]=='key down':
-                            win32api.keybd_event(key_code, 0, 0, 0)  
-                        elif s[i][1]=='key up':
-                            win32api.keybd_event(key_code, 0, win32con.KEYEVENTF_KEYUP, 0)
-                        # else:   #background mode
-                        #     pass    #not developed
-
-            mself.tnumrd.SetLabel('finished')
-            mself.tstop.Shown = False
-            
-        except:
-            print 'run error'
-            traceback.print_exc()
-            mself.tnumrd.SetLabel('failed')
-            mself.tstop.Shown = False
-
-# end of ThreadClass
 
