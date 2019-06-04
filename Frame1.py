@@ -430,8 +430,8 @@ class RunScriptClass(threading.Thread):
             steps = len(s)
             run_times = self.frame.stimes.Value
 
-            text = '%s running..' % script_path.split('/')[-1].split('\\')[-1]
-            self.frame.tnumrd.SetLabel(text)
+            running_text = '%s running..' % script_path.split('/')[-1].split('\\')[-1]
+            self.frame.tnumrd.SetLabel(running_text)
             self.frame.tstop.Shown = True
 
             mouse_ctl = mouse.Controller()
@@ -445,7 +445,7 @@ class RunScriptClass(threading.Thread):
                     self.frame.running = False
                     break
                 
-                for i in range(0, steps):
+                for i in range(steps):
 
                     print(s[i])
 
@@ -457,7 +457,10 @@ class RunScriptClass(threading.Thread):
                     
                     if self.frame.tnumrd.GetLabel() == 'broken' or self.frame.tnumrd.GetLabel() == 'finished':
                         break
-                    
+                            
+                    text = '%s  [%d/%d %d/%d]' % (running_text, i+1, steps, j, run_times)
+                    self.frame.tnumrd.SetLabel(text)
+
                     if event_type == 'EM':
                         x, y = s[i][2]
                         mouse_ctl.position = (x, y)
