@@ -9,7 +9,7 @@
 
 该软件通过 `Python` 语言编写，已编译为 `windows` 平台可执行文件，未安装 `Python` 的用户可直接下载 `release` 版本 https://github.com/taojy123/KeymouseGo/releases ，直接点击 `KeymouseGo.exe` 运行
 
-<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/sample.jpg" width="370">
+<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/sample.jpg" width="355">
 
 ----------------------
 
@@ -87,7 +87,7 @@
 
 win10 系统可以自定义修改屏幕的缩放比例，见下图
 
-<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/scale.png" width="600">
+<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/scale.png" width="773">
 
 在设定了非 `100%` 的缩放比例后，录制的脚本会出现坐标偏移
 
