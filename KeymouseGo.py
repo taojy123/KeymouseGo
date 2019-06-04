@@ -47,7 +47,7 @@ def single_run(script_path, run_times=1):
 
         for i in range(0, steps):
 
-            print s[i]
+            print(s[i])
 
             event_type = s[i][0]
             message = s[i][1]
@@ -80,12 +80,12 @@ def single_run(script_path, run_times=1):
                 elif message == 'key up':
                     keyboard_ctl.release(key)
 
-    print 'script run finish!'
+    print('script run finish!')
 
 
 if __name__ == '__main__':
 
-    print sys.argv
+    print(sys.argv)
 
     if len(sys.argv) > 1:
         script_path = sys.argv[1]

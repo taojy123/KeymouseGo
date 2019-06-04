@@ -1,4 +1,4 @@
-# KeymouseGo v2.0
+# KeymouseGo v2.1
 
 功能：记录用户的鼠标键盘操作，通过触发按钮自动执行之前记录的操作，可设定执行的次数，可以理解为 `精简绿色版` 的 `按键精灵`。
 
@@ -9,7 +9,7 @@
 
 该软件通过 `Python` 语言编写，已编译为 `windows` 平台可执行文件，未安装 `Python` 的用户可直接下载 `release` 版本 https://github.com/taojy123/KeymouseGo/releases ，直接点击 `KeymouseGo.exe` 运行
 
-<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/sample.png" width="370">
+<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/sample.jpg" width="370">
 
 ----------------------
 
@@ -83,16 +83,33 @@
 ```
 
 
+# 设定屏幕缩放比例：
+
+win10 系统可以自定义修改屏幕的缩放比例，见下图
+
+<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/scale.png" width="600">
+
+在设定了非 `100%` 的缩放比例后，录制的脚本会出现坐标偏移
+
+具体参看此 issue: https://github.com/taojy123/KeymouseGo/issues/8
+
+目前解决方案是，在 `屏幕缩放` 文本框中填写响应的值，比如 `125%`，然后再进行录制即可！
+
+
+
 ----------------------
 
 # 更新说明
+
+## v2.1
++ 增加了屏幕缩放配置，兼容了修改过屏幕缩放比例的 win10 系统
++ 优化代码，兼容 `Python3`
 
 ## v2.0
 + 代码优化重构
 + 使用 `pynput` 实现动作捕捉和执行，不再需要安装 `pywin32` 和 `pyhook`
 + 兼容 macOS (需要在隐私设置中允许程序控制电脑)
 + `pynput` 似乎不兼容 WinXP，暂时没法打包 `x86` 版本，32 位系统的同学还请下载老版本使用
-
 
 ## v1.5
 + 修复自定义缩放后录制定位偏移 Bug
