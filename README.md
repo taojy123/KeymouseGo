@@ -85,11 +85,11 @@
 
 # 设定屏幕缩放比例：
 
-win10 系统可以自定义修改屏幕的缩放比例，见下图
+win10 系统的用户通常会修改屏幕的缩放比例，见下图
 
 <img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/scale.png" width="773">
 
-在设定了非 `100%` 的缩放比例后，录制的脚本会出现坐标偏移
+在修改了缩放比例后，录制的脚本时会出现坐标偏移的问题
 
 具体参看此 issue: https://github.com/taojy123/KeymouseGo/issues/8
 
