@@ -87,7 +87,7 @@
 
 win10 系统的用户通常会修改屏幕的缩放比例，见下图
 
-<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/scale.png" width="773">
+<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/scale.png" width="386">
 
 在修改了缩放比例后，录制的脚本时会出现坐标偏移的问题
 
