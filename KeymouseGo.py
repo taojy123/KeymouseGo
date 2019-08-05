@@ -34,7 +34,7 @@ def single_run(script_path, run_times=1):
     # python KeymouseGo.py scripts/0416_2342.txt 10
     # KeymouseGo.exe scripts\0416_2342.txt
 
-    s = file(script_path, 'r').read()
+    s = open(script_path, 'r').read()
     s = json.loads(s)
     steps = len(s)
 
