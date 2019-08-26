@@ -111,8 +111,8 @@ win10 系统的用户通常会修改屏幕的缩放比例，见下图
 
 感谢以下支持者:
 
-[![liran319](https://avatars1.githubusercontent.com/u/4019372?s=50&v=4)](https://github.com/liran319)
-[![WU731642061](https://avatars3.githubusercontent.com/u/30043630?s=50&v=4)](https://github.com/WU731642061)
+<a href="https://github.com/liran319"><img src="https://avatars1.githubusercontent.com/u/4019372?s=50&v=4" height="50"></a>
+<a href="https://github.com/WU731642061"><img src="https://avatars1.githubusercontent.com/u/30043630?s=50&v=4" height="50"></a>
 
 
 ----------------------
