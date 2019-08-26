@@ -105,7 +105,7 @@ win10 系统的用户通常会修改屏幕的缩放比例，见下图
 
 付款时可备注留下您的 `Github` 账号，我会将您加入项目支持者列表中（如果您愿意）
 
-<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/donate.png" width="00">
+<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/donate.png" width="600">
 
 您的支持，是我前进的动力，谢谢！
 
