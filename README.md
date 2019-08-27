@@ -103,13 +103,13 @@ win10 系统的用户通常会修改屏幕的缩放比例，见下图
 
 如果您觉得这个项目对您有所帮助，并乐意支持开源工作，可通过 `支付宝` 或 `微信支付` 为我赞赏支持
 
-付款时可备注留下您的 `Github` 账号，我会将您加入项目支持者列表中（如果您愿意）
+捐赠时可备注留下您的 `Github` 账号，我会将您加入 `支持者列表` 中（如果您愿意）
 
-您的支持，是我前进的动力，谢谢！
+您的热情，我的动力！开源是一种精神，也是一种生活态度
 
 <img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/donate.png" width="600">
 
-感谢以下支持者:
+感谢下列支持者:
 
 <a href="https://github.com/liran319"><img src="https://avatars1.githubusercontent.com/u/4019372?s=50&v=4" height="50"></a>
 <a href="https://github.com/WU731642061"><img src="https://avatars1.githubusercontent.com/u/30043630?s=50&v=4" height="50"></a>
