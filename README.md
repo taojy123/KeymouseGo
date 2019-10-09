@@ -120,8 +120,7 @@ win10 系统的用户通常会修改屏幕的缩放比例，见下图
 # 更新说明
 
 
-暂时没法打包 `x86` 版本,32 位系统的同学请自行源码编译，或下载老版本使用
-https://github.com/taojy123/KeymouseGo/releases/tag/v1.5
+暂时没法打包 `x86` 版本，32 位系统的同学请自行源码编译，或 [下载v1.5老版本](https://github.com/taojy123/KeymouseGo/releases/tag/v1.5) 使用
 
 
 ## v2.2
@@ -138,7 +137,7 @@ https://github.com/taojy123/KeymouseGo/releases/tag/v1.5
 + 代码优化重构
 + 使用 `pynput` 实现动作捕捉和执行，不再需要安装 `pywin32` 和 `pyhook`
 + 兼容 macOS (需要在隐私设置中允许程序控制电脑)
-+ `pynput` 似乎不兼容 WinXP，暂时没法打包 `x86` 版本，32 位系统的同学还请下载老版本使用
++ `pynput` 似乎不兼容 WinXP，暂时没法打包 `x86` 版本
 
 ## v1.5
 + 修复自定义缩放后录制定位偏移 Bug
