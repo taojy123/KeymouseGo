@@ -222,8 +222,12 @@ class Frame1(wx.Frame):
             y = int(y / scale)
 
             print('mouse click:', x, y, button.name, pressed)
+
             delay = self.now_ts - self.ttt
             self.ttt = self.now_ts
+            if not self.record:
+                delay = 0
+
             pos = (x, y)
             if button.name == 'left':
                 message = 'mouse left '
@@ -235,7 +239,7 @@ class Frame1(wx.Frame):
                 message += 'down'
             else:
                 message += 'up'
-            self.record.append(['EM', message, pos, delay])
+            self.record.append([delay, 'EM', message, pos])
             text = self.tnumrd.GetLabel()
             text = text.replace(' actions recorded','')
             text = str(eval(text)+1)
@@ -271,10 +275,13 @@ class Frame1(wx.Frame):
             else:
                 assert False
 
+
             delay = self.now_ts - self.ttt
             self.ttt = self.now_ts
+            if not self.record:
+                delay = 0
 
-            self.record.append(['EK', message, name, delay])
+            self.record.append([delay, 'EK', message, name])
 
             text = self.tnumrd.GetLabel()
             text = text.replace(' actions recorded', '')
@@ -449,9 +456,16 @@ class RunScriptClass(threading.Thread):
 
                     print(s[i])
 
-                    event_type = s[i][0]
-                    message = s[i][1]
-                    delay = s[i][3]
+                    # for old style script
+                    if isinstance(s[i][0], str) and isinstance(s[i][3], int):
+                        s[i].insert(0, s[i][3])
+
+                    delay = s[i][0]
+                    event_type = s[i][1]
+                    message = s[i][2]
+                    action = s[i][3]
+
+                    message = message.lower()
                     
                     time.sleep(delay / 1000.0)
                     
@@ -462,7 +476,7 @@ class RunScriptClass(threading.Thread):
                     self.frame.tnumrd.SetLabel(text)
 
                     if event_type == 'EM':
-                        x, y = s[i][2]
+                        x, y = action
                         mouse_ctl.position = (x, y)
                         if message == 'mouse left down':
                             mouse_ctl.press(Button.left)
@@ -472,9 +486,11 @@ class RunScriptClass(threading.Thread):
                             mouse_ctl.press(Button.right)
                         elif message == 'mouse right up':
                             mouse_ctl.release(Button.right)
+                        else:
+                            print('unknow mouse event:', message)
 
                     elif event_type == 'EK':
-                        key_name = s[i][2]
+                        key_name = action
 
                         if len(key_name) == 1:
                             key = key_name
@@ -485,6 +501,8 @@ class RunScriptClass(threading.Thread):
                             keyboard_ctl.press(key)
                         elif message == 'key up':
                             keyboard_ctl.release(key)
+                        else:
+                            print('unknow keyboard event:', message)
 
             self.frame.tnumrd.SetLabel('finished')
             self.frame.tstop.Shown = False

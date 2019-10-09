@@ -45,18 +45,26 @@ def single_run(script_path, run_times=1):
     while j < run_times or run_times == 0:
         j += 1
 
-        for i in range(0, steps):
+        # Keep the same with Frame1.py:455, and remove code include `self`
+        for i in range(steps):
 
             print(s[i])
 
-            event_type = s[i][0]
-            message = s[i][1]
-            delay = s[i][3]
+            # for old style script
+            if isinstance(s[i][0], str) and isinstance(s[i][3], int):
+                s[i].insert(0, s[i][3])
 
+            delay = s[i][0]
+            event_type = s[i][1]
+            message = s[i][2]
+            action = s[i][3]
+
+            message = message.lower()
+            
             time.sleep(delay / 1000.0)
 
             if event_type == 'EM':
-                x, y = s[i][2]
+                x, y = action
                 mouse_ctl.position = (x, y)
                 if message == 'mouse left down':
                     mouse_ctl.press(Button.left)
@@ -66,9 +74,11 @@ def single_run(script_path, run_times=1):
                     mouse_ctl.press(Button.right)
                 elif message == 'mouse right up':
                     mouse_ctl.release(Button.right)
+                else:
+                    print('unknow mouse event:', message)
 
             elif event_type == 'EK':
-                key_name = s[i][2]
+                key_name = action
 
                 if len(key_name) == 1:
                     key = key_name
@@ -79,6 +89,8 @@ def single_run(script_path, run_times=1):
                     keyboard_ctl.press(key)
                 elif message == 'key up':
                     keyboard_ctl.release(key)
+                else:
+                    print('unknow keyboard event:', message)
 
     print('script run finish!')
 

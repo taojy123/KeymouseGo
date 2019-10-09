@@ -1,2 +1,5 @@
+#python2
+#python3 [recommend]
+
 wxPython>=3,<5
 pynput==1.4.2
