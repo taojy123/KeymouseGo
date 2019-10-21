@@ -107,7 +107,7 @@ win10 系统的用户通常会修改屏幕的缩放比例，见下图
 
 您的热情，我的动力！开源是一种精神，也是一种生活态度
 
-<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/donate.png" width="600">
+<img src="https://raw.githubusercontent.com/wjy7551376/KeymouseGo/master/donate.png" width="600">
 
 感谢下列支持者:
 
