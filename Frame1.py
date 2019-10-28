@@ -27,6 +27,15 @@ except:
     PY3 = True
 
 
+# # anther way to resolve DPI Scaling on win10
+# try:
+#     import ctypes
+#     ctypes.c_int()
+#     ctypes.windll.shcore.SetProcessDpiAwareness(2)
+# except Exception as e:
+#     print(e)
+
+
 wx.NO_3D = 0
 
 
@@ -144,11 +153,6 @@ class Frame1(wx.Frame):
               parent=self.panel1, pos=wx.Point(16, 102), size=wx.Size(56, 32),
               style=0)
 
-        self.label_scale = wx.StaticText(id=wxID_FRAME1STATICTEXT5,
-              label=u'\u5c4f\u5e55\u7f29\u653e', name='staticText5',
-              parent=self.panel1, pos=wx.Point(16, 141), size=wx.Size(56, 32),
-              style=0)
-
         self.choice_start = wx.Choice(choices=[], id=wxID_FRAME1CHOICE_START,
               name=u'choice_start', parent=self.panel1, pos=wx.Point(79, 58),
               size=wx.Size(108, 25), style=0)
@@ -163,9 +167,15 @@ class Frame1(wx.Frame):
         self.choice_stop.Bind(wx.EVT_CHOICE, self.OnChoice_stopChoice,
               id=wxID_FRAME1CHOICE_STOP)
 
+        # ===== if use SetProcessDpiAwareness, comment below =====
+        self.label_scale = wx.StaticText(id=wxID_FRAME1STATICTEXT5,
+              label=u'\u5c4f\u5e55\u7f29\u653e', name='staticText5',
+              parent=self.panel1, pos=wx.Point(16, 141), size=wx.Size(56, 32),
+              style=0)
         self.text_scale = wx.TextCtrl(id=wxID_FRAME1TEXTCTRL3, name='textCtrl3',
               parent=self.panel1, pos=wx.Point(79, 138), size=wx.Size(108, 22),
               style=0, value='100%')
+        # =========================================================
 
     def __init__(self, parent):
 
@@ -210,6 +220,7 @@ class Frame1(wx.Frame):
             if not self.recording or self.running:
                 return True
 
+            # ===== if use SetProcessDpiAwareness, comment below =====
             try:
                 scale = self.text_scale.GetValue()
                 scale = scale.replace('%', '').replace('-', '').strip()
@@ -217,9 +228,9 @@ class Frame1(wx.Frame):
                 scale = scale / 100.0
             except:
                 scale = 1
-
             x = int(x / scale)
             y = int(y / scale)
+            # =========================================================
 
             print('mouse click:', x, y, button.name, pressed)
 
