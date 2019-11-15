@@ -68,13 +68,13 @@ def create(parent):
     return Frame1(parent)
 
 
-[wxID_FRAME1, wxID_FRAME1BTRECORD, wxID_FRAME1BTRUN, wxID_FRAME1BUTTON1, 
+[wxID_FRAME1, wxID_FRAME1BTRECORD, wxID_FRAME1BTRUN, wxID_FRAME1BTPAUSE, wxID_FRAME1BUTTON1, 
  wxID_FRAME1CHOICE_SCRIPT, wxID_FRAME1CHOICE_START, wxID_FRAME1CHOICE_STOP, 
  wxID_FRAME1PANEL1, wxID_FRAME1STATICTEXT1, wxID_FRAME1STATICTEXT2, 
  wxID_FRAME1STATICTEXT3, wxID_FRAME1STATICTEXT4, wxID_FRAME1STIMES, 
  wxID_FRAME1TEXTCTRL1, wxID_FRAME1TEXTCTRL2, wxID_FRAME1TNUMRD, 
  wxID_FRAME1TSTOP, wxID_FRAME1STATICTEXT5, wxID_FRAME1TEXTCTRL3,
-] = [wx.NewId() for _init_ctrls in range(19)]
+] = [wx.NewId() for _init_ctrls in range(20)]
 
 
 class Frame1(wx.Frame):
@@ -100,6 +100,11 @@ class Frame1(wx.Frame):
               name='btrun', parent=self.panel1, pos=wx.Point(274, 12),
               size=wx.Size(56, 32), style=0)
         self.btrun.Bind(wx.EVT_BUTTON, self.OnBtrunButton, id=wxID_FRAME1BTRUN)
+
+        self.btpause = wx.Button(id=wxID_FRAME1BTPAUSE, label=u'\u6682\u505c',
+              name='btpause', parent=self.panel1, pos=wx.Point(274, 141),
+              size=wx.Size(56, 32), style=0)
+        self.btpause.Bind(wx.EVT_BUTTON, self.OnBtpauseButton, id=wxID_FRAME1BTPAUSE)
 
         self.tnumrd = wx.StaticText(id=wxID_FRAME1TNUMRD, label=u'ready..',
               name='tnumrd', parent=self.panel1, pos=wx.Point(17, 175),
@@ -205,6 +210,10 @@ class Frame1(wx.Frame):
         self.recording = False
         self.record = []
         self.ttt = self.now_ts
+
+        # for pause-resume feature
+        self.paused = False
+        self.pause_event = threading.Event()
 
         # =========== create mouse listener for record ===========
         def on_move(x, y):
@@ -318,7 +327,7 @@ class Frame1(wx.Frame):
 
                 if key.name == start_name and not self.running:
                     print('script start')
-                    t = RunScriptClass(self)
+                    t = RunScriptClass(self, self.pause_event)
                     t.start()
                 elif key.name == stop_name and self.running:
                     print('script stop')
@@ -400,7 +409,7 @@ class Frame1(wx.Frame):
             status = self.tnumrd.GetLabel()
             if 'running' in status or 'recorded' in status:
                 return
-            self.btrecord.SetLabel(u'\u7ed3\u675f')
+            self.btrecord.SetLabel(u'\u7ed3\u675f') # 结束
             self.tnumrd.SetLabel('0 actions recorded')
             self.choice_script.SetSelection(-1)
             self.record = []
@@ -409,8 +418,22 @@ class Frame1(wx.Frame):
 
     def OnBtrunButton(self, event):
         print('script start by btn')
-        t = RunScriptClass(self)
+        t = RunScriptClass(self, self.pause_event)
         t.start()
+        event.Skip()
+
+    def OnBtpauseButton(self, event):
+        print('script pause button pressed')
+        if self.paused:
+            print('script is resumed')
+            self.pause_event.set()
+            self.paused = False
+            self.btpause.SetLabel(u'\u6682\u505c') # 暂停
+        else:
+            print('script is paused')
+            self.pause_event.clear()
+            self.paused = True
+            self.btpause.SetLabel(u'\u7ee7\u7eed') # 继续
         event.Skip()
 
     def OnChoice_startChoice(self, event):
@@ -422,8 +445,10 @@ class Frame1(wx.Frame):
 
 class RunScriptClass(threading.Thread):
 
-    def __init__(self, frame):
+    def __init__(self, frame: Frame1, event: threading.Event):
         self.frame = frame
+        self.event = event
+        self.event.set()
         super(RunScriptClass, self).__init__()
 
     def run(self):
@@ -464,7 +489,7 @@ class RunScriptClass(threading.Thread):
                     break
                 
                 for i in range(steps):
-
+                    self.event.wait()
                     print(s[i])
 
                     # for old style script
