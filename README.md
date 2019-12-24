@@ -9,7 +9,7 @@
 
 该软件通过 `Python` 语言编写，已编译为 `windows` 平台可执行文件，未安装 `Python` 的用户可直接下载 `release` 版本 https://github.com/taojy123/KeymouseGo/releases ，直接点击 `KeymouseGo.exe` 运行
 
-<img src="https://cdn.jsdelivr.net/gh/taojy123/KeymouseGo/sample.jpg" width="355">
+<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/sample.jpg" width="355">
 
 ----------------------
 
@@ -87,7 +87,7 @@
 
 win10 系统的用户通常会修改屏幕的缩放比例，见下图
 
-<img src="https://cdn.jsdelivr.net/gh/taojy123/KeymouseGo/scale.png" width="386">
+<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/scale.png" width="386">
 
 在修改了缩放比例后，录制的脚本时会出现坐标偏移的问题
 
@@ -107,7 +107,7 @@ win10 系统的用户通常会修改屏幕的缩放比例，见下图
 
 您的热情，我的动力！开源是一种精神，也是一种生活态度
 
-<img src="https://cdn.jsdelivr.net/gh/taojy123/KeymouseGo/donate.png" width="600">
+<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/donate.png" width="600">
 
 感谢下列支持者:
 
