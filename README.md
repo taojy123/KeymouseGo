@@ -115,6 +115,10 @@ win10 系统的用户通常会修改屏幕的缩放比例，见下图
 <a href="https://github.com/WU731642061"><img src="https://avatars1.githubusercontent.com/u/30043630?s=50&v=4" height="50"></a>
 
 
+感谢 JetBrains 免费支持开发工具
+
+<a href="https://www.jetbrains.com/?from=KeymouseGo"><img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/jetbrains-variant-2.png" height="80"></a>
+
 ----------------------
 
 # 更新说明
