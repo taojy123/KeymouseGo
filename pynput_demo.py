@@ -1,4 +1,3 @@
-# Python2.7
 # pip intall pynput
 
 

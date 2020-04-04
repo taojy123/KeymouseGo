@@ -3,7 +3,7 @@
 
 ### 解决安装了 wxpython 后依旧无法 import wx 的问题
 
-C:\Python27\Lib\site-packages\
+C:\Python37\Lib\site-packages\
 添加 wx.pth 文件 内容
 wx-3.0-msw
 
@@ -20,7 +20,7 @@ wx-3.0-msw
 
 ### 解决 Boa-constructor 双击后无法打开问题
 
-修改 wx 模块的 __init__.py 文件 (路径一般为 C:\Python27\Lib\site-packages\wx-3.0-msw\___init__.py ), 末尾添加一行:
+修改 wx 模块的 __init__.py 文件 (路径一般为 C:\Python37\Lib\site-packages\wx-3.0-msw\___init__.py ), 末尾添加一行:
 NO_3D = 0
 
 
