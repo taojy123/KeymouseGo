@@ -46,9 +46,9 @@ time.sleep(1)
 def on_press(key):
     print('---- keyboard hook -----')
     if isinstance(key, Key):
-        print 'Key:', key.name, key.value.vk
+        print('Key:', key.name, key.value.vk)
     elif isinstance(key, KeyCode):
-        print 'KeyCode:', key.char, key.vk
+        print('KeyCode:', key.char, key.vk)
     else:
         assert False
     print('------------------------')
@@ -68,23 +68,23 @@ time.sleep(1)
 
 # ============ keyboard control ============ 
 keyboard_ctl = keyboard.Controller()
-keyboard_ctl.press('1')
-keyboard_ctl.release('1')
 
-keyboard_ctl.press(getattr(Key, 'space'))
-keyboard_ctl.release(getattr(Key, 'space'))
+keyboard_ctl.press('a')
+keyboard_ctl.release('a')
 
 keyboard_ctl.press(KeyCode.from_char('b'))
 keyboard_ctl.release(KeyCode.from_char('b'))
 
+keyboard_ctl.press(Key.space)
+keyboard_ctl.release(Key.space)
 
 keyboard_ctl.press(getattr(Key, 'shift'))
 keyboard_ctl.press('c')
 keyboard_ctl.release('c')
 keyboard_ctl.release(getattr(Key, 'shift'))
 
-# keyboard_ctl.press(KeyCode.from_vk(11))
-# keyboard_ctl.release(KeyCode.from_vk(11))
+keyboard_ctl.press(KeyCode.from_vk(11))
+keyboard_ctl.release(KeyCode.from_vk(11))
 
 time.sleep(5)
 

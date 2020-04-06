@@ -101,10 +101,11 @@ class Frame1(wx.Frame):
               size=wx.Size(56, 32), style=0)
         self.btrun.Bind(wx.EVT_BUTTON, self.OnBtrunButton, id=wxID_FRAME1BTRUN)
 
-        self.btpause = wx.Button(id=wxID_FRAME1BTPAUSE, label=u'\u6682\u505c',
-              name='btpause', parent=self.panel1, pos=wx.Point(274, 141),
-              size=wx.Size(56, 32), style=0)
-        self.btpause.Bind(wx.EVT_BUTTON, self.OnBtpauseButton, id=wxID_FRAME1BTPAUSE)
+        # 暂停/继续 功能不适合用按钮的形式来做，所以暂时隐去
+        # self.btpause = wx.Button(id=wxID_FRAME1BTPAUSE, label=u'\u6682\u505c',
+        #       name='btpause', parent=self.panel1, pos=wx.Point(274, 141),
+        #       size=wx.Size(56, 32), style=0)
+        # self.btpause.Bind(wx.EVT_BUTTON, self.OnBtpauseButton, id=wxID_FRAME1BTPAUSE)
 
         self.tnumrd = wx.StaticText(id=wxID_FRAME1TNUMRD, label=u'ready..',
               name='tnumrd', parent=self.panel1, pos=wx.Point(17, 175),
@@ -267,13 +268,6 @@ class Frame1(wx.Frame):
             self.tnumrd.SetLabel(text)
             return True
 
-        self.mouse_listener = mouse.Listener(
-            on_move=on_move,
-            on_scroll=on_scroll,
-            on_click=on_click
-        )
-        self.mouse_listener.start()
-
         # =========== create keyboard listener for record ===========
         def key_event(key, is_press):
             if not self.recording or self.running:
@@ -311,6 +305,10 @@ class Frame1(wx.Frame):
             return True
 
         def on_press(key):
+            return key_event(key, True)
+
+        def on_release(key):
+            print('=====',key)
             if not self.recording:
                 # listen for start/stop script
                 start_name = 'f6'
@@ -332,15 +330,18 @@ class Frame1(wx.Frame):
                 elif key.name == stop_name and self.running:
                     print('script stop')
                     self.tnumrd.SetLabel('broken')
-
-            return key_event(key, True)
-
-        def on_release(key):
             return key_event(key, False)
 
+        self.mouse_listener = mouse.Listener(
+            on_move=on_move,
+            on_scroll=on_scroll,
+            on_click=on_click
+        )
         self.keyboard_listener = keyboard.Listener(
             on_press=on_press,
             on_release=on_release)
+        
+        self.mouse_listener.start()
         self.keyboard_listener.start()
 
     @property
