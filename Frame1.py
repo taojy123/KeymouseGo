@@ -393,8 +393,7 @@ class Frame1(wx.Frame):
         if self.recording:
             print('record stop')
             self.recording = False
-            del self.record[-2]
-            del self.record[-1]
+            self.record = self.record[:-2]
             output = json.dumps(self.record, indent=1)
             output = output.replace('\r\n', '\n').replace('\r', '\n')
             output = output.replace('\n   ', '').replace('\n  ', '')
