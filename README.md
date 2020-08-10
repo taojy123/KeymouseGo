@@ -6,6 +6,13 @@
 
 ----------------------
 
+该软件通过 `Python` 语言编写，已编译为 `windows` 平台可执行文件，未安装 `Python` 的用户可直接下载 `release` 版本 https://github.com/taojy123/KeymouseGo/releases ，直接点击 `KeymouseGo.exe` 运行
+
+<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/sample.jpg" width="355">
+
+----------------------
+
+
 # 关于作者：
 
 我是陶佳元，热爱代码，怀旧，在互联网上常用的 ID 有 taojy123 、tao.py。
@@ -16,13 +23,6 @@
 
 我的邮箱: taojy123@163.com
 
-----------------------
-
-该软件通过 `Python` 语言编写，已编译为 `windows` 平台可执行文件，未安装 `Python` 的用户可直接下载 `release` 版本 https://github.com/taojy123/KeymouseGo/releases ，直接点击 `KeymouseGo.exe` 运行
-
-<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/sample.jpg" width="355">
-
-----------------------
 
 # 基本操作：
 
