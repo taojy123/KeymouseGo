@@ -28,7 +28,7 @@ def single_run(script_path, run_times=1):
         for i in range(steps):
 
             print(s[i])
-            [782, "EM", "mouse left down", [1050, 434]]
+            # [782, "EM", "mouse left down", [1050, 434]]
 
             # for old style script
             if isinstance(s[i][0], str) and isinstance(s[i][3], int):
@@ -49,14 +49,14 @@ def single_run(script_path, run_times=1):
 
                 ctypes.windll.user32.SetCursorPos(x, y)
                 
-                if s[i][1]=='mouse left down':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
-                elif s[i][1]=='mouse left up':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
-                elif s[i][1]=='mouse right down':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN, 0, 0)
-                elif s[i][1]=='mouse right up':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, 0, 0)
+                if message == 'mouse left down':
+                    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
+                elif message == 'mouse left up':
+                    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
+                elif message == 'mouse right down':
+                    win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0)
+                elif message == 'mouse right up':
+                    win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0)
                 else:
                     print('unknow mouse event:', message)
 
@@ -66,14 +66,15 @@ def single_run(script_path, run_times=1):
                 if key_code >= 160 and key_code <= 165:
                     key_code = int(key_code / 2) - 64
 
-                if s[i][1]=='key down':
+                if message == 'key down':
                     win32api.keybd_event(key_code, 0, 0, 0)  
-                elif s[i][1]=='key up':
+                elif message == 'key up':
                     win32api.keybd_event(key_code, 0, win32con.KEYEVENTF_KEYUP, 0)
                 else:
                     print('unknow keyboard event:', message)
 
     print('script run finish!')
+
 
 
 try:
@@ -82,12 +83,15 @@ try:
         fname = random.choice(fnames)
         script_path = os.path.join('scripts', fname)
         print('wait 30s')
-        time.sleep(30)
+        time.sleep(3)
         print('run begin', script_path)
         single_run(script_path, 5)
+
 except Exception as e:
     traceback.print_exc()
     input('')
 
 print('Bye!')
+
+
 
