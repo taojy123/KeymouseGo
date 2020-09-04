@@ -8,11 +8,9 @@ import json
 import random
 import traceback
 
-from pynput import mouse
-from pynput import keyboard
-from pynput.mouse import Button
-from pynput.keyboard import Key, KeyCode
-
+import win32con
+import win32api
+import ctypes
 
 
 def single_run(script_path, run_times=1):
@@ -20,9 +18,6 @@ def single_run(script_path, run_times=1):
     s = open(script_path, 'r').read()
     s = json.loads(s)
     steps = len(s)
-
-    mouse_ctl = mouse.Controller()
-    keyboard_ctl = keyboard.Controller()
 
     j = 0
     while j < run_times or run_times == 0:
@@ -33,9 +28,11 @@ def single_run(script_path, run_times=1):
         for i in range(steps):
 
             print(s[i])
+            [782, "EM", "mouse left down", [1050, 434]]
 
             # for old style script
             if isinstance(s[i][0], str) and isinstance(s[i][3], int):
+                # ["EM", "mouse left down", [1050, 434], 782] => [782, "EM", "mouse left down", [1050, 434], 782]
                 s[i].insert(0, s[i][3])
 
             delay = s[i][0]
@@ -49,30 +46,30 @@ def single_run(script_path, run_times=1):
 
             if event_type == 'EM':
                 x, y = action
-                mouse_ctl.position = (x, y)
-                if message == 'mouse left down':
-                    mouse_ctl.press(Button.left)
-                elif message == 'mouse left up':
-                    mouse_ctl.release(Button.left)
-                elif message == 'mouse right down':
-                    mouse_ctl.press(Button.right)
-                elif message == 'mouse right up':
-                    mouse_ctl.release(Button.right)
+
+                ctypes.windll.user32.SetCursorPos(x, y)
+                
+                if s[i][1]=='mouse left down':
+                    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0)
+                elif s[i][1]=='mouse left up':
+                    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0)
+                elif s[i][1]=='mouse right down':
+                    win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN, 0, 0)
+                elif s[i][1]=='mouse right up':
+                    win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, 0, 0)
                 else:
                     print('unknow mouse event:', message)
 
             elif event_type == 'EK':
-                key_name = action
+                key_code, key_name = action
 
-                if len(key_name) == 1:
-                    key = key_name
-                else:
-                    key = getattr(Key, key_name)
+                if key_code >= 160 and key_code <= 165:
+                    key_code = int(key_code / 2) - 64
 
-                if message == 'key down':
-                    keyboard_ctl.press(key)
-                elif message == 'key up':
-                    keyboard_ctl.release(key)
+                if s[i][1]=='key down':
+                    win32api.keybd_event(key_code, 0, 0, 0)  
+                elif s[i][1]=='key up':
+                    win32api.keybd_event(key_code, 0, win32con.KEYEVENTF_KEYUP, 0)
                 else:
                     print('unknow keyboard event:', message)
 
@@ -93,3 +90,4 @@ except Exception as e:
     input('')
 
 print('Bye!')
+
