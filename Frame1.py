@@ -2,53 +2,34 @@
 
 import os
 import sys
-import wx
 import time
 import threading
 import datetime
 import json
 import traceback
+import io
+
+import wx
+from wx.adv import TaskBarIcon as wxTaskBarIcon
+from wx.adv import EVT_TASKBAR_LEFT_DCLICK
+
+import pyWinhook
+import win32ui,win32con,pythoncom,win32gui,win32process,win32api
+import ctypes
 
 from pynput import mouse
 from pynput import keyboard
 from pynput.mouse import Button
 from pynput.keyboard import Key, KeyCode
 
-PY2 = PY3 = False
-try:
-    import StringIO
-    from wx import TaskBarIcon as wxTaskBarIcon
-    from wx import EVT_TASKBAR_LEFT_DCLICK
-    PY2 = True
-except:
-    import io
-    from wx.adv import TaskBarIcon as wxTaskBarIcon
-    from wx.adv import EVT_TASKBAR_LEFT_DCLICK
-    PY3 = True
-
-
-# # anther way to resolve DPI Scaling on win10
-# try:
-#     import ctypes
-#     ctypes.c_int()
-#     ctypes.windll.shcore.SetProcessDpiAwareness(2)
-# except Exception as e:
-#     print(e)
-
 
 wx.NO_3D = 0
-
-
-KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12']
+HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12']
 
 
 def GetMondrianStream():
-    if PY2:
-        data = '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00 \x00\x00\x00 \x08\x06\x00\x00\x00szz\xf4\x00\x00\x00\x04sBIT\x08\x08\x08\x08|\x08d\x88\x00\x00\x00qIDATX\x85\xed\xd6;\n\x800\x10E\xd1{\xc5\x8d\xb9r\x97\x16\x0b\xad$\x8a\x82:\x16o\xda\x84pB2\x1f\x81Fa\x8c\x9c\x08\x04Z{\xcf\xa72\xbcv\xfa\xc5\x08 \x80r\x80\xfc\xa2\x0e\x1c\xe4\xba\xfaX\x1d\xd0\xde]S\x07\x02\xd8>\xe1wa-`\x9fQ\xe9\x86\x01\x04\x10\x00\\(Dk\x1b-\x04\xdc\x1d\x07\x14\x98;\x0bS\x7f\x7f\xf9\x13\x04\x10@\xf9X\xbe\x00\xc9 \x14K\xc1<={\x00\x00\x00\x00IEND\xaeB`\x82'
-        stream = StringIO.StringIO(data)
-    else:
-        data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00 \x00\x00\x00 \x08\x06\x00\x00\x00szz\xf4\x00\x00\x00\x04sBIT\x08\x08\x08\x08|\x08d\x88\x00\x00\x00qIDATX\x85\xed\xd6;\n\x800\x10E\xd1{\xc5\x8d\xb9r\x97\x16\x0b\xad$\x8a\x82:\x16o\xda\x84pB2\x1f\x81Fa\x8c\x9c\x08\x04Z{\xcf\xa72\xbcv\xfa\xc5\x08 \x80r\x80\xfc\xa2\x0e\x1c\xe4\xba\xfaX\x1d\xd0\xde]S\x07\x02\xd8>\xe1wa-`\x9fQ\xe9\x86\x01\x04\x10\x00\\(Dk\x1b-\x04\xdc\x1d\x07\x14\x98;\x0bS\x7f\x7f\xf9\x13\x04\x10@\xf9X\xbe\x00\xc9 \x14K\xc1<={\x00\x00\x00\x00IEND\xaeB`\x82'
-        stream = io.BytesIO(data)
+    data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00 \x00\x00\x00 \x08\x06\x00\x00\x00szz\xf4\x00\x00\x00\x04sBIT\x08\x08\x08\x08|\x08d\x88\x00\x00\x00qIDATX\x85\xed\xd6;\n\x800\x10E\xd1{\xc5\x8d\xb9r\x97\x16\x0b\xad$\x8a\x82:\x16o\xda\x84pB2\x1f\x81Fa\x8c\x9c\x08\x04Z{\xcf\xa72\xbcv\xfa\xc5\x08 \x80r\x80\xfc\xa2\x0e\x1c\xe4\xba\xfaX\x1d\xd0\xde]S\x07\x02\xd8>\xe1wa-`\x9fQ\xe9\x86\x01\x04\x10\x00\\(Dk\x1b-\x04\xdc\x1d\x07\x14\x98;\x0bS\x7f\x7f\xf9\x13\x04\x10@\xf9X\xbe\x00\xc9 \x14K\xc1<={\x00\x00\x00\x00IEND\xaeB`\x82'
+    stream = io.BytesIO(data)
     return stream
 
 
@@ -201,10 +182,10 @@ class Frame1(wx.Frame):
         if self.scripts:
             self.choice_script.SetSelection(0)
                 
-        self.choice_start.SetItems(KEYS)
+        self.choice_start.SetItems(HOT_KEYS)
         self.choice_start.SetSelection(3)
         
-        self.choice_stop.SetItems(KEYS)
+        self.choice_stop.SetItems(HOT_KEYS)
         self.choice_stop.SetSelection(6)
 
         self.running = False
@@ -314,9 +295,9 @@ class Frame1(wx.Frame):
                 start_name = 'f6'
                 stop_name = 'f9'
                 start_index = self.choice_start.GetSelection()
-                start_name = KEYS[start_index].lower()
+                start_name = HOT_KEYS[start_index].lower()
                 stop_index = self.choice_stop.GetSelection()
-                stop_name = KEYS[stop_index].lower()
+                stop_name = HOT_KEYS[stop_index].lower()
 
                 print(start_name, stop_name, key)
 

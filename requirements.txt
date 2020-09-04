@@ -1,4 +1,5 @@
 # Python3
 
 wxPython>=3,<5
-pynput==1.4.2
+pywin32==228
+pyWinhook==1.6.2
