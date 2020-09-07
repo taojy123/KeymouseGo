@@ -287,7 +287,7 @@ class Frame1(wx.Frame):
             if message not in all_messages:
                 return True
 
-            key_info = (event.KeyID, event.Key)
+            key_info = (event.KeyID, event.Key, event.Extended)
 
             delay = current_ts() - self.ttt
             self.ttt = current_ts()
@@ -336,11 +336,6 @@ class Frame1(wx.Frame):
         event.Skip()
         
     def OnClose(self, event):
-        try:
-            self.mouse_listener.stop()
-            self.keyboard_listener.stop()
-        except:
-            pass
         self.taskBarIcon.Destroy()
         self.Destroy()
         event.Skip()
@@ -507,16 +502,20 @@ class RunScriptClass(threading.Thread):
                     print('unknow mouse event:', message)
 
             elif event_type == 'EK':
-                key_code, key_name = action
+                key_code, key_name, extended = action
 
                 # shift ctrl alt
                 # if key_code >= 160 and key_code <= 165:
                 #     key_code = int(key_code/2) - 64
 
+                base = 0
+                if extended:
+                    base = win32con.KEYEVENTF_EXTENDEDKEY
+
                 if message == 'key down':
-                    win32api.keybd_event(key_code, 0, 0, 0)  
+                    win32api.keybd_event(key_code, 0, base, 0)
                 elif message == 'key up':
-                    win32api.keybd_event(key_code, 0, win32con.KEYEVENTF_KEYUP, 0)
+                    win32api.keybd_event(key_code, 0, base | win32con.KEYEVENTF_KEYUP, 0)
                 else:
                     print('unknow keyboard event:', message)
 
@@ -541,7 +540,7 @@ class TaskBarIcon(wxTaskBarIcon):
         self.frame.Raise()
 
     def OnAbout(self, event):
-        wx.MessageBox('https://github.com/taojy123/KeymouseGo', 'KeymouseGo')
+        wx.MessageBox('https://github.com/taojy123/KeymouseGo', 'KeymouseGo v3.0')
         event.Skip()
 
     def OnCloseshow(self, event):
