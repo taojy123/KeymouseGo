@@ -78,12 +78,15 @@ def single_run(script_path, run_times=1):
 
 
 try:
-    fnames = os.listdir('scripts')
+    fnames = list(os.listdir('scripts'))
     if fnames:
-        fname = random.choice(fnames)
+        print('all files:', fnames)
+        n = int(time.time()) % len(fnames)
+        fname = fnames[n]
+        print('choice file:', fname)
         script_path = os.path.join('scripts', fname)
         print('wait 30s')
-        time.sleep(3)
+        time.sleep(30)
         print('run begin', script_path)
         single_run(script_path, 5)
 
