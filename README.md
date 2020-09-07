@@ -1,4 +1,4 @@
-# KeymouseGo v2.2
+# KeymouseGo v3.0
 
 功能：记录用户的鼠标键盘操作，通过触发按钮自动执行之前记录的操作，可设定执行的次数，可以理解为 `精简绿色版` 的 `按键精灵`。
 
@@ -50,7 +50,7 @@
 6、`scripts` 下的脚本文件内容可以修改，修改时可参考如下所述 `脚本格式说明`。
 
 
-# 脚本格式说明：
+# 脚本语法说明：
 
 ```
 [
@@ -92,21 +92,6 @@
 > KeymouseGo.exe scripts/0314_1452.txt 3
 ```
 
-
-# 设定屏幕缩放比例：
-
-win10 系统的用户通常会修改屏幕的缩放比例，见下图
-
-<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/scale.png" width="386">
-
-在修改了缩放比例后，录制的脚本时会出现坐标偏移的问题
-
-具体参看此 issue: https://github.com/taojy123/KeymouseGo/issues/8
-
-目前解决方案是，在 `屏幕缩放` 文本框中填写响应的值，比如 `125%`，然后再进行录制即可！
-
-
-
 ----------------------
 
 # 赞赏支持
@@ -119,7 +104,7 @@ win10 系统的用户通常会修改屏幕的缩放比例，见下图
 
 <img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/donate.png" width="600">
 
-感谢下列支持者:
+感谢以下支持者:
 
 <a href="https://github.com/liran319"><img src="https://avatars1.githubusercontent.com/u/4019372?s=50&v=4" height="50"></a>
 <a href="https://github.com/WU731642061"><img src="https://avatars1.githubusercontent.com/u/30043630?s=50&v=4" height="50"></a>
@@ -132,26 +117,23 @@ win10 系统的用户通常会修改屏幕的缩放比例，见下图
 
 ----------------------
 
-# 已知的一些问题
-
-`pynput` 在 `macOS` 上有兼容性问题，发现无法同时监听鼠标和键盘事件的时候。
-
-经过简单的验证发现：
-- 单纯的同时监听鼠标和键盘事件，没有问题
-- 在 wxpython 中只监听鼠标事件，没有问题
-- 在 wxpython 中只监听键盘事件，没有问题
-- 在 wxpython 中同时监听键盘事件，有几率会报错，并无法正常监听键盘事件
-- 暂时找不到解决方案，可能要考虑找 pynput 的替代品
-
-详见此 issue https://github.com/moses-palmer/pynput/issues/55
-
-
-----------------------
-
 # 更新说明
 
-
 暂时没法打包 `x86` 版本，32 位系统的同学请自行源码编译，或 [下载v1.5老版本](https://github.com/taojy123/KeymouseGo/releases/tag/v1.5) 使用
+
+
+## v3.0
+
+因为兼容 macOS 遇到的很大的阻碍，最终放弃跨平台，血泪史可参看这两个 issue:
+https://github.com/taojy123/KeymouseGo/issues/24
+https://github.com/moses-palmer/pynput/issues/55
+
++ 改回使用 `win32api` 库，只支持 windows 系统
++ 因为使用了 `win32api`，屏幕缩放比例不再需要手动设置
++ 录制脚本语法有部分改动，不向前兼容
++ 解决了 `shift` + `上下左右` 的回放问题，见 https://github.com/taojy123/KeymouseGo/issues/27
++ 录制鼠标路径 todo
++ 文字输入功能 todo
 
 
 ## v2.2

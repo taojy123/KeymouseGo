@@ -159,13 +159,13 @@ class Frame1(wx.Frame):
               id=wxID_FRAME1CHOICE_STOP)
 
         # ===== if use SetProcessDpiAwareness, comment below =====
-        self.label_scale = wx.StaticText(id=wxID_FRAME1STATICTEXT5,
-              label='屏幕缩放', name='staticText5',
-              parent=self.panel1, pos=wx.Point(16, 141), size=wx.Size(56, 32),
-              style=0)
-        self.text_scale = wx.TextCtrl(id=wxID_FRAME1TEXTCTRL3, name='textCtrl3',
-              parent=self.panel1, pos=wx.Point(79, 138), size=wx.Size(108, 22),
-              style=0, value='100%')
+        # self.label_scale = wx.StaticText(id=wxID_FRAME1STATICTEXT5,
+        #       label='屏幕缩放', name='staticText5',
+        #       parent=self.panel1, pos=wx.Point(16, 141), size=wx.Size(56, 32),
+        #       style=0)
+        # self.text_scale = wx.TextCtrl(id=wxID_FRAME1TEXTCTRL3, name='textCtrl3',
+        #       parent=self.panel1, pos=wx.Point(79, 138), size=wx.Size(108, 22),
+        #       style=0, value='100%')
         # =========================================================
 
     def __init__(self, parent):
@@ -461,10 +461,6 @@ class RunScriptClass(threading.Thread):
 
         for i in range(steps):
 
-            # for old style script
-            if isinstance(s[i][0], str) and isinstance(s[i][3], int):
-                s[i].insert(0, s[i][3])
-
             print(s[i])
 
             delay = s[i][0]
@@ -476,7 +472,7 @@ class RunScriptClass(threading.Thread):
             
             if thd:
                 current_status = thd.frame.tnumrd.GetLabel()
-                if  current_status in ['broken', 'finished']:
+                if current_status in ['broken', 'finished']:
                     break
                 thd.event.wait()
                 text = '%s  [%d/%d %d/%d]' % (thd.running_text, i+1, steps, thd.j, thd.run_times)
@@ -484,8 +480,10 @@ class RunScriptClass(threading.Thread):
 
             if event_type == 'EM':
                 x, y = action
+
                 # ctypes.windll.user32.SetCursorPos(x, y)
                 # win32api.SetCursorPos([x, y])
+
                 nx = int(x * 65535 / sw)
                 ny = int(y * 65535 / sh)
                 win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE|win32con.MOUSEEVENTF_MOVE, nx, ny, 0, 0)
