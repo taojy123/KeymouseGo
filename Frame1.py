@@ -49,6 +49,10 @@ def create(parent):
     return Frame1(parent)
 
 
+def current_ts():
+    return int(time.time() * 1000)
+
+
 [wxID_FRAME1, wxID_FRAME1BTRECORD, wxID_FRAME1BTRUN, wxID_FRAME1BTPAUSE, wxID_FRAME1BUTTON1, 
  wxID_FRAME1CHOICE_SCRIPT, wxID_FRAME1CHOICE_START, wxID_FRAME1CHOICE_STOP, 
  wxID_FRAME1PANEL1, wxID_FRAME1STATICTEXT1, wxID_FRAME1STATICTEXT2, 
@@ -71,35 +75,35 @@ class Frame1(wx.Frame):
               pos=wx.Point(0, 0), size=wx.Size(350, 205),
               style=wx.NO_3D | wx.CAPTION)
 
-        self.btrecord = wx.Button(id=wxID_FRAME1BTRECORD, label=u'\u5f55\u5236',
+        self.btrecord = wx.Button(id=wxID_FRAME1BTRECORD, label='录制',
               name='btrecord', parent=self.panel1, pos=wx.Point(202, 12),
               size=wx.Size(56, 32), style=0)
         self.btrecord.Bind(wx.EVT_BUTTON, self.OnBtrecordButton,
               id=wxID_FRAME1BTRECORD)
 
-        self.btrun = wx.Button(id=wxID_FRAME1BTRUN, label=u'\u542f\u52a8',
+        self.btrun = wx.Button(id=wxID_FRAME1BTRUN, label='启动',
               name='btrun', parent=self.panel1, pos=wx.Point(274, 12),
               size=wx.Size(56, 32), style=0)
         self.btrun.Bind(wx.EVT_BUTTON, self.OnBtrunButton, id=wxID_FRAME1BTRUN)
 
         # 暂停/继续 功能不适合用按钮的形式来做，所以暂时隐去
-        # self.btpause = wx.Button(id=wxID_FRAME1BTPAUSE, label=u'\u6682\u505c',
+        # self.btpause = wx.Button(id=wxID_FRAME1BTPAUSE, label='暂停',
         #       name='btpause', parent=self.panel1, pos=wx.Point(274, 141),
         #       size=wx.Size(56, 32), style=0)
         # self.btpause.Bind(wx.EVT_BUTTON, self.OnBtpauseButton, id=wxID_FRAME1BTPAUSE)
 
-        self.tnumrd = wx.StaticText(id=wxID_FRAME1TNUMRD, label=u'ready..',
+        self.tnumrd = wx.StaticText(id=wxID_FRAME1TNUMRD, label='ready..',
               name='tnumrd', parent=self.panel1, pos=wx.Point(17, 175),
               size=wx.Size(100, 36), style=0)
 
-        self.button1 = wx.Button(id=wxID_FRAME1BUTTON1, label=u'test',
+        self.button1 = wx.Button(id=wxID_FRAME1BUTTON1, label='test',
               name='button1', parent=self.panel1, pos=wx.Point(128, 296),
               size=wx.Size(75, 24), style=0)
         self.button1.Bind(wx.EVT_BUTTON, self.OnButton1Button,
               id=wxID_FRAME1BUTTON1)
 
         self.tstop = wx.StaticText(id=wxID_FRAME1TSTOP,
-              label=u'If you want to stop it, Press F12', name='tstop',
+              label='If you want to stop it, Press F12', name='tstop',
               parent=self.panel1, pos=wx.Point(25, 332), size=wx.Size(183, 18),
               style=0)
         self.tstop.Show(False)
@@ -110,7 +114,7 @@ class Frame1(wx.Frame):
         self.stimes.SetValue(1)
 
         self.label_run_times = wx.StaticText(id=wxID_FRAME1STATICTEXT2,
-              label=u'\u6267\u884c\u6b21\u6570(0\u4e3a\u65e0\u9650\u5faa\u73af)',
+              label='执行次数(0为无限循环)',
               name='label_run_times', parent=self.panel1, pos=wx.Point(203, 61),
               size=wx.Size(136, 26), style=0)
 
@@ -123,40 +127,40 @@ class Frame1(wx.Frame):
               style=0, value='123')
 
         self.label_script = wx.StaticText(id=wxID_FRAME1STATICTEXT3,
-              label=u'\u811a\u672c', name='label_script', parent=self.panel1,
+              label='脚本', name='label_script', parent=self.panel1,
               pos=wx.Point(17, 20), size=wx.Size(40, 32), style=0)
 
         self.choice_script = wx.Choice(choices=[], id=wxID_FRAME1CHOICE_SCRIPT,
-              name=u'choice_script', parent=self.panel1, pos=wx.Point(79, 15),
+              name='choice_script', parent=self.panel1, pos=wx.Point(79, 15),
               size=wx.Size(108, 25), style=0)
 
         self.label_start_key = wx.StaticText(id=wxID_FRAME1STATICTEXT1,
-              label=u'\u542f\u52a8\u70ed\u952e', name='label_start_key',
+              label='启动热键', name='label_start_key',
               parent=self.panel1, pos=wx.Point(16, 63), size=wx.Size(56, 24),
               style=0)
 
         self.label_stop_key = wx.StaticText(id=wxID_FRAME1STATICTEXT4,
-              label=u'\u7ec8\u6b62\u70ed\u952e', name='label_stop_key',
+              label='终止热键', name='label_stop_key',
               parent=self.panel1, pos=wx.Point(16, 102), size=wx.Size(56, 32),
               style=0)
 
         self.choice_start = wx.Choice(choices=[], id=wxID_FRAME1CHOICE_START,
-              name=u'choice_start', parent=self.panel1, pos=wx.Point(79, 58),
+              name='choice_start', parent=self.panel1, pos=wx.Point(79, 58),
               size=wx.Size(108, 25), style=0)
-        self.choice_start.SetLabel(u'')
-        self.choice_start.SetLabelText(u'')
+        self.choice_start.SetLabel('')
+        self.choice_start.SetLabelText('')
         self.choice_start.Bind(wx.EVT_CHOICE, self.OnChoice_startChoice,
               id=wxID_FRAME1CHOICE_START)
 
         self.choice_stop = wx.Choice(choices=[], id=wxID_FRAME1CHOICE_STOP,
-              name=u'choice_stop', parent=self.panel1, pos=wx.Point(79, 98),
+              name='choice_stop', parent=self.panel1, pos=wx.Point(79, 98),
               size=wx.Size(108, 25), style=0)
         self.choice_stop.Bind(wx.EVT_CHOICE, self.OnChoice_stopChoice,
               id=wxID_FRAME1CHOICE_STOP)
 
         # ===== if use SetProcessDpiAwareness, comment below =====
         self.label_scale = wx.StaticText(id=wxID_FRAME1STATICTEXT5,
-              label=u'\u5c4f\u5e55\u7f29\u653e', name='staticText5',
+              label='屏幕缩放', name='staticText5',
               parent=self.panel1, pos=wx.Point(16, 141), size=wx.Size(56, 32),
               style=0)
         self.text_scale = wx.TextCtrl(id=wxID_FRAME1TEXTCTRL3, name='textCtrl3',
@@ -191,143 +195,118 @@ class Frame1(wx.Frame):
         self.running = False
         self.recording = False
         self.record = []
-        self.ttt = self.now_ts
+        self.ttt = current_ts()
 
         # for pause-resume feature
         self.paused = False
         self.pause_event = threading.Event()
 
-        # =========== create mouse listener for record ===========
-        def on_move(x, y):
+        self.hm = pyWinhook.HookManager()
+
+        def on_mouse_event(event):
+
+            # print('MessageName:',event.MessageName)  #事件名称
+            # print('Message:',event.Message)          #windows消息常量 
+            # print('Time:',event.Time)                #事件发生的时间戳        
+            # print('Window:',event.Window)            #窗口句柄         
+            # print('WindowName:',event.WindowName)    #窗口标题
+            # print('Position:',event.Position)        #事件发生时相对于整个屏幕的坐标
+            # print('Wheel:',event.Wheel)              #鼠标滚轮
+            # print('Injected:',event.Injected)        #判断这个事件是否由程序方式生成，而不是正常的人为触发。
+            # print('---')
+
             if not self.recording or self.running:
                 return True
 
-        def on_scroll(x, y, dx, dy):
-            if not self.recording or self.running:
+            message = event.MessageName
+            all_messages = ('mouse left down', 'mouse left up', 'mouse right down', 'mouse right up')
+            if message not in all_messages:
                 return True
 
-        def on_click(x, y, button, pressed):
+            pos = win32gui.GetCursorPos()
 
-            if not self.recording or self.running:
-                return True
-
-            # ===== if use SetProcessDpiAwareness, comment below =====
-            try:
-                scale = self.text_scale.GetValue()
-                scale = scale.replace('%', '').replace('-', '').strip()
-                scale = float(scale)
-                scale = scale / 100.0
-            except:
-                scale = 1
-            x = int(x / scale)
-            y = int(y / scale)
-            # =========================================================
-
-            print('mouse click:', x, y, button.name, pressed)
-
-            delay = self.now_ts - self.ttt
-            self.ttt = self.now_ts
+            delay = current_ts() - self.ttt
+            self.ttt = current_ts()
             if not self.record:
                 delay = 0
 
-            pos = (x, y)
-            if button.name == 'left':
-                message = 'mouse left '
-            elif button.name == 'right':
-                message = 'mouse right '
-            else:
-                return True
-            if pressed:
-                message += 'down'
-            else:
-                message += 'up'
+            print(delay, message, pos)
+
             self.record.append([delay, 'EM', message, pos])
             text = self.tnumrd.GetLabel()
-            text = text.replace(' actions recorded','')
-            text = str(eval(text)+1)
-            text = text + ' actions recorded'
+            action_count = text.replace(' actions recorded', '')
+            text = '%d actions recorded' % (int(action_count) + 1)
             self.tnumrd.SetLabel(text)
             return True
 
-        # =========== create keyboard listener for record ===========
-        def key_event(key, is_press):
-            if not self.recording or self.running:
-                return True
+        def on_keyboard_event(event):
 
-            if is_press:
-                print('keyboard press:', key)
-                message = 'key down'
-            else:
-                print('keyboard release:', key)
-                message = 'key up'
+            # print('MessageName:',event.MessageName)          #同上，共同属性不再赘述
+            # print('Message:',event.Message)
+            # print('Time:',event.Time)
+            # print('Window:',event.Window)
+            # print('WindowName:',event.WindowName)
+            # print('Ascii:', event.Ascii, chr(event.Ascii))   #按键的ASCII码
+            # print('Key:', event.Key)                         #按键的名称
+            # print('KeyID:', event.KeyID)                     #按键的虚拟键值
+            # print('ScanCode:', event.ScanCode)               #按键扫描码
+            # print('Extended:', event.Extended)               #判断是否为增强键盘的扩展键
+            # print('Injected:', event.Injected)
+            # print('Alt', event.Alt)                          #是某同时按下Alt
+            # print('Transition', event.Transition)            #判断转换状态
+            # print('---')
 
-            if isinstance(key, Key):
-                print('Key:', key.name, key.value.vk)
-                name = key.name
-            elif isinstance(key, KeyCode):
-                print('KeyCode:', key.char, key.vk)
-                name = key.char
-            else:
-                assert False
+            message = event.MessageName
+            message = message.replace(' sys ', ' ')
 
-
-            delay = self.now_ts - self.ttt
-            self.ttt = self.now_ts
-            if not self.record:
-                delay = 0
-
-            self.record.append([delay, 'EK', message, name])
-
-            text = self.tnumrd.GetLabel()
-            text = text.replace(' actions recorded', '')
-            text = str(eval(text) + 1)
-            text = text + ' actions recorded'
-            self.tnumrd.SetLabel(text)
-            return True
-
-        def on_press(key):
-            return key_event(key, True)
-
-        def on_release(key):
-            print('=====',key)
-            if not self.recording:
+            if message == 'key up' and not self.recording:
                 # listen for start/stop script
-                start_name = 'f6'
-                stop_name = 'f9'
+                key_name = event.Key.lower()
+                start_name = 'f6'  # as default
+                stop_name = 'f9'  # as default
+
                 start_index = self.choice_start.GetSelection()
-                start_name = HOT_KEYS[start_index].lower()
                 stop_index = self.choice_stop.GetSelection()
+                start_name = HOT_KEYS[start_index].lower()
                 stop_name = HOT_KEYS[stop_index].lower()
 
-                print(start_name, stop_name, key)
-
-                if not isinstance(key, Key):
-                    return True
-
-                if key.name == start_name and not self.running:
+                if key_name == start_name and not self.running:
                     print('script start')
                     t = RunScriptClass(self, self.pause_event)
                     t.start()
-                elif key.name == stop_name and self.running:
+                    print(key_name, 'host start')
+                elif key_name == stop_name and self.running:
                     print('script stop')
                     self.tnumrd.SetLabel('broken')
-            return key_event(key, False)
+                    print(key_name, 'host stop')
 
-        self.mouse_listener = mouse.Listener(
-            on_move=on_move,
-            on_scroll=on_scroll,
-            on_click=on_click
-        )
-        self.keyboard_listener = keyboard.Listener(
-            on_press=on_press,
-            on_release=on_release)
-        
-        self.mouse_listener.start()
-        self.keyboard_listener.start()
+            if not self.recording or self.running:
+                return True
 
-    @property
-    def now_ts(self):
-        return int(time.time() * 1000)
+            all_messages = ('key down', 'key up')
+            if message not in all_messages:
+                return True
+
+            key_info = (event.KeyID, event.Key)
+
+            delay = current_ts() - self.ttt
+            self.ttt = current_ts()
+            if not self.record:
+                delay = 0
+
+            print(delay, message, key_info)
+
+            self.record.append([delay, 'EK', message, key_info])
+            text = self.tnumrd.GetLabel()
+            action_count = text.replace(' actions recorded', '')
+            text = '%d actions recorded' % (int(action_count) + 1)
+            self.tnumrd.SetLabel(text)
+            return True
+
+        self.hm.MouseAll = on_mouse_event
+        self.hm.KeyAll = on_keyboard_event
+        self.hm.HookMouse()
+        self.hm.HookKeyboard()
 
     def get_script_path(self):
         i = self.choice_script.GetSelection()
@@ -380,17 +359,17 @@ class Frame1(wx.Frame):
             output = output.replace('\n   ', '').replace('\n  ', '')
             output = output.replace('\n ]', ']')
             open(self.new_script_path(), 'w').write(output)
-            self.btrecord.SetLabel(u'\u5f55\u5236')
+            self.btrecord.SetLabel('录制')
             self.tnumrd.SetLabel('finished')
             self.record = []
         else:
             print('record start')
             self.recording = True
-            self.ttt = self.now_ts
+            self.ttt = current_ts()
             status = self.tnumrd.GetLabel()
             if 'running' in status or 'recorded' in status:
                 return
-            self.btrecord.SetLabel(u'\u7ed3\u675f') # 结束
+            self.btrecord.SetLabel('结束') # 结束
             self.tnumrd.SetLabel('0 actions recorded')
             self.choice_script.SetSelection(-1)
             self.record = []
@@ -409,12 +388,12 @@ class Frame1(wx.Frame):
             print('script is resumed')
             self.pause_event.set()
             self.paused = False
-            self.btpause.SetLabel(u'\u6682\u505c') # 暂停
+            self.btpause.SetLabel('暂停')
         else:
             print('script is paused')
             self.pause_event.clear()
             self.paused = True
-            self.btpause.SetLabel(u'\u7ee7\u7eed') # 继续
+            self.btpause.SetLabel('继续')
         event.Skip()
 
     def OnChoice_startChoice(self, event):
@@ -449,77 +428,19 @@ class RunScriptClass(threading.Thread):
         self.frame.running = True
 
         try:
-            s = open(script_path, 'r').read()
-            s = json.loads(s)
-            steps = len(s)
-            run_times = self.frame.stimes.Value
-
-            running_text = '%s running..' % script_path.split('/')[-1].split('\\')[-1]
-            self.frame.tnumrd.SetLabel(running_text)
+            self.run_times = self.frame.stimes.Value
+            self.running_text = '%s running..' % script_path.split('/')[-1].split('\\')[-1]
+            self.frame.tnumrd.SetLabel(self.running_text)
             self.frame.tstop.Shown = True
 
-            mouse_ctl = mouse.Controller()
-            keyboard_ctl = keyboard.Controller()
-
-            j = 0
-            while j < run_times or run_times == 0:
-                j += 1
-
-                if self.frame.tnumrd.GetLabel() == 'broken' or self.frame.tnumrd.GetLabel() == 'finished':
+            self.j = 0
+            while self.j < self.run_times or self.run_times == 0:
+                self.j += 1
+                current_status = self.frame.tnumrd.GetLabel()
+                if  current_status in ['broken', 'finished']:
                     self.frame.running = False
                     break
-                
-                for i in range(steps):
-                    self.event.wait()
-                    print(s[i])
-
-                    # for old style script
-                    if isinstance(s[i][0], str) and isinstance(s[i][3], int):
-                        s[i].insert(0, s[i][3])
-
-                    delay = s[i][0]
-                    event_type = s[i][1]
-                    message = s[i][2]
-                    action = s[i][3]
-
-                    message = message.lower()
-                    
-                    time.sleep(delay / 1000.0)
-                    
-                    if self.frame.tnumrd.GetLabel() == 'broken' or self.frame.tnumrd.GetLabel() == 'finished':
-                        break
-                            
-                    text = '%s  [%d/%d %d/%d]' % (running_text, i+1, steps, j, run_times)
-                    self.frame.tnumrd.SetLabel(text)
-
-                    if event_type == 'EM':
-                        x, y = action
-                        mouse_ctl.position = (x, y)
-                        if message == 'mouse left down':
-                            mouse_ctl.press(Button.left)
-                        elif message == 'mouse left up':
-                            mouse_ctl.release(Button.left)
-                        elif message == 'mouse right down':
-                            mouse_ctl.press(Button.right)
-                        elif message == 'mouse right up':
-                            mouse_ctl.release(Button.right)
-                        else:
-                            print('unknow mouse event:', message)
-
-                    elif event_type == 'EK':
-                        key_name = action
-
-                        if len(key_name) == 1:
-                            key = key_name
-                        else:
-                            key = getattr(Key, key_name)
-
-                        if message == 'key down':
-                            keyboard_ctl.press(key)
-                        elif message == 'key up':
-                            keyboard_ctl.release(key)
-                        else:
-                            print('unknow keyboard event:', message)
+                RunScriptClass.run_script_once(script_path, thd=self)
 
             self.frame.tnumrd.SetLabel('finished')
             self.frame.tstop.Shown = False
@@ -532,6 +453,72 @@ class RunScriptClass(threading.Thread):
             self.frame.tnumrd.SetLabel('failed')
             self.frame.tstop.Shown = False
             self.frame.running = False
+
+
+    @classmethod
+    def run_script_once(cls, script_path, thd=None):
+        s = open(script_path, 'r').read()
+        s = json.loads(s)
+        steps = len(s)
+
+        sw = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
+        sh = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
+
+        for i in range(steps):
+
+            # for old style script
+            if isinstance(s[i][0], str) and isinstance(s[i][3], int):
+                s[i].insert(0, s[i][3])
+
+            print(s[i])
+
+            delay = s[i][0]
+            event_type = s[i][1]
+            message = s[i][2].lower()
+            action = s[i][3]
+
+            time.sleep(delay / 1000.0)
+            
+            if thd:
+                current_status = thd.frame.tnumrd.GetLabel()
+                if  current_status in ['broken', 'finished']:
+                    break
+                thd.event.wait()
+                text = '%s  [%d/%d %d/%d]' % (thd.running_text, i+1, steps, thd.j, thd.run_times)
+                thd.frame.tnumrd.SetLabel(text)
+
+            if event_type == 'EM':
+                x, y = action
+                # ctypes.windll.user32.SetCursorPos(x, y)
+                # win32api.SetCursorPos([x, y])
+                nx = int(x * 65535 / sw)
+                ny = int(y * 65535 / sh)
+                win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE|win32con.MOUSEEVENTF_MOVE, nx, ny, 0, 0)
+
+                if message == 'mouse left down':
+                    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
+                elif message == 'mouse left up':
+                    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
+                elif message == 'mouse right down':
+                    win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0)
+                elif message == 'mouse right up':
+                    win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0)
+                else:
+                    print('unknow mouse event:', message)
+
+            elif event_type == 'EK':
+                key_code, key_name = action
+
+                # shift ctrl alt
+                # if key_code >= 160 and key_code <= 165:
+                #     key_code = int(key_code/2) - 64
+
+                if message == 'key down':
+                    win32api.keybd_event(key_code, 0, 0, 0)  
+                elif message == 'key up':
+                    win32api.keybd_event(key_code, 0, win32con.KEYEVENTF_KEYUP, 0)
+                else:
+                    print('unknow keyboard event:', message)
 
 
 class TaskBarIcon(wxTaskBarIcon):
