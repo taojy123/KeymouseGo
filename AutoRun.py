@@ -7,10 +7,13 @@ import sys
 import json
 import random
 import traceback
+import tkinter
+import _thread
 
 import win32con
 import win32api
 import ctypes
+
 
 
 def single_run(script_path, run_times=1):
@@ -48,7 +51,7 @@ def single_run(script_path, run_times=1):
                 x, y = action
 
                 ctypes.windll.user32.SetCursorPos(x, y)
-                
+
                 if message == 'mouse left down':
                     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
                 elif message == 'mouse left up':
@@ -76,25 +79,40 @@ def single_run(script_path, run_times=1):
     print('script run finish!')
 
 
+def run():
+    try:
+        fnames = list(os.listdir('scripts'))
+        print(fnames)
+        if fnames:
+            n = int(time.time()) % len(fnames)
+            fname = fnames[n]
+            print('choice file:', fname)
+            script_path = os.path.join('scripts', fname)
+            print('wait 30s')
+            time.sleep(30)
+            print('run begin', script_path)
+            single_run(script_path, 5)
+            print('exit..')
+            top.quit()
+    except Exception as e:
+        exc = traceback.format_exc()
+        print(exc)
 
-try:
-    fnames = list(os.listdir('scripts'))
-    if fnames:
-        print('all files:', fnames)
-        n = int(time.time()) % len(fnames)
-        fname = fnames[n]
-        print('choice file:', fname)
-        script_path = os.path.join('scripts', fname)
-        print('wait 30s')
-        time.sleep(30)
-        print('run begin', script_path)
-        single_run(script_path, 5)
 
-except Exception as e:
-    traceback.print_exc()
-    input('')
+def print_to_tk(*args):
+    args = [str(arg) for arg in args]
+    text = ' '.join(args)
+    # t1.delete('0.0', 'end')
+    t1.insert('end', text + '\n')
 
-print('Bye!')
+print = print_to_tk
+top = tkinter.Tk()
+top.geometry('+0+0')
+t1 = tkinter.Text(top, width=30, height=15)
+t1.pack()
+top.state('iconic')
 
+_thread.start_new_thread(run, ())
 
+top.mainloop()
 
