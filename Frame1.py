@@ -9,19 +9,18 @@ import json
 import traceback
 import io
 
+import pyperclip
 import wx
 from wx.adv import TaskBarIcon as wxTaskBarIcon
 from wx.adv import EVT_TASKBAR_LEFT_DCLICK
 
 import pyWinhook
-import win32ui,win32con,pythoncom,win32gui,win32process,win32api
+import win32con
+import win32api
 import ctypes
 
-from pynput import mouse
-from pynput import keyboard
-from pynput.mouse import Button
-from pynput.keyboard import Key, KeyCode
 
+MOUSE_MOVE_INTERVAL_MS = 200  # 录制鼠标轨迹的精度，数值越小越精准，但同时可能产生大量的冗余
 
 wx.NO_3D = 0
 HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12']
@@ -219,13 +218,17 @@ class Frame1(wx.Frame):
                 return True
 
             message = event.MessageName
-            all_messages = ('mouse left down', 'mouse left up', 'mouse right down', 'mouse right up')
+            all_messages = ('mouse left down', 'mouse left up', 'mouse right down', 'mouse right up', 'mouse move')
             if message not in all_messages:
                 return True
 
-            pos = win32gui.GetCursorPos()
+            pos = win32api.GetCursorPos()
 
             delay = current_ts() - self.ttt
+
+            if message == 'mouse move' and delay < MOUSE_MOVE_INTERVAL_MS:
+                return True
+
             self.ttt = current_ts()
             if not self.record:
                 delay = 0
@@ -453,7 +456,7 @@ class RunScriptClass(threading.Thread):
     @classmethod
     def run_script_once(cls, script_path, thd=None):
         s = open(script_path, 'r').read()
-        s = json.loads(s)
+        s = json.loads(s.replace('],\n]', ']\n]'))
         steps = len(s)
 
         sw = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
@@ -464,7 +467,7 @@ class RunScriptClass(threading.Thread):
             print(s[i])
 
             delay = s[i][0]
-            event_type = s[i][1]
+            event_type = s[i][1].upper()
             message = s[i][2].lower()
             action = s[i][3]
 
@@ -496,6 +499,8 @@ class RunScriptClass(threading.Thread):
                     win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0)
                 elif message == 'mouse right up':
                     win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0)
+                elif message == 'mouse move':
+                    pass
                 else:
                     print('unknow mouse event:', message)
 
@@ -516,6 +521,19 @@ class RunScriptClass(threading.Thread):
                     win32api.keybd_event(key_code, 0, base | win32con.KEYEVENTF_KEYUP, 0)
                 else:
                     print('unknow keyboard event:', message)
+
+            elif event_type == 'EX':
+
+                if message == 'input':
+                    text = action
+                    pyperclip.copy(text)
+                    # Ctrl+V
+                    win32api.keybd_event(162, 0, 0, 0)  # ctrl
+                    win32api.keybd_event(86, 0, 0, 0)  # v
+                    win32api.keybd_event(86, 0, win32con.KEYEVENTF_KEYUP, 0)
+                    win32api.keybd_event(162, 0, win32con.KEYEVENTF_KEYUP, 0)
+                else:
+                    print('unknow extra event:', message)
 
 
 class TaskBarIcon(wxTaskBarIcon):
