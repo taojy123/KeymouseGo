@@ -9,7 +9,6 @@ import json
 import traceback
 import io
 
-import pyperclip
 import wx
 from wx.adv import TaskBarIcon as wxTaskBarIcon
 from wx.adv import EVT_TASKBAR_LEFT_DCLICK
@@ -180,8 +179,8 @@ class Frame1(wx.Frame):
             os.mkdir('scripts')
         self.scripts = os.listdir('scripts')[::-1]
         
-        self.choice_script.SetItems(self.scripts)
         self.scripts = list(filter(lambda s: s.endswith('.txt'), self.scripts))
+        self.choice_script.SetItems(self.scripts)
         if self.scripts:
             self.choice_script.SetSelection(0)
                 
