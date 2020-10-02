@@ -19,7 +19,7 @@
 
 我的个人站点 [tslow.cn](https://tslow.cn) 整理并罗列了一些 `个人项目` 和 `小工具` 合集。
 
-你可以在 [简书](http://jianshu.tslow.cn) 浏览我最新发布的文章，还可以在我的 [优酷频道](https://i.youku.com/taojy123) 观看技术分享和生活纪实。
+你可以在 [简书](http://jianshu.tslow.cn) 浏览我最新发布的文章，还可以在 [B站](https://space.bilibili.com/145137942) 观看我的技术分享和生活纪实。
 
 我的邮箱: taojy123@163.com
 
