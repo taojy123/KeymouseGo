@@ -19,6 +19,9 @@ import win32api
 import ctypes
 
 
+VERSION = '3.1'
+
+
 MOUSE_MOVE_INTERVAL_MS = 200  # 录制鼠标轨迹的精度，数值越小越精准，但同时可能产生大量的冗余
 
 wx.NO_3D = 0
@@ -66,7 +69,7 @@ class Frame1(wx.Frame):
         wx.Frame.__init__(self, id=wxID_FRAME1, name='', parent=prnt,
               pos=wx.Point(506, 283), size=wx.Size(366, 201),
               style=wx.STAY_ON_TOP | wx.DEFAULT_FRAME_STYLE,
-              title='Keymouse Go')
+              title='KeymouseGo v%s' % VERSION)
         self.SetClientSize(wx.Size(350, 205))
 
         self.panel1 = wx.Panel(id=wxID_FRAME1PANEL1, name='panel1', parent=self,
@@ -483,12 +486,19 @@ class RunScriptClass(threading.Thread):
             if event_type == 'EM':
                 x, y = action
 
-                # ctypes.windll.user32.SetCursorPos(x, y)
-                # win32api.SetCursorPos([x, y])
+                if action == [-1, -1]:
+                    # 约定 [-1, -1] 表示鼠标保持原位置不动
+                    pass
+                else:
+                    # 挪动鼠标 普通做法
+                    # ctypes.windll.user32.SetCursorPos(x, y)
+                    # or
+                    # win32api.SetCursorPos([x, y])
 
-                nx = int(x * 65535 / sw)
-                ny = int(y * 65535 / sh)
-                win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE|win32con.MOUSEEVENTF_MOVE, nx, ny, 0, 0)
+                    # 更好的兼容 win10 屏幕缩放问题
+                    nx = int(x * 65535 / sw)
+                    ny = int(y * 65535 / sh)
+                    win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE|win32con.MOUSEEVENTF_MOVE, nx, ny, 0, 0)
 
                 if message == 'mouse left down':
                     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
@@ -555,7 +565,7 @@ class TaskBarIcon(wxTaskBarIcon):
         self.frame.Raise()
 
     def OnAbout(self, event):
-        wx.MessageBox('https://github.com/taojy123/KeymouseGo', 'KeymouseGo v3.0')
+        wx.MessageBox('https://github.com/taojy123/KeymouseGo', 'KeymouseGo v%s' % VERSION)
         event.Skip()
 
     def OnCloseshow(self, event):

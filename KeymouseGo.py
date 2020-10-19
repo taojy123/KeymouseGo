@@ -1,11 +1,17 @@
 #!/usr/bin/env python
 #Boa:App:BoaApp
 
-import Frame1
-import wx
 import time
+import os
 import sys
 import json
+import threading
+
+import wx
+import pyWinhook
+import pythoncom
+
+import Frame1
 
 
 modules = {'Frame1': [1, 'Main frame of Application', u'Frame1.py']}
@@ -24,13 +30,41 @@ def main():
     application.MainLoop()
 
 
+
 def single_run(script_path, run_times=1):
-    j = 0
-    while j < run_times or run_times == 0:
-        j += 1
-        print('===========', j, '==============')
-        Frame1.RunScriptClass.run_script_once(script_path)
-    print('script run finish!')
+
+    t = HookThread()
+    t.start()
+
+    try:
+        j = 0
+        while j < run_times or run_times == 0:
+            j += 1
+            print('===========', j, '==============')
+            Frame1.RunScriptClass.run_script_once(script_path)
+        print('script run finish!')
+    except Exception as e:
+        raise e
+    finally:
+        os._exit(0)
+
+
+class HookThread(threading.Thread):
+
+    def run(self):
+
+        def on_keyboard_event(event):
+            key_name = event.Key.lower()
+            stop_name = 'f9'
+            if key_name == stop_name:
+                print('break exit!')
+                os._exit(0)
+            return True
+
+        hm = pyWinhook.HookManager()
+        hm.KeyAll = on_keyboard_event
+        hm.HookKeyboard()
+        pythoncom.PumpMessages()
 
 
 if __name__ == '__main__':
