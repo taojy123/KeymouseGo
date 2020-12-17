@@ -457,8 +457,20 @@ class RunScriptClass(threading.Thread):
 
     @classmethod
     def run_script_once(cls, script_path, thd=None):
-        s = open(script_path, 'r').read()
-        s = json.loads(s.replace('],\n]', ']\n]'))
+        
+        content = ''
+        for line in open(script_path, 'r').readlines():
+            # 去注释
+            if '//' in line:
+                index = line.find('//')
+                line = line[:index]
+            # 去空字符
+            line = line.strip()
+        content += line
+        # 去最后一个元素的逗号（如有）
+        content = content.replace('],\n]', ']\n]')
+        
+        s = json.loads(content)
         steps = len(s)
 
         sw = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
