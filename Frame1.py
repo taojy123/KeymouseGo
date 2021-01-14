@@ -22,8 +22,6 @@ import ctypes
 VERSION = '3.1'
 
 
-MOUSE_MOVE_INTERVAL_MS = 200  # 录制鼠标轨迹的精度，数值越小越精准，但同时可能产生大量的冗余
-
 wx.NO_3D = 0
 HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12']
 
@@ -159,6 +157,21 @@ class Frame1(wx.Frame):
         self.choice_stop.Bind(wx.EVT_CHOICE, self.OnChoice_stopChoice,
               id=wxID_FRAME1CHOICE_STOP)
 
+
+        self.label_mouse_interval = wx.StaticText(
+              label='鼠标精度', name='label_mouse_interval',
+              parent=self.panel1, pos=wx.Point(16, 141), size=wx.Size(56, 32),
+              style=0)
+
+        self.mouse_move_interval_ms = wx.SpinCtrl(initial=200, max=999999,
+              min=0, name='mouse_move_interval_ms', parent=self.panel1, pos=wx.Point(79, 141),
+              size=wx.Size(68, 18), style=wx.SP_ARROW_KEYS)
+
+        self.label_mouse_interval_tips = wx.StaticText(
+              label='数值越小鼠标轨迹越精准，为 0 则不记录', name='label_mouse_interval_tips',
+              parent=self.panel1, pos=wx.Point(160, 141), size=wx.Size(150, 50),
+              style=0)
+
         # ===== if use SetProcessDpiAwareness, comment below =====
         # self.label_scale = wx.StaticText(id=wxID_FRAME1STATICTEXT5,
         #       label='屏幕缩放', name='staticText5',
@@ -228,7 +241,10 @@ class Frame1(wx.Frame):
 
             delay = current_ts() - self.ttt
 
-            if message == 'mouse move' and delay < MOUSE_MOVE_INTERVAL_MS:
+            # 录制鼠标轨迹的精度，数值越小越精准，但同时可能产生大量的冗余
+            mouse_move_interval_ms = self.mouse_move_interval_ms.Value or 999999
+            
+            if message == 'mouse move' and delay < mouse_move_interval_ms:
                 return True
 
             self.ttt = current_ts()
@@ -466,10 +482,12 @@ class RunScriptClass(threading.Thread):
                 line = line[:index]
             # 去空字符
             line = line.strip()
-        content += line
+            content += line
+            
         # 去最后一个元素的逗号（如有）
         content = content.replace('],\n]', ']\n]')
         
+        print(content)
         s = json.loads(content)
         steps = len(s)
 
