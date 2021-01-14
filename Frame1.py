@@ -19,7 +19,7 @@ import win32api
 import ctypes
 
 
-VERSION = '3.1'
+VERSION = '3.2'
 
 
 wx.NO_3D = 0
@@ -483,7 +483,7 @@ class RunScriptClass(threading.Thread):
             # 去空字符
             line = line.strip()
             content += line
-            
+
         # 去最后一个元素的逗号（如有）
         content = content.replace('],\n]', ']\n]')
         
