@@ -19,7 +19,7 @@ import win32api
 import ctypes
 
 
-VERSION = '3.2'
+VERSION = '3.2.1'
 
 
 wx.NO_3D = 0
@@ -475,7 +475,26 @@ class RunScriptClass(threading.Thread):
     def run_script_once(cls, script_path, thd=None):
         
         content = ''
-        for line in open(script_path, 'r').readlines():
+
+        lines = []
+        try:
+            lines = open(script_path, 'r').readlines()
+        except Exception as e:
+            print(e)
+
+        if not lines:
+            try:
+                lines = open(script_path, 'r', encoding='utf8').readlines()
+            except Exception as e:
+                print(e)
+
+        if not lines:
+            try:
+                lines = open(script_path, 'r', encoding='gbk').readlines()
+            except Exception as e:
+                print(e)
+
+        for line in lines:
             # 去注释
             if '//' in line:
                 index = line.find('//')
