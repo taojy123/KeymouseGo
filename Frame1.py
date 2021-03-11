@@ -17,9 +17,10 @@ import pyWinhook
 import win32con
 import win32api
 import ctypes
+import pyperclip
 
 
-VERSION = '3.2.1'
+VERSION = '3.2.2'
 
 
 wx.NO_3D = 0
@@ -477,18 +478,11 @@ class RunScriptClass(threading.Thread):
         content = ''
 
         lines = []
+
         try:
-            lines = open(script_path, 'r').readlines()
+            lines = open(script_path, 'r', encoding='utf8').readlines()
         except Exception as e:
             print(e)
-
-        if not lines:
-            try:
-                lines = open(script_path, 'r', encoding='utf8').readlines()
-            except Exception as e:
-                print(e)
-
-        if not lines:
             try:
                 lines = open(script_path, 'r', encoding='gbk').readlines()
             except Exception as e:
@@ -504,7 +498,7 @@ class RunScriptClass(threading.Thread):
             content += line
 
         # 去最后一个元素的逗号（如有）
-        content = content.replace('],\n]', ']\n]')
+        content = content.replace('],\n]', ']\n]').replace('],]', ']]')
         
         print(content)
         s = json.loads(content)
