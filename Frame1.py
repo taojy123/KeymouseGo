@@ -19,12 +19,16 @@ import win32api
 import ctypes
 import pyperclip
 
+import config
+
 
 VERSION = '3.2.2'
 
 
 wx.NO_3D = 0
 HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12']
+
+conf = config.getconfig()
 
 
 def GetMondrianStream():
@@ -111,7 +115,7 @@ class Frame1(wx.Frame):
         self.stimes = wx.SpinCtrl(id=wxID_FRAME1STIMES, initial=0, max=1000,
               min=0, name='stimes', parent=self.panel1, pos=wx.Point(206, 101),
               size=wx.Size(45, 18), style=wx.SP_ARROW_KEYS)
-        self.stimes.SetValue(1)
+        self.stimes.SetValue(int(conf[2][1]))
 
         self.label_run_times = wx.StaticText(id=wxID_FRAME1STATICTEXT2,
               label='执行次数(0为无限循环)',
@@ -158,13 +162,12 @@ class Frame1(wx.Frame):
         self.choice_stop.Bind(wx.EVT_CHOICE, self.OnChoice_stopChoice,
               id=wxID_FRAME1CHOICE_STOP)
 
-
         self.label_mouse_interval = wx.StaticText(
               label='鼠标精度', name='label_mouse_interval',
               parent=self.panel1, pos=wx.Point(16, 141), size=wx.Size(56, 32),
               style=0)
 
-        self.mouse_move_interval_ms = wx.SpinCtrl(initial=200, max=999999,
+        self.mouse_move_interval_ms = wx.SpinCtrl(initial=int(conf[3][1]), max=999999,
               min=0, name='mouse_move_interval_ms', parent=self.panel1, pos=wx.Point(79, 141),
               size=wx.Size(68, 18), style=wx.SP_ARROW_KEYS)
 
@@ -202,10 +205,10 @@ class Frame1(wx.Frame):
             self.choice_script.SetSelection(0)
                 
         self.choice_start.SetItems(HOT_KEYS)
-        self.choice_start.SetSelection(3)
+        self.choice_start.SetSelection(int(conf[0][1]))
         
         self.choice_stop.SetItems(HOT_KEYS)
-        self.choice_stop.SetSelection(6)
+        self.choice_stop.SetSelection(int(conf[1][1]))
 
         self.running = False
         self.recording = False
@@ -234,7 +237,10 @@ class Frame1(wx.Frame):
                 return True
 
             message = event.MessageName
-            all_messages = ('mouse left down', 'mouse left up', 'mouse right down', 'mouse right up', 'mouse move')
+            if message == 'mouse wheel':
+                message += ' up' if event.Wheel == 1 else ' down'
+            all_messages = ('mouse left down', 'mouse left up', 'mouse right down', 'mouse right up', 'mouse move',
+                            'mouse middle down', 'mouse middle up', 'mouse wheel up', 'mouse wheel down')
             if message not in all_messages:
                 return True
 
@@ -358,6 +364,10 @@ class Frame1(wx.Frame):
         event.Skip()
         
     def OnClose(self, event):
+        config.saveconfig(newStartIndex=self.choice_start.GetSelection(),
+                          newStopIndex=self.choice_stop.GetSelection(),
+                          newTimes=self.stimes.GetValue(),
+                          newPrecsion=self.mouse_move_interval_ms.GetValue())
         self.taskBarIcon.Destroy()
         self.Destroy()
         event.Skip()
@@ -551,6 +561,14 @@ class RunScriptClass(threading.Thread):
                     win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0)
                 elif message == 'mouse right up':
                     win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0)
+                elif message == 'mouse middle down':
+                    win32api.mouse_event(win32con.MOUSEEVENTF_MIDDLEDOWN, 0, 0, 0, 0)
+                elif message == 'mouse middle up':
+                    win32api.mouse_event(win32con.MOUSEEVENTF_MIDDLEUP, 0, 0, 0, 0)
+                elif message == 'mouse wheel up':
+                    win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, 120, 0)
+                elif message == 'mouse wheel down':
+                    win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, -120, 0)
                 elif message == 'mouse move':
                     pass
                 else:
