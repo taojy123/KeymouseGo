@@ -7,6 +7,7 @@ import os
     StopHotKeyIndex
     LoopTimes
     Precision
+    ExecuteSpeed
 '''
 
 conf = configparser.ConfigParser()
@@ -18,6 +19,7 @@ def setdefaultconf(config):
     config.set('Config', 'StopHotKeyIndex', '6')
     config.set('Config', 'LoopTimes', '1')
     config.set('Config', 'Precision', '200')
+    config.set('Config', 'ExecuteSpeed', '100')
 
 
 def getconfig():
@@ -29,9 +31,10 @@ def getconfig():
     return conf.items('Config')
 
 
-def saveconfig(newStartIndex, newStopIndex, newTimes, newPrecsion):
+def saveconfig(newStartIndex, newStopIndex, newTimes, newPrecsion, newSpeed):
     conf.set('Config', 'StartHotKeyIndex', str(newStartIndex))
     conf.set('Config', 'StopHotKeyIndex', str(newStopIndex))
     conf.set('Config', 'LoopTimes', str(newTimes))
     conf.set('Config', 'Precision', str(newPrecsion))
+    conf.set('Config', 'ExecuteSpeed', str(newSpeed))
     conf.write(open('config.ini', 'w'))
