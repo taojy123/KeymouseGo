@@ -1,5 +1,6 @@
 import configparser
 import os
+import winreg
 
 '''
     [Config]
@@ -11,6 +12,13 @@ import os
 '''
 
 conf = configparser.ConfigParser()
+swapmousebuttons = True if winreg.QueryValueEx(winreg.OpenKey(winreg.HKEY_CURRENT_USER,
+                                                              r'Control Panel\Mouse',
+                                                              0,
+                                                              winreg.KEY_READ),
+                                               'SwapMouseButtons')[0] == '1' else False
+swapmousemap = {'mouse left down': 'mouse right down', 'mouse left up': 'mouse right up',
+                'mouse right down': 'mouse left down', 'mouse right up': 'mouse left up'}
 
 
 def setdefaultconf(config):
