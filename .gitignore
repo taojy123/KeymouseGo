@@ -56,3 +56,6 @@ target/
 scripts/
 
 .idea/
+
+# Custom configue file
+*.ini

@@ -74,6 +74,8 @@
 + 每行的第 3 个元素表示动作的类型：
   + `mouse left down` 为鼠标左键按下，`mouse left up` 为鼠标左键抬起，
   + `mouse right down` 为鼠标右键按下，`mouse right up` 为鼠标右键抬起，
+  + `mouse middle down` 为鼠标中键按下， `mouse middle up` 为鼠标中键抬起，
+  + `mouse wheel up` 为鼠标滚轮上滑， `mouse wheel down` 为鼠标滚轮下滑，
   + `key down` 为键盘按键按下，`key up` 为键盘按键抬起，
   + `mouse move` 为鼠标滑过，`input` 输入文字。
 + 每行的第 4 个元素表示具体的动作参数

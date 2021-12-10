@@ -57,11 +57,11 @@ def current_ts():
     return int(time.time() * 1000)
 
 
-[wxID_FRAME1, wxID_FRAME1BTRECORD, wxID_FRAME1BTRUN, wxID_FRAME1BTPAUSE, wxID_FRAME1BUTTON1, 
- wxID_FRAME1CHOICE_SCRIPT, wxID_FRAME1CHOICE_START, wxID_FRAME1CHOICE_STOP, 
- wxID_FRAME1PANEL1, wxID_FRAME1STATICTEXT1, wxID_FRAME1STATICTEXT2, 
- wxID_FRAME1STATICTEXT3, wxID_FRAME1STATICTEXT4, wxID_FRAME1STIMES, 
- wxID_FRAME1TEXTCTRL1, wxID_FRAME1TEXTCTRL2, wxID_FRAME1TNUMRD, 
+[wxID_FRAME1, wxID_FRAME1BTRECORD, wxID_FRAME1BTRUN, wxID_FRAME1BTPAUSE, wxID_FRAME1BUTTON1,
+ wxID_FRAME1CHOICE_SCRIPT, wxID_FRAME1CHOICE_START, wxID_FRAME1CHOICE_STOP,
+ wxID_FRAME1PANEL1, wxID_FRAME1STATICTEXT1, wxID_FRAME1STATICTEXT2,
+ wxID_FRAME1STATICTEXT3, wxID_FRAME1STATICTEXT4, wxID_FRAME1STIMES,
+ wxID_FRAME1TEXTCTRL1, wxID_FRAME1TEXTCTRL2, wxID_FRAME1TNUMRD,
  wxID_FRAME1TSTOP, wxID_FRAME1STATICTEXT5, wxID_FRAME1TEXTCTRL3,
 ] = [wx.NewId() for _init_ctrls in range(20)]
 
@@ -70,23 +70,23 @@ class Frame1(wx.Frame):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
         wx.Frame.__init__(self, id=wxID_FRAME1, name='', parent=prnt,
-              pos=wx.Point(506, 283), size=wx.Size(366, 201),
+              pos=wx.Point(506, 283), size=wx.Size(366, 231),
               style=wx.STAY_ON_TOP | wx.DEFAULT_FRAME_STYLE,
               title='KeymouseGo v%s' % VERSION)
-        self.SetClientSize(wx.Size(350, 205))
+        self.SetClientSize(wx.Size(361, 235))
 
         self.panel1 = wx.Panel(id=wxID_FRAME1PANEL1, name='panel1', parent=self,
               pos=wx.Point(0, 0), size=wx.Size(350, 205),
               style=wx.NO_3D | wx.CAPTION)
 
         self.btrecord = wx.Button(id=wxID_FRAME1BTRECORD, label='录制',
-              name='btrecord', parent=self.panel1, pos=wx.Point(202, 12),
+              name='btrecord', parent=self.panel1, pos=wx.Point(213, 12),
               size=wx.Size(56, 32), style=0)
         self.btrecord.Bind(wx.EVT_BUTTON, self.OnBtrecordButton,
               id=wxID_FRAME1BTRECORD)
 
         self.btrun = wx.Button(id=wxID_FRAME1BTRUN, label='启动',
-              name='btrun', parent=self.panel1, pos=wx.Point(274, 12),
+              name='btrun', parent=self.panel1, pos=wx.Point(285, 12),
               size=wx.Size(56, 32), style=0)
         self.btrun.Bind(wx.EVT_BUTTON, self.OnBtrunButton, id=wxID_FRAME1BTRUN)
 
@@ -97,7 +97,7 @@ class Frame1(wx.Frame):
         # self.btpause.Bind(wx.EVT_BUTTON, self.OnBtpauseButton, id=wxID_FRAME1BTPAUSE)
 
         self.tnumrd = wx.StaticText(id=wxID_FRAME1TNUMRD, label='ready..',
-              name='tnumrd', parent=self.panel1, pos=wx.Point(17, 175),
+              name='tnumrd', parent=self.panel1, pos=wx.Point(17, 205),
               size=wx.Size(100, 36), style=0)
 
         self.button1 = wx.Button(id=wxID_FRAME1BUTTON1, label='test',
@@ -113,13 +113,13 @@ class Frame1(wx.Frame):
         self.tstop.Show(False)
 
         self.stimes = wx.SpinCtrl(id=wxID_FRAME1STIMES, initial=0, max=1000,
-              min=0, name='stimes', parent=self.panel1, pos=wx.Point(206, 101),
+              min=0, name='stimes', parent=self.panel1, pos=wx.Point(217, 101),
               size=wx.Size(45, 18), style=wx.SP_ARROW_KEYS)
         self.stimes.SetValue(int(conf[2][1]))
 
         self.label_run_times = wx.StaticText(id=wxID_FRAME1STATICTEXT2,
               label='执行次数(0为无限循环)',
-              name='label_run_times', parent=self.panel1, pos=wx.Point(203, 61),
+              name='label_run_times', parent=self.panel1, pos=wx.Point(214, 61),
               size=wx.Size(136, 26), style=0)
 
         self.textCtrl1 = wx.TextCtrl(id=wxID_FRAME1TEXTCTRL1, name='textCtrl1',
@@ -135,12 +135,12 @@ class Frame1(wx.Frame):
               pos=wx.Point(17, 20), size=wx.Size(40, 32), style=0)
 
         self.choice_script = wx.Choice(choices=[], id=wxID_FRAME1CHOICE_SCRIPT,
-              name='choice_script', parent=self.panel1, pos=wx.Point(79, 15),
+              name='choice_script', parent=self.panel1, pos=wx.Point(90, 15),
               size=wx.Size(108, 25), style=0)
 
         self.label_start_key = wx.StaticText(id=wxID_FRAME1STATICTEXT1,
-              label='启动热键', name='label_start_key',
-              parent=self.panel1, pos=wx.Point(16, 63), size=wx.Size(56, 24),
+              label='启动/暂停热键', name='label_start_key',
+              parent=self.panel1, pos=wx.Point(16, 55), size=wx.Size(56, 36),
               style=0)
 
         self.label_stop_key = wx.StaticText(id=wxID_FRAME1STATICTEXT4,
@@ -149,7 +149,7 @@ class Frame1(wx.Frame):
               style=0)
 
         self.choice_start = wx.Choice(choices=[], id=wxID_FRAME1CHOICE_START,
-              name='choice_start', parent=self.panel1, pos=wx.Point(79, 58),
+              name='choice_start', parent=self.panel1, pos=wx.Point(90, 58),
               size=wx.Size(108, 25), style=0)
         self.choice_start.SetLabel('')
         self.choice_start.SetLabelText('')
@@ -157,7 +157,7 @@ class Frame1(wx.Frame):
               id=wxID_FRAME1CHOICE_START)
 
         self.choice_stop = wx.Choice(choices=[], id=wxID_FRAME1CHOICE_STOP,
-              name='choice_stop', parent=self.panel1, pos=wx.Point(79, 98),
+              name='choice_stop', parent=self.panel1, pos=wx.Point(90, 98),
               size=wx.Size(108, 25), style=0)
         self.choice_stop.Bind(wx.EVT_CHOICE, self.OnChoice_stopChoice,
               id=wxID_FRAME1CHOICE_STOP)
@@ -168,14 +168,28 @@ class Frame1(wx.Frame):
               style=0)
 
         self.mouse_move_interval_ms = wx.SpinCtrl(initial=int(conf[3][1]), max=999999,
-              min=0, name='mouse_move_interval_ms', parent=self.panel1, pos=wx.Point(79, 141),
+              min=0, name='mouse_move_interval_ms', parent=self.panel1, pos=wx.Point(90, 141),
               size=wx.Size(68, 18), style=wx.SP_ARROW_KEYS)
 
         self.label_mouse_interval_tips = wx.StaticText(
               label='数值越小鼠标轨迹越精准，为 0 则不记录', name='label_mouse_interval_tips',
-              parent=self.panel1, pos=wx.Point(160, 141), size=wx.Size(150, 50),
+              parent=self.panel1, pos=wx.Point(171, 140), size=wx.Size(150, 50),
               style=0)
 
+        self.label_execute_speed = wx.StaticText(
+              label='执行速度(%)', name='label_execute_speed',
+              parent=self.panel1, pos=wx.Point(16, 176), size=wx.Size(70, 32),
+              style=0)
+
+        self.execute_speed = wx.SpinCtrl(initial=int(conf[4][1]), max=500,
+              min=20, name='execute_speed', parent=self.panel1,
+              pos=wx.Point(90, 176),
+              size=wx.Size(68, 18), style=wx.SP_ARROW_KEYS)
+
+        self.label_execute_speed_tips = wx.StaticText(
+            label='范围(20%-500%)', name='label_execute_speed_tips',
+            parent=self.panel1, pos=wx.Point(171, 176), size=wx.Size(150, 50),
+            style=0)
         # ===== if use SetProcessDpiAwareness, comment below =====
         # self.label_scale = wx.StaticText(id=wxID_FRAME1STATICTEXT5,
         #       label='屏幕缩放', name='staticText5',
@@ -189,24 +203,24 @@ class Frame1(wx.Frame):
     def __init__(self, parent):
 
         self._init_ctrls(parent)
-        
+
         self.SetIcon(GetMondrianIcon())
-        self.taskBarIcon = TaskBarIcon(self) 
+        self.taskBarIcon = TaskBarIcon(self)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Bind(wx.EVT_ICONIZE, self.OnIconfiy)
-        
+
         if not os.path.exists('scripts'):
             os.mkdir('scripts')
         self.scripts = os.listdir('scripts')[::-1]
-        
+
         self.scripts = list(filter(lambda s: s.endswith('.txt'), self.scripts))
         self.choice_script.SetItems(self.scripts)
         if self.scripts:
             self.choice_script.SetSelection(0)
-                
+
         self.choice_start.SetItems(HOT_KEYS)
         self.choice_start.SetSelection(int(conf[0][1]))
-        
+
         self.choice_stop.SetItems(HOT_KEYS)
         self.choice_stop.SetSelection(int(conf[1][1]))
 
@@ -250,7 +264,7 @@ class Frame1(wx.Frame):
 
             # 录制鼠标轨迹的精度，数值越小越精准，但同时可能产生大量的冗余
             mouse_move_interval_ms = self.mouse_move_interval_ms.Value or 999999
-            
+
             if message == 'mouse move' and delay < mouse_move_interval_ms:
                 return True
 
@@ -290,11 +304,15 @@ class Frame1(wx.Frame):
             if message == 'key up' and not self.recording:
                 # listen for start/stop script
                 key_name = event.Key.lower()
-                start_name = 'f6'  # as default
-                stop_name = 'f9'  # as default
+                # start_name = 'f6'  # as default
+                # stop_name = 'f9'  # as default
 
                 start_index = self.choice_start.GetSelection()
                 stop_index = self.choice_stop.GetSelection()
+                # Predict potential conflict
+                if start_index == stop_index:
+                    stop_index = (stop_index + 1) % len(HOT_KEYS)
+                    self.choice_stop.SetSelection(stop_index)
                 start_name = HOT_KEYS[start_index].lower()
                 stop_name = HOT_KEYS[stop_index].lower()
 
@@ -303,6 +321,17 @@ class Frame1(wx.Frame):
                     t = RunScriptClass(self, self.pause_event)
                     t.start()
                     print(key_name, 'host start')
+                elif key_name == start_name and self.running:
+                    if self.paused:
+                        print('script resume')
+                        self.paused = False
+                        self.pause_event.set()
+                        print(key_name, 'host resume')
+                    else:
+                        print('script pause')
+                        self.paused = True
+                        self.pause_event.clear()
+                        print(key_name, 'host pause')
                 elif key_name == stop_name and self.running:
                     print('script stop')
                     self.tnumrd.SetLabel('broken')
@@ -344,7 +373,7 @@ class Frame1(wx.Frame):
         path = os.path.join(os.getcwd(), 'scripts', script)
         print(path)
         return path
-        
+
     def new_script_path(self):
         now = datetime.datetime.now()
         script = '%s.txt' % now.strftime('%m%d_%H%M')
@@ -358,16 +387,17 @@ class Frame1(wx.Frame):
     def OnHide(self, event):
         self.Hide()
         event.Skip()
-        
+
     def OnIconfiy(self, event):
         self.Hide()
         event.Skip()
-        
+
     def OnClose(self, event):
         config.saveconfig(newStartIndex=self.choice_start.GetSelection(),
                           newStopIndex=self.choice_stop.GetSelection(),
                           newTimes=self.stimes.GetValue(),
-                          newPrecsion=self.mouse_move_interval_ms.GetValue())
+                          newPrecsion=self.mouse_move_interval_ms.GetValue(),
+                          newSpeed=self.execute_speed.GetValue())
         self.taskBarIcon.Destroy()
         self.Destroy()
         event.Skip()
@@ -400,7 +430,7 @@ class Frame1(wx.Frame):
             self.tnumrd.SetLabel('0 actions recorded')
             self.choice_script.SetSelection(-1)
             self.record = []
-        
+
         event.Skip()
 
     def OnBtrunButton(self, event):
@@ -459,6 +489,7 @@ class RunScriptClass(threading.Thread):
             self.running_text = '%s running..' % script_path.split('/')[-1].split('\\')[-1]
             self.frame.tnumrd.SetLabel(self.running_text)
             self.frame.tstop.Shown = True
+            self.run_speed = self.frame.execute_speed.Value
 
             self.j = 0
             while self.j < self.run_times or self.run_times == 0:
@@ -473,7 +504,7 @@ class RunScriptClass(threading.Thread):
             self.frame.tstop.Shown = False
             self.frame.running = False
             print('script run finish!')
-            
+
         except Exception as e:
             print('run error', e)
             traceback.print_exc()
@@ -484,7 +515,7 @@ class RunScriptClass(threading.Thread):
 
     @classmethod
     def run_script_once(cls, script_path, thd=None):
-        
+
         content = ''
 
         lines = []
@@ -509,7 +540,7 @@ class RunScriptClass(threading.Thread):
 
         # 去最后一个元素的逗号（如有）
         content = content.replace('],\n]', ']\n]').replace('],]', ']]')
-        
+
         print(content)
         s = json.loads(content)
         steps = len(s)
@@ -521,19 +552,19 @@ class RunScriptClass(threading.Thread):
 
             print(s[i])
 
-            delay = s[i][0]
+            delay = s[i][0] / (thd.run_speed/100)
             event_type = s[i][1].upper()
             message = s[i][2].lower()
             action = s[i][3]
 
             time.sleep(delay / 1000.0)
-            
+
             if thd:
                 current_status = thd.frame.tnumrd.GetLabel()
                 if current_status in ['broken', 'finished']:
                     break
                 thd.event.wait()
-                text = '%s  [%d/%d %d/%d]' % (thd.running_text, i+1, steps, thd.j, thd.run_times)
+                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i+1, steps, thd.j, thd.run_times, thd.run_speed)
                 thd.frame.tnumrd.SetLabel(text)
 
             if event_type == 'EM':
