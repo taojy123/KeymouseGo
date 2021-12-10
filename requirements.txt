@@ -1,6 +1,6 @@
 # Python3
 
 wxPython>=3,<5
-pywin32==228
+pywin32==301
 pyWinhook==1.6.2
 pyperclip==1.8.0
