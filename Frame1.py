@@ -96,6 +96,13 @@ class Frame1(wx.Frame):
         #       size=wx.Size(56, 32), style=0)
         # self.btpause.Bind(wx.EVT_BUTTON, self.OnBtpauseButton, id=wxID_FRAME1BTPAUSE)
 
+        # 暂停录制
+        self.btpauserecord = wx.Button(id=wxID_FRAME1BTPAUSE, label='暂停录制',
+               name='btpauserecording', parent=self.panel1, pos=wx.Point(285, 95),
+               size=wx.Size(56, 32), style=0)
+        self.btpauserecord.Bind(wx.EVT_BUTTON, self.OnPauseRecordButton, id=wxID_FRAME1BTPAUSE)
+        self.btpauserecord.Enable(False)
+
         self.tnumrd = wx.StaticText(id=wxID_FRAME1TNUMRD, label='ready..',
               name='tnumrd', parent=self.panel1, pos=wx.Point(17, 205),
               size=wx.Size(100, 36), style=0)
@@ -233,6 +240,15 @@ class Frame1(wx.Frame):
         self.paused = False
         self.pause_event = threading.Event()
 
+        # Pause-Resume Record
+        self.pauserecord = False
+
+        self.actioncount = 0
+
+        # For better thread control
+        self.runthread = None
+        self.isbrokenorfinish = True
+
         self.hm = pyWinhook.HookManager()
 
         def on_mouse_event(event):
@@ -247,7 +263,7 @@ class Frame1(wx.Frame):
             # print('Injected:',event.Injected)        #判断这个事件是否由程序方式生成，而不是正常的人为触发。
             # print('---')
 
-            if not self.recording or self.running:
+            if not self.recording or self.running or self.pauserecord:
                 return True
 
             message = event.MessageName
@@ -277,9 +293,8 @@ class Frame1(wx.Frame):
             print(delay, message, pos)
 
             self.record.append([delay, 'EM', message, pos])
-            text = self.tnumrd.GetLabel()
-            action_count = text.replace(' actions recorded', '')
-            text = '%d actions recorded' % (int(action_count) + 1)
+            self.actioncount = self.actioncount + 1
+            text = '%d actions recorded' % self.actioncount
             self.tnumrd.SetLabel(text)
             return True
 
@@ -320,8 +335,11 @@ class Frame1(wx.Frame):
 
                 if key_name == start_name and not self.running:
                     print('script start')
-                    t = RunScriptClass(self, self.pause_event)
-                    t.start()
+                    # t = RunScriptClass(self, self.pause_event)
+                    # t.start()
+                    self.runthread = RunScriptClass(self, self.pause_event)
+                    self.runthread.start()
+                    self.isbrokenorfinish = False
                     print(key_name, 'host start')
                 elif key_name == start_name and self.running:
                     if self.paused:
@@ -337,13 +355,22 @@ class Frame1(wx.Frame):
                 elif key_name == stop_name and self.running:
                     print('script stop')
                     self.tnumrd.SetLabel('broken')
+                    self.isbrokenorfinish = True
+                    if self.paused:
+                        self.paused = False
+                        self.pause_event.set()
                     print(key_name, 'host stop')
 
-            if not self.recording or self.running:
+            if not self.recording or self.running or self.pauserecord:
                 return True
 
             all_messages = ('key down', 'key up')
             if message not in all_messages:
+                return True
+
+            # 不录制热键
+            hot_keys = [HOT_KEYS[self.choice_start.GetSelection()], HOT_KEYS[self.choice_stop.GetSelection()]]
+            if event.Key in hot_keys:
                 return True
 
             key_info = (event.KeyID, event.Key, event.Extended)
@@ -407,6 +434,18 @@ class Frame1(wx.Frame):
     def OnButton1Button(self, event):
         event.Skip()
 
+    def OnPauseRecordButton(self, event):
+        if self.pauserecord:
+            print('record resume')
+            self.pauserecord = False
+            self.btpauserecord.SetLabel('暂停录制')
+        else:
+            print('record pause')
+            self.pauserecord = True
+            self.btpauserecord.SetLabel('继续录制')
+            self.tnumrd.SetLabel('record paused')
+        event.Skip()
+
     def OnBtrecordButton(self, event):
 
         if self.recording:
@@ -421,6 +460,11 @@ class Frame1(wx.Frame):
             self.btrecord.SetLabel('录制')
             self.tnumrd.SetLabel('finished')
             self.record = []
+            self.btpauserecord.Enable(False)
+            self.btrun.Enable(True)
+            self.actioncount = 0
+            self.pauserecord = False
+            self.btpauserecord.SetLabel('暂停录制')
         else:
             print('record start')
             self.recording = True
@@ -432,13 +476,17 @@ class Frame1(wx.Frame):
             self.tnumrd.SetLabel('0 actions recorded')
             self.choice_script.SetSelection(-1)
             self.record = []
-
+            self.btpauserecord.Enable(True)
+            self.btrun.Enable(False)
         event.Skip()
 
     def OnBtrunButton(self, event):
         print('script start by btn')
-        t = RunScriptClass(self, self.pause_event)
-        t.start()
+        # t = RunScriptClass(self, self.pause_event)
+        # t.start()
+        self.runthread = RunScriptClass(self, self.pause_event)
+        self.runthread.start()
+        self.isbrokenorfinish = False
         event.Skip()
 
     def OnBtpauseButton(self, event):
@@ -486,6 +534,9 @@ class RunScriptClass(threading.Thread):
 
         self.frame.running = True
 
+        self.frame.btrun.Enable(False)
+        self.frame.btrecord.Enable(False)
+
         try:
             self.run_times = self.frame.stimes.Value
             self.running_text = '%s running..' % script_path.split('/')[-1].split('\\')[-1]
@@ -513,7 +564,9 @@ class RunScriptClass(threading.Thread):
             self.frame.tnumrd.SetLabel('failed')
             self.frame.tstop.Shown = False
             self.frame.running = False
-
+        finally:
+            self.frame.btrun.Enable(True)
+            self.frame.btrecord.Enable(True)
 
     @classmethod
     def run_script_once(cls, script_path, thd=None):
@@ -562,8 +615,10 @@ class RunScriptClass(threading.Thread):
             time.sleep(delay / 1000.0)
 
             if thd:
-                current_status = thd.frame.tnumrd.GetLabel()
-                if current_status in ['broken', 'finished']:
+                # current_status = thd.frame.tnumrd.GetLabel()
+                # if current_status in ['broken', 'finished']:
+                #     break
+                if thd.frame.isbrokenorfinish:
                     break
                 thd.event.wait()
                 text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i+1, steps, thd.j, thd.run_times, thd.run_speed)
@@ -613,6 +668,11 @@ class RunScriptClass(threading.Thread):
                 # shift ctrl alt
                 # if key_code >= 160 and key_code <= 165:
                 #     key_code = int(key_code/2) - 64
+
+                # 不执行热键
+                hot_keys = [HOT_KEYS[thd.frame.choice_start.GetSelection()], HOT_KEYS[thd.frame.choice_stop.GetSelection()]]
+                if key_name in hot_keys:
+                    continue
 
                 base = 0
                 if extended:
