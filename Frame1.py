@@ -18,6 +18,7 @@ import win32con
 import win32api
 import ctypes
 import pyperclip
+from playsound import playsound
 
 import config
 
@@ -55,6 +56,16 @@ def create(parent):
 
 def current_ts():
     return int(time.time() * 1000)
+    
+
+def play_start_sound():
+    path = os.path.join(os.getcwd(), 'sounds', 'start.mp3')
+    playsound(path)
+
+
+def play_end_sound():
+    path = os.path.join(os.getcwd(), 'sounds', 'end.mp3')
+    playsound(path)
 
 
 [wxID_FRAME1, wxID_FRAME1BTRECORD, wxID_FRAME1BTRUN, wxID_FRAME1BTPAUSE, wxID_FRAME1BUTTON1,
@@ -545,6 +556,7 @@ class RunScriptClass(threading.Thread):
             self.run_speed = self.frame.execute_speed.Value
 
             self.j = 0
+            play_start_sound()
             while self.j < self.run_times or self.run_times == 0:
                 self.j += 1
                 current_status = self.frame.tnumrd.GetLabel()
@@ -556,6 +568,7 @@ class RunScriptClass(threading.Thread):
             self.frame.tnumrd.SetLabel('finished')
             self.frame.tstop.Shown = False
             self.frame.running = False
+            play_end_sound()
             print('script run finish!')
 
         except Exception as e:
