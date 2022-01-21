@@ -19,6 +19,7 @@ import win32api
 import ctypes
 import pyperclip
 from playsound import playsound
+from playsound import PlaysoundException
 
 import config
 
@@ -57,16 +58,6 @@ def create(parent):
 def current_ts():
     return int(time.time() * 1000)
     
-
-def play_start_sound():
-    path = os.path.join(os.getcwd(), 'sounds', 'start.mp3')
-    playsound(path)
-
-
-def play_end_sound():
-    path = os.path.join(os.getcwd(), 'sounds', 'end.mp3')
-    playsound(path)
-
 
 [wxID_FRAME1, wxID_FRAME1BTRECORD, wxID_FRAME1BTRUN, wxID_FRAME1BTPAUSE, wxID_FRAME1BUTTON1,
  wxID_FRAME1CHOICE_SCRIPT, wxID_FRAME1CHOICE_START, wxID_FRAME1CHOICE_STOP,
@@ -512,19 +503,18 @@ class RunScriptClass(threading.Thread):
             self.run_speed = self.frame.execute_speed.Value
 
             self.j = 0
-            play_start_sound()
             while self.j < self.run_times or self.run_times == 0:
                 self.j += 1
                 current_status = self.frame.tnumrd.GetLabel()
                 if  current_status in ['broken', 'finished']:
                     self.frame.running = False
                     break
-                RunScriptClass.run_script_once(script_path, thd=self)
+                RunScriptClass.run_script_once(script_path, self.j, thd=self)
 
             self.frame.tnumrd.SetLabel('finished')
             self.frame.tstop.Shown = False
             self.frame.running = False
-            play_end_sound()
+            PlayPromptTone.play_end_sound()
             print('script run finish!')
 
         except Exception as e:
@@ -536,7 +526,7 @@ class RunScriptClass(threading.Thread):
 
 
     @classmethod
-    def run_script_once(cls, script_path, thd=None):
+    def run_script_once(cls, script_path, step, thd=None):
 
         content = ''
 
@@ -575,6 +565,10 @@ class RunScriptClass(threading.Thread):
             event_type = s[i][1].upper()
             message = s[i][2].lower()
             action = s[i][3]
+
+            if 1 == step and 0 == i:
+                play = PlayPromptTone(1, delay)
+                play.start()
 
             time.sleep(delay / 1000.0)
 
@@ -689,3 +683,31 @@ class TaskBarIcon(wxTaskBarIcon):
         menu.Append(self.ID_Closeshow, 'Exit')
         return menu
 
+
+class PlayPromptTone(threading.Thread):
+
+    def __init__(self, op, delay):
+        self._delay = delay
+        self._op = op
+        super().__init__()
+
+    def run(self):
+        if 1 == self._op:
+            if self._delay >= 1000:
+                time.sleep((self._delay - 500.0) / 1000.0)
+            self._play_start_sound()
+
+    def _play_start_sound(self):
+        try:
+            path = os.path.join(os.getcwd(), 'sounds', 'start.mp3')
+            playsound(path)
+        except PlaysoundException as e:
+            print(e)
+
+    @classmethod
+    def play_end_sound(cls):
+        try:
+            path = os.path.join(os.getcwd(), 'sounds', 'end.mp3')
+            playsound(path)
+        except PlaysoundException as e:
+            print(e)
