@@ -77,11 +77,15 @@ def play_end_sound():
 ] = [wx.NewId() for _init_ctrls in range(20)]
 
 
+SW = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
+SH = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
+
+
 class Frame1(wx.Frame):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
         wx.Frame.__init__(self, id=wxID_FRAME1, name='', parent=prnt,
-              pos=wx.Point(506, 283), size=wx.Size(366, 231),
+              pos=wx.Point(SW / 2 - 183, SH / 2 - 115.5), size=wx.Size(366, 231),
               style=wx.STAY_ON_TOP | wx.DEFAULT_FRAME_STYLE,
               title='KeymouseGo v%s' % VERSION)
         self.SetClientSize(wx.Size(361, 235))
@@ -558,9 +562,6 @@ class RunScriptClass(threading.Thread):
         s = json.loads(content)
         steps = len(s)
 
-        sw = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
-        sh = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
-
         for i in range(steps):
 
             print(s[i])
@@ -593,8 +594,8 @@ class RunScriptClass(threading.Thread):
                     # win32api.SetCursorPos([x, y])
 
                     # 更好的兼容 win10 屏幕缩放问题
-                    nx = int(x * 65535 / sw)
-                    ny = int(y * 65535 / sh)
+                    nx = int(x * 65535 / SW)
+                    ny = int(y * 65535 / SH)
                     win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE|win32con.MOUSEEVENTF_MOVE, nx, ny, 0, 0)
 
                 if message == 'mouse left down':
