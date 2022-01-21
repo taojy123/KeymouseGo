@@ -287,9 +287,14 @@ class Frame1(wx.Frame):
             if not self.record:
                 delay = 0
 
-            print(delay, message, pos)
+            x, y = pos
+            tx = x / SW
+            ty = y / SH
+            tpos = (tx, ty)
 
-            self.record.append([delay, 'EM', message, pos])
+            print(delay, message, tpos)
+
+            self.record.append([delay, 'EM', message, tpos])
             text = self.tnumrd.GetLabel()
             action_count = text.replace(' actions recorded', '')
             text = '%d actions recorded' % (int(action_count) + 1)
@@ -594,8 +599,8 @@ class RunScriptClass(threading.Thread):
                     # win32api.SetCursorPos([x, y])
 
                     # 更好的兼容 win10 屏幕缩放问题
-                    nx = int(x * 65535 / SW)
-                    ny = int(y * 65535 / SH)
+                    nx = int((x * SW) * 65535 / SW)
+                    ny = int((y * SH) * 65535 / SH)
                     win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE|win32con.MOUSEEVENTF_MOVE, nx, ny, 0, 0)
 
                 if message == 'mouse left down':
