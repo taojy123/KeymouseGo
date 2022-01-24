@@ -19,6 +19,7 @@ import win32api
 import ctypes
 import pyperclip
 from playsound import playsound
+from playsound import PlaysoundException
 
 import config
 
@@ -58,16 +59,6 @@ def current_ts():
     return int(time.time() * 1000)
     
 
-def play_start_sound():
-    path = os.path.join(os.getcwd(), 'sounds', 'start.mp3')
-    playsound(path)
-
-
-def play_end_sound():
-    path = os.path.join(os.getcwd(), 'sounds', 'end.mp3')
-    playsound(path)
-
-
 [wxID_FRAME1, wxID_FRAME1BTRECORD, wxID_FRAME1BTRUN, wxID_FRAME1BTPAUSE, wxID_FRAME1BUTTON1,
  wxID_FRAME1CHOICE_SCRIPT, wxID_FRAME1CHOICE_START, wxID_FRAME1CHOICE_STOP,
  wxID_FRAME1PANEL1, wxID_FRAME1STATICTEXT1, wxID_FRAME1STATICTEXT2,
@@ -77,11 +68,15 @@ def play_end_sound():
 ] = [wx.NewId() for _init_ctrls in range(20)]
 
 
+SW = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
+SH = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
+
+
 class Frame1(wx.Frame):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
         wx.Frame.__init__(self, id=wxID_FRAME1, name='', parent=prnt,
-              pos=wx.Point(506, 283), size=wx.Size(366, 231),
+              pos=wx.Point(SW / 2 - 183, SH / 2 - 115.5), size=wx.Size(366, 231),
               style=wx.STAY_ON_TOP | wx.DEFAULT_FRAME_STYLE,
               title='KeymouseGo v%s' % VERSION)
         self.SetClientSize(wx.Size(361, 235))
@@ -301,11 +296,17 @@ class Frame1(wx.Frame):
             if not self.record:
                 delay = 0
 
-            print(delay, message, pos)
+            x, y = pos
+            tx = x / SW
+            ty = y / SH
+            tpos = (tx, ty)
 
-            self.record.append([delay, 'EM', message, pos])
+            print(delay, message, tpos)
+
+            self.record.append([delay, 'EM', message, tpos])
             self.actioncount = self.actioncount + 1
             text = '%d actions recorded' % self.actioncount
+
             self.tnumrd.SetLabel(text)
             return True
 
@@ -394,9 +395,8 @@ class Frame1(wx.Frame):
             print(delay, message, key_info)
 
             self.record.append([delay, 'EK', message, key_info])
-            text = self.tnumrd.GetLabel()
-            action_count = text.replace(' actions recorded', '')
-            text = '%d actions recorded' % (int(action_count) + 1)
+            self.actioncount = self.actioncount + 1
+            text = '%d actions recorded' % self.actioncount
             self.tnumrd.SetLabel(text)
             return True
 
@@ -556,19 +556,18 @@ class RunScriptClass(threading.Thread):
             self.run_speed = self.frame.execute_speed.Value
 
             self.j = 0
-            play_start_sound()
             while self.j < self.run_times or self.run_times == 0:
                 self.j += 1
                 current_status = self.frame.tnumrd.GetLabel()
                 if  current_status in ['broken', 'finished']:
                     self.frame.running = False
                     break
-                RunScriptClass.run_script_once(script_path, thd=self)
+                RunScriptClass.run_script_once(script_path, self.j, thd=self)
 
             self.frame.tnumrd.SetLabel('finished')
             self.frame.tstop.Shown = False
             self.frame.running = False
-            play_end_sound()
+            PlayPromptTone.play_end_sound()
             print('script run finish!')
 
         except Exception as e:
@@ -582,7 +581,7 @@ class RunScriptClass(threading.Thread):
             self.frame.btrecord.Enable(True)
 
     @classmethod
-    def run_script_once(cls, script_path, thd=None):
+    def run_script_once(cls, script_path, step, thd=None):
 
         content = ''
 
@@ -613,9 +612,6 @@ class RunScriptClass(threading.Thread):
         s = json.loads(content)
         steps = len(s)
 
-        sw = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
-        sh = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
-
         for i in range(steps):
 
             print(s[i])
@@ -624,6 +620,10 @@ class RunScriptClass(threading.Thread):
             event_type = s[i][1].upper()
             message = s[i][2].lower()
             action = s[i][3]
+
+            if 1 == step and 0 == i:
+                play = PlayPromptTone(1, delay)
+                play.start()
 
             time.sleep(delay / 1000.0)
 
@@ -650,8 +650,8 @@ class RunScriptClass(threading.Thread):
                     # win32api.SetCursorPos([x, y])
 
                     # 更好的兼容 win10 屏幕缩放问题
-                    nx = int(x * 65535 / sw)
-                    ny = int(y * 65535 / sh)
+                    nx = int((x * SW) * 65535 / SW)
+                    ny = int((y * SH) * 65535 / SH)
                     win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE|win32con.MOUSEEVENTF_MOVE, nx, ny, 0, 0)
 
                 if message == 'mouse left down':
@@ -745,3 +745,31 @@ class TaskBarIcon(wxTaskBarIcon):
         menu.Append(self.ID_Closeshow, 'Exit')
         return menu
 
+
+class PlayPromptTone(threading.Thread):
+
+    def __init__(self, op, delay):
+        self._delay = delay
+        self._op = op
+        super().__init__()
+
+    def run(self):
+        if 1 == self._op:
+            if self._delay >= 1000:
+                time.sleep((self._delay - 500.0) / 1000.0)
+            self._play_start_sound()
+
+    def _play_start_sound(self):
+        try:
+            path = os.path.join(os.getcwd(), 'sounds', 'start.mp3')
+            playsound(path)
+        except PlaysoundException as e:
+            print(e)
+
+    @classmethod
+    def play_end_sound(cls):
+        try:
+            path = os.path.join(os.getcwd(), 'sounds', 'end.mp3')
+            playsound(path)
+        except PlaysoundException as e:
+            print(e)

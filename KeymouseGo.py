@@ -41,7 +41,7 @@ def single_run(script_path, run_times=1):
         while j < run_times or run_times == 0:
             j += 1
             print('===========', j, '==============')
-            Frame1.RunScriptClass.run_script_once(script_path)
+            Frame1.RunScriptClass.run_script_once(script_path, j)
         print('script run finish!')
     except Exception as e:
         raise e
