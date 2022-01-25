@@ -13,6 +13,14 @@ import pythoncom
 
 import Frame1
 
+import ctypes
+# DPI感知
+try:
+    # win8.1及以上
+    ctypes.windll.shcore.SetProcessDpiAwareness(2)
+except:
+    # win 8及以下
+    ctypes.windll.user32.SetProcessDPIAware()
 
 modules = {'Frame1': [1, 'Main frame of Application', u'Frame1.py']}
 

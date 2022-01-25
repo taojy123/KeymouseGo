@@ -79,137 +79,137 @@ class Frame1(wx.Frame):
               pos=wx.Point(SW / 2 - 183, SH / 2 - 115.5), size=wx.Size(366, 231),
               style=wx.STAY_ON_TOP | wx.DEFAULT_FRAME_STYLE,
               title='KeymouseGo v%s' % VERSION)
-        self.SetClientSize(wx.Size(361, 235))
+        self.SetClientSize(self.FromDIP(wx.Size(361, 235)))
 
         self.panel1 = wx.Panel(id=wxID_FRAME1PANEL1, name='panel1', parent=self,
-              pos=wx.Point(0, 0), size=wx.Size(350, 205),
+              pos=self.FromDIP(wx.Point(0, 0)), size=self.FromDIP(wx.Size(350, 205)),
               style=wx.NO_3D | wx.CAPTION)
 
         self.btrecord = wx.Button(id=wxID_FRAME1BTRECORD, label='录制',
-              name='btrecord', parent=self.panel1, pos=wx.Point(213, 12),
-              size=wx.Size(56, 32), style=0)
+              name='btrecord', parent=self.panel1, pos=self.FromDIP(wx.Point(213, 12)),
+              size=self.FromDIP(wx.Size(56, 32)), style=0)
         self.btrecord.Bind(wx.EVT_BUTTON, self.OnBtrecordButton,
               id=wxID_FRAME1BTRECORD)
 
         self.btrun = wx.Button(id=wxID_FRAME1BTRUN, label='启动',
-              name='btrun', parent=self.panel1, pos=wx.Point(285, 12),
-              size=wx.Size(56, 32), style=0)
+              name='btrun', parent=self.panel1, pos=self.FromDIP(wx.Point(285, 12)),
+              size=self.FromDIP(wx.Size(56, 32)), style=0)
         self.btrun.Bind(wx.EVT_BUTTON, self.OnBtrunButton, id=wxID_FRAME1BTRUN)
 
         # 暂停/继续 功能不适合用按钮的形式来做，所以暂时隐去
         # self.btpause = wx.Button(id=wxID_FRAME1BTPAUSE, label='暂停',
-        #       name='btpause', parent=self.panel1, pos=wx.Point(274, 141),
-        #       size=wx.Size(56, 32), style=0)
+        #       name='btpause', parent=self.panel1, pos=self.FromDIP(wx.Point(274, 141)),
+        #       size=self.FromDIP(wx.Size(56, 32)), style=0)
         # self.btpause.Bind(wx.EVT_BUTTON, self.OnBtpauseButton, id=wxID_FRAME1BTPAUSE)
 
         # 暂停录制
         self.btpauserecord = wx.Button(id=wxID_FRAME1BTPAUSE, label='暂停录制',
-               name='btpauserecording', parent=self.panel1, pos=wx.Point(285, 95),
-               size=wx.Size(56, 32), style=0)
+               name='btpauserecording', parent=self.panel1, pos=self.FromDIP(wx.Point(285, 95)),
+               size=self.FromDIP(wx.Size(56, 32)), style=0)
         self.btpauserecord.Bind(wx.EVT_BUTTON, self.OnPauseRecordButton, id=wxID_FRAME1BTPAUSE)
         self.btpauserecord.Enable(False)
 
         self.tnumrd = wx.StaticText(id=wxID_FRAME1TNUMRD, label='ready..',
-              name='tnumrd', parent=self.panel1, pos=wx.Point(17, 205),
-              size=wx.Size(100, 36), style=0)
+              name='tnumrd', parent=self.panel1, pos=self.FromDIP(wx.Point(17, 205)),
+              size=self.FromDIP(wx.Size(100, 36)), style=0)
 
         self.button1 = wx.Button(id=wxID_FRAME1BUTTON1, label='test',
-              name='button1', parent=self.panel1, pos=wx.Point(128, 296),
-              size=wx.Size(75, 24), style=0)
+              name='button1', parent=self.panel1, pos=self.FromDIP(wx.Point(128, 296)),
+              size=self.FromDIP(wx.Size(75, 24)), style=0)
         self.button1.Bind(wx.EVT_BUTTON, self.OnButton1Button,
               id=wxID_FRAME1BUTTON1)
 
         self.tstop = wx.StaticText(id=wxID_FRAME1TSTOP,
               label='If you want to stop it, Press F12', name='tstop',
-              parent=self.panel1, pos=wx.Point(25, 332), size=wx.Size(183, 18),
+              parent=self.panel1, pos=self.FromDIP(wx.Point(25, 332)), size=self.FromDIP(wx.Size(183, 18)),
               style=0)
         self.tstop.Show(False)
 
         self.stimes = wx.SpinCtrl(id=wxID_FRAME1STIMES, initial=0, max=1000,
-              min=0, name='stimes', parent=self.panel1, pos=wx.Point(217, 101),
-              size=wx.Size(45, 18), style=wx.SP_ARROW_KEYS)
+              min=0, name='stimes', parent=self.panel1, pos=self.FromDIP(wx.Point(217, 101)),
+              size=self.FromDIP(wx.Size(45, 18)), style=wx.SP_ARROW_KEYS)
         self.stimes.SetValue(int(conf[2][1]))
 
         self.label_run_times = wx.StaticText(id=wxID_FRAME1STATICTEXT2,
               label='执行次数(0为无限循环)',
-              name='label_run_times', parent=self.panel1, pos=wx.Point(214, 61),
-              size=wx.Size(136, 26), style=0)
+              name='label_run_times', parent=self.panel1, pos=self.FromDIP(wx.Point(214, 61)),
+              size=self.FromDIP(wx.Size(136, 26)), style=0)
 
         self.textCtrl1 = wx.TextCtrl(id=wxID_FRAME1TEXTCTRL1, name='textCtrl1',
-              parent=self.panel1, pos=wx.Point(24, 296), size=wx.Size(40, 22),
+              parent=self.panel1, pos=self.FromDIP(wx.Point(24, 296)), size=self.FromDIP(wx.Size(40, 22)),
               style=0, value='119')
 
         self.textCtrl2 = wx.TextCtrl(id=wxID_FRAME1TEXTCTRL2, name='textCtrl2',
-              parent=self.panel1, pos=wx.Point(80, 296), size=wx.Size(36, 22),
+              parent=self.panel1, pos=self.FromDIP(wx.Point(80, 296)), size=self.FromDIP(wx.Size(36, 22)),
               style=0, value='123')
 
         self.label_script = wx.StaticText(id=wxID_FRAME1STATICTEXT3,
               label='脚本', name='label_script', parent=self.panel1,
-              pos=wx.Point(17, 20), size=wx.Size(40, 32), style=0)
+              pos=self.FromDIP(wx.Point(17, 20)), size=self.FromDIP(wx.Size(40, 32)), style=0)
 
         self.choice_script = wx.Choice(choices=[], id=wxID_FRAME1CHOICE_SCRIPT,
-              name='choice_script', parent=self.panel1, pos=wx.Point(90, 15),
-              size=wx.Size(108, 25), style=0)
+              name='choice_script', parent=self.panel1, pos=self.FromDIP(wx.Point(90, 15)),
+              size=self.FromDIP(wx.Size(108, 25)), style=0)
 
         self.label_start_key = wx.StaticText(id=wxID_FRAME1STATICTEXT1,
               label='启动/暂停热键', name='label_start_key',
-              parent=self.panel1, pos=wx.Point(16, 55), size=wx.Size(56, 36),
+              parent=self.panel1, pos=self.FromDIP(wx.Point(16, 55)), size=self.FromDIP(wx.Size(56, 36)),
               style=0)
 
         self.label_stop_key = wx.StaticText(id=wxID_FRAME1STATICTEXT4,
               label='终止热键', name='label_stop_key',
-              parent=self.panel1, pos=wx.Point(16, 102), size=wx.Size(56, 32),
+              parent=self.panel1, pos=self.FromDIP(wx.Point(16, 102)), size=self.FromDIP(wx.Size(56, 32)),
               style=0)
 
         self.choice_start = wx.Choice(choices=[], id=wxID_FRAME1CHOICE_START,
-              name='choice_start', parent=self.panel1, pos=wx.Point(90, 58),
-              size=wx.Size(108, 25), style=0)
+              name='choice_start', parent=self.panel1, pos=self.FromDIP(wx.Point(90, 58)),
+              size=self.FromDIP(wx.Size(108, 25)), style=0)
         self.choice_start.SetLabel('')
         self.choice_start.SetLabelText('')
         self.choice_start.Bind(wx.EVT_CHOICE, self.OnChoice_startChoice,
               id=wxID_FRAME1CHOICE_START)
 
         self.choice_stop = wx.Choice(choices=[], id=wxID_FRAME1CHOICE_STOP,
-              name='choice_stop', parent=self.panel1, pos=wx.Point(90, 98),
-              size=wx.Size(108, 25), style=0)
+              name='choice_stop', parent=self.panel1, pos=self.FromDIP(wx.Point(90, 98)),
+              size=self.FromDIP(wx.Size(108, 25)), style=0)
         self.choice_stop.Bind(wx.EVT_CHOICE, self.OnChoice_stopChoice,
               id=wxID_FRAME1CHOICE_STOP)
 
         self.label_mouse_interval = wx.StaticText(
               label='鼠标精度', name='label_mouse_interval',
-              parent=self.panel1, pos=wx.Point(16, 141), size=wx.Size(56, 32),
+              parent=self.panel1, pos=self.FromDIP(wx.Point(16, 141)), size=self.FromDIP(wx.Size(56, 32)),
               style=0)
 
         self.mouse_move_interval_ms = wx.SpinCtrl(initial=int(conf[3][1]), max=999999,
-              min=0, name='mouse_move_interval_ms', parent=self.panel1, pos=wx.Point(90, 141),
-              size=wx.Size(68, 18), style=wx.SP_ARROW_KEYS)
+              min=0, name='mouse_move_interval_ms', parent=self.panel1, pos=self.FromDIP(wx.Point(90, 141)),
+              size=self.FromDIP(wx.Size(68, 18)), style=wx.SP_ARROW_KEYS)
 
         self.label_mouse_interval_tips = wx.StaticText(
               label='数值越小鼠标轨迹越精准，为 0 则不记录', name='label_mouse_interval_tips',
-              parent=self.panel1, pos=wx.Point(171, 140), size=wx.Size(150, 50),
+              parent=self.panel1, pos=self.FromDIP(wx.Point(171, 140)), size=self.FromDIP(wx.Size(150, 50)),
               style=0)
 
         self.label_execute_speed = wx.StaticText(
               label='执行速度(%)', name='label_execute_speed',
-              parent=self.panel1, pos=wx.Point(16, 176), size=wx.Size(70, 32),
+              parent=self.panel1, pos=self.FromDIP(wx.Point(16, 176)), size=self.FromDIP(wx.Size(70, 32)),
               style=0)
 
         self.execute_speed = wx.SpinCtrl(initial=int(conf[4][1]), max=500,
               min=20, name='execute_speed', parent=self.panel1,
-              pos=wx.Point(90, 176),
-              size=wx.Size(68, 18), style=wx.SP_ARROW_KEYS)
+              pos=self.FromDIP(wx.Point(90, 176)),
+              size=self.FromDIP(wx.Size(68, 18)), style=wx.SP_ARROW_KEYS)
 
         self.label_execute_speed_tips = wx.StaticText(
             label='范围(20%-500%)', name='label_execute_speed_tips',
-            parent=self.panel1, pos=wx.Point(171, 176), size=wx.Size(150, 50),
+            parent=self.panel1, pos=self.FromDIP(wx.Point(171, 176)), size=self.FromDIP(wx.Size(150, 50)),
             style=0)
         # ===== if use SetProcessDpiAwareness, comment below =====
         # self.label_scale = wx.StaticText(id=wxID_FRAME1STATICTEXT5,
         #       label='屏幕缩放', name='staticText5',
-        #       parent=self.panel1, pos=wx.Point(16, 141), size=wx.Size(56, 32),
+        #       parent=self.panel1, pos=self.FromDIP(wx.Point(16, 141)), size=self.FromDIP(wx.Size(56, 32)),
         #       style=0)
         # self.text_scale = wx.TextCtrl(id=wxID_FRAME1TEXTCTRL3, name='textCtrl3',
-        #       parent=self.panel1, pos=wx.Point(79, 138), size=wx.Size(108, 22),
+        #       parent=self.panel1, pos=self.FromDIP(wx.Point(79, 138)), size=self.FromDIP(wx.Size(108, 22)),
         #       style=0, value='100%')
         # =========================================================
 
