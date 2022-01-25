@@ -152,7 +152,7 @@ class Frame1(wx.Frame):
               size=self.FromDIP(wx.Size(108, 25)), style=0)
 
         self.label_start_key = wx.StaticText(id=wxID_FRAME1STATICTEXT1,
-              label='启动/暂停热键', name='label_start_key',
+              label='启动/暂停执行热键', name='label_start_key',
               parent=self.panel1, pos=self.FromDIP(wx.Point(16, 55)), size=self.FromDIP(wx.Size(56, 36)),
               style=0)
 
