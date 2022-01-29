@@ -1,3 +1,4 @@
+# cython: language_level=3
 #Boa:Frame:Frame1
 
 import os
@@ -667,9 +668,9 @@ class RunScriptClass(threading.Thread):
                 elif message == 'mouse middle up':
                     win32api.mouse_event(win32con.MOUSEEVENTF_MIDDLEUP, 0, 0, 0, 0)
                 elif message == 'mouse wheel up':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, 120, 0)
+                    win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, win32con.WHEEL_DELTA, 0)
                 elif message == 'mouse wheel down':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, -120, 0)
+                    win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, -win32con.WHEEL_DELTA, 0)
                 elif message == 'mouse move':
                     pass
                 else:

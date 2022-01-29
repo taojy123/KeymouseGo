@@ -1,18 +1,15 @@
+# cython: language_level=3
 #!/usr/bin/env python
 #Boa:App:BoaApp
-
 import time
 import os
 import sys
 import json
 import threading
-
 import wx
 import pyWinhook
 import pythoncom
-
 import Frame1
-
 import ctypes
 # DPI感知
 try:
@@ -23,7 +20,6 @@ except:
     ctypes.windll.user32.SetProcessDPIAware()
 
 modules = {'Frame1': [1, 'Main frame of Application', u'Frame1.py']}
-
 
 class BoaApp(wx.App):
     def OnInit(self):
@@ -76,7 +72,6 @@ class HookThread(threading.Thread):
 
 
 if __name__ == '__main__':
-
     print(sys.argv)
 
     if len(sys.argv) > 1:
