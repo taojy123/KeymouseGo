@@ -1,3 +1,4 @@
+# cython: language_level=3
 import configparser
 import os
 import winreg
@@ -12,6 +13,7 @@ import winreg
 '''
 
 conf = configparser.ConfigParser()
+# 是否切换主要/次要功能键
 swapmousebuttons = True if winreg.QueryValueEx(winreg.OpenKey(winreg.HKEY_CURRENT_USER,
                                                               r'Control Panel\Mouse',
                                                               0,
