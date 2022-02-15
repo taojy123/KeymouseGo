@@ -1,6 +1,6 @@
 # cython: language_level=3
-#!/usr/bin/env python
-#Boa:App:BoaApp
+# !/usr/bin/env python
+# Boa:App:BoaApp
 import time
 import os
 import sys
@@ -11,15 +11,21 @@ import pyWinhook
 import pythoncom
 import Frame1
 import ctypes
+
 # DPI感知
 try:
-    # win8.1及以上
-    ctypes.windll.shcore.SetProcessDpiAwareness(2)
+    # win10 version 1607及以上
+    ctypes.windll.shcore.SetProcessDpiAwarenessContext(ctypes.windll.shcore.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)
 except:
-    # win 8及以下
-    ctypes.windll.user32.SetProcessDPIAware()
+    try:
+        # win 8.1 及以上
+        ctypes.windll.shcore.SetProcessDpiAwareness(ctypes.windll.shcore.PROCESS_PER_MONITOR_DPI_AWARE)
+    except:
+        # win vista 及以上
+        ctypes.windll.user32.SetProcessDPIAware()
 
 modules = {'Frame1': [1, 'Main frame of Application', u'Frame1.py']}
+
 
 class BoaApp(wx.App):
     def OnInit(self):
@@ -34,9 +40,7 @@ def main():
     application.MainLoop()
 
 
-
 def single_run(script_path, run_times=1):
-
     t = HookThread()
     t.start()
 
@@ -56,7 +60,6 @@ def single_run(script_path, run_times=1):
 class HookThread(threading.Thread):
 
     def run(self):
-
         def on_keyboard_event(event):
             key_name = event.Key.lower()
             stop_name = 'f9'
@@ -80,4 +83,3 @@ if __name__ == '__main__':
         single_run(script_path, run_times)
     else:
         main()
-
