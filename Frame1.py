@@ -15,8 +15,8 @@ from wx.adv import TaskBarIcon as wxTaskBarIcon
 from wx.adv import EVT_TASKBAR_LEFT_DCLICK
 
 import pyWinhook
-import win32con
-import win32api
+import win32con, win32print
+import win32api, win32gui
 import ctypes
 import pyperclip
 from playsound import playsound
@@ -25,7 +25,7 @@ from playsound import PlaysoundException
 import config
 
 
-VERSION = '3.2.2'
+VERSION = '3.3'
 
 
 wx.NO_3D = 0
@@ -69,8 +69,11 @@ def current_ts():
 ] = [wx.NewId() for _init_ctrls in range(20)]
 
 
-SW = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
-SH = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
+# SW = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
+# SH = win32api.GetSystemMetrics(win32con.SM_CYSCREEN)
+hDC = win32gui.GetDC(0)
+SW = win32print.GetDeviceCaps(hDC, win32con.DESKTOPHORZRES)
+SH = win32print.GetDeviceCaps(hDC, win32con.DESKTOPVERTRES)
 
 
 class Frame1(wx.Frame):
