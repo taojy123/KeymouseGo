@@ -10,6 +10,7 @@ import winreg
     LoopTimes
     Precision
     ExecuteSpeed
+    RecordHotKeyIndex
 '''
 
 conf = configparser.ConfigParser()
@@ -30,6 +31,7 @@ def setdefaultconf(config):
     config.set('Config', 'LoopTimes', '1')
     config.set('Config', 'Precision', '200')
     config.set('Config', 'ExecuteSpeed', '100')
+    config.set('Config', 'RecordHotKeyIndex', '7')
 
 
 def getconfig():
@@ -41,10 +43,11 @@ def getconfig():
     return conf.items('Config')
 
 
-def saveconfig(newStartIndex, newStopIndex, newTimes, newPrecsion, newSpeed):
+def saveconfig(newStartIndex, newStopIndex, newTimes, newPrecsion, newSpeed, newRecordIndex):
     conf.set('Config', 'StartHotKeyIndex', str(newStartIndex))
     conf.set('Config', 'StopHotKeyIndex', str(newStopIndex))
     conf.set('Config', 'LoopTimes', str(newTimes))
     conf.set('Config', 'Precision', str(newPrecsion))
     conf.set('Config', 'ExecuteSpeed', str(newSpeed))
+    conf.set('Config', 'RecordHotKeyIndex', str(newRecordIndex))
     conf.write(open('config.ini', 'w'))

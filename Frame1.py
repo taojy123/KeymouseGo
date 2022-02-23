@@ -33,7 +33,6 @@ HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12']
 
 conf = config.getconfig()
 
-
 def GetMondrianStream():
     data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00 \x00\x00\x00 \x08\x06\x00\x00\x00szz\xf4\x00\x00\x00\x04sBIT\x08\x08\x08\x08|\x08d\x88\x00\x00\x00qIDATX\x85\xed\xd6;\n\x800\x10E\xd1{\xc5\x8d\xb9r\x97\x16\x0b\xad$\x8a\x82:\x16o\xda\x84pB2\x1f\x81Fa\x8c\x9c\x08\x04Z{\xcf\xa72\xbcv\xfa\xc5\x08 \x80r\x80\xfc\xa2\x0e\x1c\xe4\xba\xfaX\x1d\xd0\xde]S\x07\x02\xd8>\xe1wa-`\x9fQ\xe9\x86\x01\x04\x10\x00\\(Dk\x1b-\x04\xdc\x1d\x07\x14\x98;\x0bS\x7f\x7f\xf9\x13\x04\x10@\xf9X\xbe\x00\xc9 \x14K\xc1<={\x00\x00\x00\x00IEND\xaeB`\x82'
     stream = io.BytesIO(data)
@@ -61,12 +60,12 @@ def current_ts():
     
 
 [wxID_FRAME1, wxID_FRAME1BTRECORD, wxID_FRAME1BTRUN, wxID_FRAME1BTPAUSE, wxID_FRAME1BUTTON1,
- wxID_FRAME1CHOICE_SCRIPT, wxID_FRAME1CHOICE_START, wxID_FRAME1CHOICE_STOP,
+ wxID_FRAME1CHOICE_SCRIPT, wxID_FRAME1CHOICE_START, wxID_FRAME1CHOICE_STOP, wxID_FRAME1CHOICE_RECORD,
  wxID_FRAME1PANEL1, wxID_FRAME1STATICTEXT1, wxID_FRAME1STATICTEXT2,
  wxID_FRAME1STATICTEXT3, wxID_FRAME1STATICTEXT4, wxID_FRAME1STIMES,
  wxID_FRAME1TEXTCTRL1, wxID_FRAME1TEXTCTRL2, wxID_FRAME1TNUMRD,
  wxID_FRAME1TSTOP, wxID_FRAME1STATICTEXT5, wxID_FRAME1TEXTCTRL3,
-] = [wx.NewId() for _init_ctrls in range(20)]
+] = [wx.NewId() for _init_ctrls in range(21)]
 
 
 # SW = win32api.GetSystemMetrics(win32con.SM_CXSCREEN)
@@ -80,13 +79,13 @@ class Frame1(wx.Frame):
     def _init_ctrls(self, prnt):
         # generated method, don't edit
         wx.Frame.__init__(self, id=wxID_FRAME1, name='', parent=prnt,
-              pos=wx.Point(SW / 2 - 183, SH / 2 - 115.5), size=wx.Size(366, 231),
+              pos=wx.Point(SW / 2 - 183, SH / 2 - 115.5), size=wx.Size(366, 271),
               style=wx.STAY_ON_TOP | wx.DEFAULT_FRAME_STYLE,
               title='KeymouseGo v%s' % VERSION)
-        self.SetClientSize(self.FromDIP(wx.Size(361, 235)))
+        self.SetClientSize(self.FromDIP(wx.Size(361, 270)))
 
         self.panel1 = wx.Panel(id=wxID_FRAME1PANEL1, name='panel1', parent=self,
-              pos=self.FromDIP(wx.Point(0, 0)), size=self.FromDIP(wx.Size(350, 205)),
+              pos=self.FromDIP(wx.Point(0, 0)), size=self.FromDIP(wx.Size(350, 245)),
               style=wx.NO_3D | wx.CAPTION)
 
         self.btrecord = wx.Button(id=wxID_FRAME1BTRECORD, label='录制',
@@ -108,13 +107,13 @@ class Frame1(wx.Frame):
 
         # 暂停录制
         self.btpauserecord = wx.Button(id=wxID_FRAME1BTPAUSE, label='暂停录制',
-               name='btpauserecording', parent=self.panel1, pos=self.FromDIP(wx.Point(285, 95)),
+               name='btpauserecording', parent=self.panel1, pos=self.FromDIP(wx.Point(213, 135)),
                size=self.FromDIP(wx.Size(56, 32)), style=0)
         self.btpauserecord.Bind(wx.EVT_BUTTON, self.OnPauseRecordButton, id=wxID_FRAME1BTPAUSE)
         self.btpauserecord.Enable(False)
 
         self.tnumrd = wx.StaticText(id=wxID_FRAME1TNUMRD, label='ready..',
-              name='tnumrd', parent=self.panel1, pos=self.FromDIP(wx.Point(17, 205)),
+              name='tnumrd', parent=self.panel1, pos=self.FromDIP(wx.Point(17, 245)),
               size=self.FromDIP(wx.Size(100, 36)), style=0)
 
         self.button1 = wx.Button(id=wxID_FRAME1BUTTON1, label='test',
@@ -165,6 +164,12 @@ class Frame1(wx.Frame):
               parent=self.panel1, pos=self.FromDIP(wx.Point(16, 102)), size=self.FromDIP(wx.Size(56, 32)),
               style=0)
 
+        self.label_record_key = wx.StaticText(id=wxID_FRAME1STATICTEXT1,
+              label='开始/暂停录制热键', name='label_record_key',
+              parent=self.panel1, pos=self.FromDIP(wx.Point(16, 132)),
+              size=self.FromDIP(wx.Size(56, 36)),
+              style=0)
+
         self.choice_start = wx.Choice(choices=[], id=wxID_FRAME1CHOICE_START,
               name='choice_start', parent=self.panel1, pos=self.FromDIP(wx.Point(90, 58)),
               size=self.FromDIP(wx.Size(108, 25)), style=0)
@@ -179,33 +184,39 @@ class Frame1(wx.Frame):
         self.choice_stop.Bind(wx.EVT_CHOICE, self.OnChoice_stopChoice,
               id=wxID_FRAME1CHOICE_STOP)
 
+        self.choice_record = wx.Choice(choices=[], id=wxID_FRAME1CHOICE_RECORD,
+              name='choice_record', parent=self.panel1, pos=self.FromDIP(wx.Point(90, 138)),
+              size=self.FromDIP(wx.Size(108, 25)), style=0)
+        self.choice_record.Bind(wx.EVT_CHOICE, self.OnChoice_recordChoice,
+              id=wxID_FRAME1CHOICE_RECORD)
+
         self.label_mouse_interval = wx.StaticText(
               label='鼠标精度', name='label_mouse_interval',
-              parent=self.panel1, pos=self.FromDIP(wx.Point(16, 141)), size=self.FromDIP(wx.Size(56, 32)),
+              parent=self.panel1, pos=self.FromDIP(wx.Point(16, 181)), size=self.FromDIP(wx.Size(56, 32)),
               style=0)
 
         self.mouse_move_interval_ms = wx.SpinCtrl(initial=int(conf[3][1]), max=999999,
-              min=0, name='mouse_move_interval_ms', parent=self.panel1, pos=self.FromDIP(wx.Point(90, 141)),
+              min=0, name='mouse_move_interval_ms', parent=self.panel1, pos=self.FromDIP(wx.Point(90, 181)),
               size=self.FromDIP(wx.Size(68, 18)), style=wx.SP_ARROW_KEYS)
 
         self.label_mouse_interval_tips = wx.StaticText(
               label='数值越小鼠标轨迹越精准，为 0 则不记录', name='label_mouse_interval_tips',
-              parent=self.panel1, pos=self.FromDIP(wx.Point(171, 140)), size=self.FromDIP(wx.Size(150, 50)),
+              parent=self.panel1, pos=self.FromDIP(wx.Point(171, 180)), size=self.FromDIP(wx.Size(150, 50)),
               style=0)
 
         self.label_execute_speed = wx.StaticText(
               label='执行速度(%)', name='label_execute_speed',
-              parent=self.panel1, pos=self.FromDIP(wx.Point(16, 176)), size=self.FromDIP(wx.Size(70, 32)),
+              parent=self.panel1, pos=self.FromDIP(wx.Point(16, 216)), size=self.FromDIP(wx.Size(70, 32)),
               style=0)
 
         self.execute_speed = wx.SpinCtrl(initial=int(conf[4][1]), max=500,
               min=20, name='execute_speed', parent=self.panel1,
-              pos=self.FromDIP(wx.Point(90, 176)),
+              pos=self.FromDIP(wx.Point(90, 216)),
               size=self.FromDIP(wx.Size(68, 18)), style=wx.SP_ARROW_KEYS)
 
         self.label_execute_speed_tips = wx.StaticText(
             label='范围(20%-500%)', name='label_execute_speed_tips',
-            parent=self.panel1, pos=self.FromDIP(wx.Point(171, 176)), size=self.FromDIP(wx.Size(150, 50)),
+            parent=self.panel1, pos=self.FromDIP(wx.Point(171, 216)), size=self.FromDIP(wx.Size(150, 50)),
             style=0)
         # ===== if use SetProcessDpiAwareness, comment below =====
         # self.label_scale = wx.StaticText(id=wxID_FRAME1STATICTEXT5,
@@ -240,6 +251,9 @@ class Frame1(wx.Frame):
 
         self.choice_stop.SetItems(HOT_KEYS)
         self.choice_stop.SetSelection(int(conf[1][1]))
+
+        self.choice_record.SetItems(HOT_KEYS)
+        self.choice_record.SetSelection(int(conf[5][1]))
 
         self.running = False
         self.recording = False
@@ -334,7 +348,7 @@ class Frame1(wx.Frame):
             message = event.MessageName
             message = message.replace(' sys ', ' ')
 
-            if message == 'key up' and not self.recording:
+            if message == 'key up':
                 # listen for start/stop script
                 key_name = event.Key.lower()
                 # start_name = 'f6'  # as default
@@ -342,14 +356,22 @@ class Frame1(wx.Frame):
 
                 start_index = self.choice_start.GetSelection()
                 stop_index = self.choice_stop.GetSelection()
+                record_index = self.choice_record.GetSelection()
+
                 # Predict potential conflict
                 if start_index == stop_index:
                     stop_index = (stop_index + 1) % len(HOT_KEYS)
                     self.choice_stop.SetSelection(stop_index)
+                if start_index == record_index:
+                    record_index = (record_index + 1) % len(HOT_KEYS)
+                    if record_index == stop_index:
+                        record_index = (record_index + 1) % len(HOT_KEYS)
+                    self.choice_record.SetSelection(record_index)
                 start_name = HOT_KEYS[start_index].lower()
                 stop_name = HOT_KEYS[stop_index].lower()
+                record_name = HOT_KEYS[record_index].lower()
 
-                if key_name == start_name and not self.running:
+                if key_name == start_name and not self.running and not self.recording:
                     print('script start')
                     # t = RunScriptClass(self, self.pause_event)
                     # t.start()
@@ -357,7 +379,7 @@ class Frame1(wx.Frame):
                     self.runthread.start()
                     self.isbrokenorfinish = False
                     print(key_name, 'host start')
-                elif key_name == start_name and self.running:
+                elif key_name == start_name and self.running and not self.recording:
                     if self.paused:
                         print('script resume')
                         self.paused = False
@@ -368,7 +390,7 @@ class Frame1(wx.Frame):
                         self.paused = True
                         self.pause_event.clear()
                         print(key_name, 'host pause')
-                elif key_name == stop_name and self.running:
+                elif key_name == stop_name and self.running and not self.recording:
                     print('script stop')
                     self.tnumrd.SetLabel('broken')
                     self.isbrokenorfinish = True
@@ -376,6 +398,16 @@ class Frame1(wx.Frame):
                         self.paused = False
                         self.pause_event.set()
                     print(key_name, 'host stop')
+                elif key_name == stop_name and self.recording:
+                    self.recordMethod()
+                    print(key_name, 'host stop record')
+                elif key_name == record_name:
+                    if not self.recording:
+                        self.recordMethod()
+                        print(key_name, 'host start record')
+                    else:
+                        self.pauseRecordMethod()
+                        print(key_name, 'host pause record')
 
             if not self.recording or self.running or self.pauserecord:
                 return True
@@ -385,7 +417,9 @@ class Frame1(wx.Frame):
                 return True
 
             # 不录制热键
-            hot_keys = [HOT_KEYS[self.choice_start.GetSelection()], HOT_KEYS[self.choice_stop.GetSelection()]]
+            hot_keys = [HOT_KEYS[self.choice_start.GetSelection()],
+                        HOT_KEYS[self.choice_stop.GetSelection()],
+                        HOT_KEYS[self.choice_record.GetSelection()]]
             if event.Key in hot_keys:
                 return True
 
@@ -441,7 +475,9 @@ class Frame1(wx.Frame):
                           newStopIndex=self.choice_stop.GetSelection(),
                           newTimes=self.stimes.GetValue(),
                           newPrecsion=self.mouse_move_interval_ms.GetValue(),
-                          newSpeed=self.execute_speed.GetValue())
+                          newSpeed=self.execute_speed.GetValue(),
+                          newRecordIndex=self.choice_record.GetSelection()
+                          )
         self.taskBarIcon.Destroy()
         self.Destroy()
         event.Skip()
@@ -449,7 +485,7 @@ class Frame1(wx.Frame):
     def OnButton1Button(self, event):
         event.Skip()
 
-    def OnPauseRecordButton(self, event):
+    def pauseRecordMethod(self):
         if self.pauserecord:
             print('record resume')
             self.pauserecord = False
@@ -459,10 +495,12 @@ class Frame1(wx.Frame):
             self.pauserecord = True
             self.btpauserecord.SetLabel('继续录制')
             self.tnumrd.SetLabel('record paused')
+
+    def OnPauseRecordButton(self, event):
+        self.pauseRecordMethod()
         event.Skip()
 
-    def OnBtrecordButton(self, event):
-
+    def recordMethod(self):
         if self.recording:
             print('record stop')
             self.recording = False
@@ -487,12 +525,15 @@ class Frame1(wx.Frame):
             status = self.tnumrd.GetLabel()
             if 'running' in status or 'recorded' in status:
                 return
-            self.btrecord.SetLabel('结束') # 结束
+            self.btrecord.SetLabel('结束')  # 结束
             self.tnumrd.SetLabel('0 actions recorded')
             self.choice_script.SetSelection(-1)
             self.record = []
             self.btpauserecord.Enable(True)
             self.btrun.Enable(False)
+
+    def OnBtrecordButton(self, event):
+        self.recordMethod()
         event.Skip()
 
     def OnBtrunButton(self, event):
@@ -522,6 +563,9 @@ class Frame1(wx.Frame):
         event.Skip()
 
     def OnChoice_stopChoice(self, event):
+        event.Skip()
+
+    def OnChoice_recordChoice(self, event):
         event.Skip()
 
 
