@@ -21,6 +21,7 @@ import ctypes
 import pyperclip
 from playsound import playsound
 from playsound import PlaysoundException
+import re
 
 import config
 
@@ -321,7 +322,8 @@ class Frame1(wx.Frame):
 
             print(delay, message, tpos)
 
-            self.record.append([delay, 'EM', message, tpos])
+            # self.record.append([delay, 'EM', message, tpos])
+            self.record.append([delay, 'EM', message, ['{0}%'.format(tx), '{0}%'.format(ty)]])
             self.actioncount = self.actioncount + 1
             text = '%d actions recorded' % self.actioncount
 
@@ -688,6 +690,10 @@ class RunScriptClass(threading.Thread):
 
             if event_type == 'EM':
                 x, y = action
+                # 兼容旧版的绝对坐标
+                if not isinstance(x, int) and not isinstance(y, int):
+                    x = float(re.match('([0-1].[0-9]+)%', x).group(1))
+                    y = float(re.match('([0-1].[0-9]+)%', y).group(1))
 
                 if action == [-1, -1]:
                     # 约定 [-1, -1] 表示鼠标保持原位置不动
@@ -699,8 +705,12 @@ class RunScriptClass(threading.Thread):
                     # win32api.SetCursorPos([x, y])
 
                     # 更好的兼容 win10 屏幕缩放问题
-                    nx = int((x * SW) * 65535 / SW)
-                    ny = int((y * SH) * 65535 / SH)
+                    if isinstance(x, int) and isinstance(y, int):
+                        nx = int(x * 65535 / SW)
+                        ny = int(y * 65535 / SH)
+                    else:
+                        nx = int(x * 65535)
+                        ny = int(y * 65535)
                     win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE|win32con.MOUSEEVENTF_MOVE, nx, ny, 0, 0)
 
                 if message == 'mouse left down':
