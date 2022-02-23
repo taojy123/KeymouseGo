@@ -7,6 +7,7 @@ import winreg
     [Config]
     StartHotKeyIndex
     StopHotKeyIndex
+    RecordHotKeyIndex
     LoopTimes
     Precision
     ExecuteSpeed
@@ -27,6 +28,7 @@ def setdefaultconf(config):
     config.add_section('Config')
     config.set('Config', 'StartHotKeyIndex', '3')
     config.set('Config', 'StopHotKeyIndex', '6')
+    config.set('Config', 'RecordHotKeyIndex', '7')
     config.set('Config', 'LoopTimes', '1')
     config.set('Config', 'Precision', '200')
     config.set('Config', 'ExecuteSpeed', '100')
@@ -38,13 +40,14 @@ def getconfig():
         conf.write(open('config.ini', 'w'))
     else:
         conf.read('config.ini')
-    return conf.items('Config')
+    return dict(conf.items('Config'))
 
 
-def saveconfig(newStartIndex, newStopIndex, newTimes, newPrecsion, newSpeed):
-    conf.set('Config', 'StartHotKeyIndex', str(newStartIndex))
-    conf.set('Config', 'StopHotKeyIndex', str(newStopIndex))
-    conf.set('Config', 'LoopTimes', str(newTimes))
-    conf.set('Config', 'Precision', str(newPrecsion))
-    conf.set('Config', 'ExecuteSpeed', str(newSpeed))
+def saveconfig(newConf):
+    conf.set('Config', 'StartHotKeyIndex', str(newConf['starthotkeyindex']))
+    conf.set('Config', 'StopHotKeyIndex', str(newConf['stophotkeyindex']))
+    conf.set('Config', 'RecordHotKeyIndex', str(newConf['recordhotkeyindex']))
+    conf.set('Config', 'LoopTimes', str(newConf['looptimes']))
+    conf.set('Config', 'Precision', str(newConf['precision']))
+    conf.set('Config', 'ExecuteSpeed', str(newConf['executespeed']))
     conf.write(open('config.ini', 'w'))
