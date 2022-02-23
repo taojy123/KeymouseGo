@@ -131,7 +131,7 @@ class Frame1(wx.Frame):
         self.stimes = wx.SpinCtrl(id=wxID_FRAME1STIMES, initial=0, max=1000,
               min=0, name='stimes', parent=self.panel1, pos=self.FromDIP(wx.Point(217, 101)),
               size=self.FromDIP(wx.Size(45, 18)), style=wx.SP_ARROW_KEYS)
-        self.stimes.SetValue(int(conf[2][1]))
+        self.stimes.SetValue(int(conf['looptimes']))
 
         self.label_run_times = wx.StaticText(id=wxID_FRAME1STATICTEXT2,
               label='执行次数(0为无限循环)',
@@ -195,7 +195,7 @@ class Frame1(wx.Frame):
               parent=self.panel1, pos=self.FromDIP(wx.Point(16, 181)), size=self.FromDIP(wx.Size(56, 32)),
               style=0)
 
-        self.mouse_move_interval_ms = wx.SpinCtrl(initial=int(conf[3][1]), max=999999,
+        self.mouse_move_interval_ms = wx.SpinCtrl(initial=int(conf['precision']), max=999999,
               min=0, name='mouse_move_interval_ms', parent=self.panel1, pos=self.FromDIP(wx.Point(90, 181)),
               size=self.FromDIP(wx.Size(68, 18)), style=wx.SP_ARROW_KEYS)
 
@@ -209,7 +209,7 @@ class Frame1(wx.Frame):
               parent=self.panel1, pos=self.FromDIP(wx.Point(16, 216)), size=self.FromDIP(wx.Size(70, 32)),
               style=0)
 
-        self.execute_speed = wx.SpinCtrl(initial=int(conf[4][1]), max=500,
+        self.execute_speed = wx.SpinCtrl(initial=int(conf['executespeed']), max=500,
               min=20, name='execute_speed', parent=self.panel1,
               pos=self.FromDIP(wx.Point(90, 216)),
               size=self.FromDIP(wx.Size(68, 18)), style=wx.SP_ARROW_KEYS)
@@ -247,13 +247,13 @@ class Frame1(wx.Frame):
             self.choice_script.SetSelection(0)
 
         self.choice_start.SetItems(HOT_KEYS)
-        self.choice_start.SetSelection(int(conf[0][1]))
+        self.choice_start.SetSelection(int(conf['starthotkeyindex']))
 
         self.choice_stop.SetItems(HOT_KEYS)
-        self.choice_stop.SetSelection(int(conf[1][1]))
+        self.choice_stop.SetSelection(int(conf['stophotkeyindex']))
 
         self.choice_record.SetItems(HOT_KEYS)
-        self.choice_record.SetSelection(int(conf[5][1]))
+        self.choice_record.SetSelection(int(conf['recordhotkeyindex']))
 
         self.running = False
         self.recording = False
@@ -471,13 +471,14 @@ class Frame1(wx.Frame):
         event.Skip()
 
     def OnClose(self, event):
-        config.saveconfig(newStartIndex=self.choice_start.GetSelection(),
-                          newStopIndex=self.choice_stop.GetSelection(),
-                          newTimes=self.stimes.GetValue(),
-                          newPrecsion=self.mouse_move_interval_ms.GetValue(),
-                          newSpeed=self.execute_speed.GetValue(),
-                          newRecordIndex=self.choice_record.GetSelection()
-                          )
+        config.saveconfig({
+            'starthotkeyindex':self.choice_start.GetSelection(),
+            'stophotkeyindex':self.choice_stop.GetSelection(),
+            'recordhotkeyindex': self.choice_record.GetSelection(),
+            'looptimes':self.stimes.GetValue(),
+            'precision':self.mouse_move_interval_ms.GetValue(),
+            'executespeed':self.execute_speed.GetValue()
+            })
         self.taskBarIcon.Destroy()
         self.Destroy()
         event.Skip()
