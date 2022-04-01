@@ -11,6 +11,7 @@ import winreg
     LoopTimes
     Precision
     ExecuteSpeed
+    Language
 '''
 
 conf = configparser.ConfigParser()
@@ -32,7 +33,7 @@ def setdefaultconf(config):
     config.set('Config', 'LoopTimes', '1')
     config.set('Config', 'Precision', '200')
     config.set('Config', 'ExecuteSpeed', '100')
-
+    config.set('Config', 'Language', 'zh-cn')
 
 def getconfig():
     if not os.path.exists('config.ini'):
@@ -50,4 +51,5 @@ def saveconfig(newConf):
     conf.set('Config', 'LoopTimes', str(newConf['looptimes']))
     conf.set('Config', 'Precision', str(newConf['precision']))
     conf.set('Config', 'ExecuteSpeed', str(newConf['executespeed']))
+    conf.set('Config', 'Language', str(newConf['language']))
     conf.write(open('config.ini', 'w'))
