@@ -105,8 +105,10 @@
 
 如果您是开发爱好者，并对本项目感兴趣，欢迎参与项目的共同建设，您可以向本项目提交 Pull request 来贡献代码。
 
-在此，特别鸣谢积极贡献者：
+在此，特别感谢积极贡献者：
 
+<a href="https://github.com/Monomux"><img src="https://avatars.githubusercontent.com/u/70839036?s=50&v=4" height="50"></a>
+Monomux
 
 
 ----------------------
