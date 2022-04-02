@@ -23,7 +23,20 @@
 
 我的邮箱: taojy123@163.com
 
+----------------------
 
+# 开源贡献者:
+
+如果您是开发爱好者，并对本项目感兴趣，欢迎参与项目的共同建设，您可以向本项目提交 Pull request 来贡献代码。
+
+在此，特别感谢积极贡献者：
+
+<a href="https://github.com/Monomux"><img src="https://avatars.githubusercontent.com/u/70839036?s=80&v=4" height="80"></a>
+  
+Monomux
+
+----------------------
+ 
 # 基本操作：
 
 1、点击 `录制` 按钮，开始录制。
@@ -98,17 +111,6 @@
 ```
 > KeymouseGo.exe scripts/0314_1452.txt 3
 ```
-
-----------------------
-
-# 开源贡献
-
-如果您是开发爱好者，并对本项目感兴趣，欢迎参与项目的共同建设，您可以向本项目提交 Pull request 来贡献代码。
-
-在此，特别感谢积极贡献者：
-
-<a href="https://github.com/Monomux"><img src="https://avatars.githubusercontent.com/u/70839036?s=50&v=4" height="50"></a>
-Monomux
 
 
 ----------------------
