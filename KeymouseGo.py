@@ -11,7 +11,7 @@ from PySide2 import QtWidgets
 
 from UIFunc import UIFunc
 
-
+from qt_material import apply_stylesheet
 # DPI感知
 # try:
 #     # win10 version 1607及以上
@@ -28,6 +28,7 @@ from UIFunc import UIFunc
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
+    apply_stylesheet(app, theme='light_cyan_500.xml')
     ui = UIFunc()
     ui.show()
     sys.exit(app.exec_())
