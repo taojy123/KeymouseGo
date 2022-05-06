@@ -1,4 +1,5 @@
 # -*- encoding:utf-8 -*-
+import collections
 import datetime
 import json
 import os
@@ -10,18 +11,21 @@ import winreg
 
 import pyWinhook
 import pyperclip
+import pythoncom
 import win32api
 import win32con
 import win32gui
 import win32print
-from PySide2 import QtGui, QtCore
+from PySide2 import QtCore
 from PySide2.QtCore import QTranslator, QCoreApplication
 from PySide2.QtWidgets import QMainWindow, QApplication
 from playsound import playsound, PlaysoundException
+from pyWinhook import cpyHook, HookConstants
 
 from UIView import Ui_UIView
 
-HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12']
+HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
+            'XButton1', 'XButton2', 'Middle']
 hDC = win32gui.GetDC(0)
 SW = win32print.GetDeviceCaps(hDC, win32con.DESKTOPHORZRES)
 SH = win32print.GetDeviceCaps(hDC, win32con.DESKTOPVERTRES)
@@ -132,7 +136,9 @@ class UIFunc(QMainWindow, Ui_UIView):
             elif message in swapmousemap and swapmousebuttons:
                 message = swapmousemap[message]
             all_messages = ('mouse left down', 'mouse left up', 'mouse right down', 'mouse right up', 'mouse move',
-                            'mouse middle down', 'mouse middle up', 'mouse wheel up', 'mouse wheel down')
+                            'mouse middle down', 'mouse middle up', 'mouse wheel up', 'mouse wheel down',
+                            # 'mouse x1 down', 'mouse x1 up', 'mouse x2 down', 'mouse x2 up'
+                            )
             if message not in all_messages:
                 return True
 
@@ -191,60 +197,7 @@ class UIFunc(QMainWindow, Ui_UIView):
                 # start_name = 'f6'  # as default
                 # stop_name = 'f9'  # as default
 
-                start_index = self.choice_start.currentIndex()
-                stop_index = self.choice_stop.currentIndex()
-                record_index = self.choice_record.currentIndex()
-
-                # Predict potential conflict
-                if start_index == stop_index:
-                    stop_index = (stop_index + 1) % len(HOT_KEYS)
-                    self.choice_stop.setCurrentIndex(stop_index)
-                if start_index == record_index:
-                    record_index = (record_index + 1) % len(HOT_KEYS)
-                    if record_index == stop_index:
-                        record_index = (record_index + 1) % len(HOT_KEYS)
-                    self.choice_record.setCurrentIndex(record_index)
-                start_name = HOT_KEYS[start_index].lower()
-                stop_name = HOT_KEYS[stop_index].lower()
-                record_name = HOT_KEYS[record_index].lower()
-
-                if key_name == start_name and not self.running and not self.recording:
-                    print('script start')
-                    # t = RunScriptClass(self, self.pause_event)
-                    # t.start()
-                    self.runthread = RunScriptClass(self, self.pause_event)
-                    self.runthread.start()
-                    self.isbrokenorfinish = False
-                    print(key_name, 'host start')
-                elif key_name == start_name and self.running and not self.recording:
-                    if self.paused:
-                        print('script resume')
-                        self.paused = False
-                        self.pause_event.set()
-                        print(key_name, 'host resume')
-                    else:
-                        print('script pause')
-                        self.paused = True
-                        self.pause_event.clear()
-                        print(key_name, 'host pause')
-                elif key_name == stop_name and self.running and not self.recording:
-                    print('script stop')
-                    self.tnumrd.setText('broken')
-                    self.isbrokenorfinish = True
-                    if self.paused:
-                        self.paused = False
-                        self.pause_event.set()
-                    print(key_name, 'host stop')
-                elif key_name == stop_name and self.recording:
-                    self.recordMethod()
-                    print(key_name, 'host stop record')
-                elif key_name == record_name:
-                    if not self.recording:
-                        self.recordMethod()
-                        print(key_name, 'host start record')
-                    else:
-                        self.pauseRecordMethod()
-                        print(key_name, 'host pause record')
+                hotkeymethod(key_name)
 
             if not self.recording or self.running or self.pauserecord:
                 return True
@@ -254,10 +207,7 @@ class UIFunc(QMainWindow, Ui_UIView):
                 return True
 
             # 不录制热键
-            hot_keys = [HOT_KEYS[self.choice_start.currentIndex()],
-                        HOT_KEYS[self.choice_stop.currentIndex()],
-                        HOT_KEYS[self.choice_record.currentIndex()]]
-            if event.Key in hot_keys:
+            if event.Key in HOT_KEYS:
                 return True
 
             key_info = (event.KeyID, event.Key, event.Extended)
@@ -275,9 +225,95 @@ class UIFunc(QMainWindow, Ui_UIView):
             self.tnumrd.setText(text)
             return True
 
-        self.hm.MouseAll = on_mouse_event
+        def hotkeymethod(key_name):
+            start_index = self.choice_start.currentIndex()
+            stop_index = self.choice_stop.currentIndex()
+            record_index = self.choice_record.currentIndex()
+            # Predict potential conflict
+            if start_index == stop_index:
+                stop_index = (stop_index + 1) % len(HOT_KEYS)
+                self.choice_stop.setCurrentIndex(stop_index)
+            if start_index == record_index:
+                record_index = (record_index + 1) % len(HOT_KEYS)
+                if record_index == stop_index:
+                    record_index = (record_index + 1) % len(HOT_KEYS)
+                self.choice_record.setCurrentIndex(record_index)
+            start_name = HOT_KEYS[start_index].lower()
+            stop_name = HOT_KEYS[stop_index].lower()
+            record_name = HOT_KEYS[record_index].lower()
+
+            if key_name == start_name and not self.running and not self.recording:
+                print('script start')
+                # t = RunScriptClass(self, self.pause_event)
+                # t.start()
+                self.runthread = RunScriptClass(self, self.pause_event)
+                self.runthread.start()
+                self.isbrokenorfinish = False
+                print(key_name, 'host start')
+            elif key_name == start_name and self.running and not self.recording:
+                if self.paused:
+                    print('script resume')
+                    self.paused = False
+                    self.pause_event.set()
+                    print(key_name, 'host resume')
+                else:
+                    print('script pause')
+                    self.paused = True
+                    self.pause_event.clear()
+                    print(key_name, 'host pause')
+            elif key_name == stop_name and self.running and not self.recording:
+                print('script stop')
+                self.tnumrd.setText('broken')
+                self.isbrokenorfinish = True
+                if self.paused:
+                    self.paused = False
+                    self.pause_event.set()
+                print(key_name, 'host stop')
+            elif key_name == stop_name and self.recording:
+                self.recordMethod()
+                print(key_name, 'host stop record')
+            elif key_name == record_name and not self.running:
+                if not self.recording:
+                    self.recordMethod()
+                    print(key_name, 'host start record')
+                else:
+                    self.pauseRecordMethod()
+                    print(key_name, 'host pause record')
+            return key_name in [start_name, stop_name, record_name]
+
+        self.msgdic = {0x0201: 'mouse left down', 0x0202: 'mouse left up',
+                       0x0204: 'mouse right down', 0x0205: 'mouse right up',
+                       0x0200: 'mouse move',
+                       0x0207: 'mouse middle down', 0x0208: 'mouse middle up',
+                       0x020a: 'mouse wheel',
+                       0x020b: 'mouse x down', 0x020c: 'mouse x up'}
+        self.datadic = {0x10000: 'x1', 0x20000: 'x2'}
+        self.MyMouseEvent = collections.namedtuple("MyMouseEvent", ["MessageName"])
+        self.midashotkey = False
+
+        def mouse_handler(msg, x, y, data, flags, time, hwnd, window_name):
+            name = self.msgdic[msg]
+            if name == 'mouse wheel':
+                name = name + (' up' if data > 0 else ' down')
+            elif name in ['mouse x down', 'mouse x up']:
+                name = name.replace('x', self.datadic[data])
+            if 'mouse x1 down' == name:
+                hotkeymethod('xbutton1')
+            elif 'mouse x2 down' == name:
+                hotkeymethod('xbutton2')
+            elif 'mouse middle' in name:
+                if 'down' in name:
+                    self.midashotkey = hotkeymethod('middle')
+                if not self.midashotkey:
+                    on_mouse_event(self.MyMouseEvent(name))
+            else:
+                on_mouse_event(self.MyMouseEvent(name))
+            return True
+
+        cpyHook.cSetHook(HookConstants.WH_MOUSE_LL, mouse_handler)
+        # self.hm.MouseAll = on_mouse_event
         self.hm.KeyAll = on_keyboard_event
-        self.hm.HookMouse()
+        # self.hm.HookMouse()
         self.hm.HookKeyboard()
 
     def eventFilter(self, watched, event):
@@ -390,7 +426,7 @@ class UIFunc(QMainWindow, Ui_UIView):
             self.btrun.setEnabled(False)
 
     def OnBtrecordButton(self):
-            self.recordMethod()
+        self.recordMethod()
 
     def OnBtrunButton(self):
         print('script start by btn')
@@ -567,9 +603,7 @@ class RunScriptClass(threading.Thread):
                 #     key_code = int(key_code/2) - 64
 
                 # 不执行热键
-                hot_keys = [HOT_KEYS[thd.frame.choice_start.currentIndex()],
-                            HOT_KEYS[thd.frame.choice_stop.currentIndex()]]
-                if key_name in hot_keys:
+                if key_name in HOT_KEYS:
                     continue
 
                 base = 0
