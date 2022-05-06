@@ -44,10 +44,7 @@ class UIFunc(QMainWindow, Ui_UIView):
     def __init__(self):
         super(UIFunc, self).__init__()
         self.setupUi(self)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap('Mondrian.png'),
-                       QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.setWindowIcon(icon)
+
         self.config = self.loadconfig()
 
         self.setFocusPolicy(QtCore.Qt.NoFocus)
