@@ -4,6 +4,7 @@ import datetime
 import json
 import os
 import re
+import sys
 import threading
 import time
 import traceback
@@ -44,9 +45,21 @@ def current_ts():
     return int(time.time() * 1000)
 
 
+def get_assets_path(*paths):
+    # pyinstaller -F --add-data ./assets;assets KeymouseGo.py
+    try:
+        root = sys._MEIPASS
+    except:
+        root = os.getcwd()
+    return os.path.join(root, 'assets', *paths)
+
+
 class UIFunc(QMainWindow, Ui_UIView):
     def __init__(self):
         super(UIFunc, self).__init__()
+
+        print('assets root:', get_assets_path())
+
         self.setupUi(self)
 
         self.config = self.loadconfig()
@@ -331,12 +344,12 @@ class UIFunc(QMainWindow, Ui_UIView):
 
     def onchangelang(self):
         if self.choice_language.currentText() == '简体中文':
-            self.trans.load('i18n/zh-cn')
+            self.trans.load(get_assets_path('i18n', 'zh-cn'))
             _app = QApplication.instance()
             _app.installTranslator(self.trans)
             self.retranslateUi(self)
         elif self.choice_language.currentText() == 'English':
-            self.trans.load('i18n/en')
+            self.trans.load(get_assets_path('i18n', 'en'))
             _app = QApplication.instance()
             _app.installTranslator(self.trans)
             self.retranslateUi(self)
@@ -646,7 +659,7 @@ class PlayPromptTone(threading.Thread):
 
     def _play_start_sound(self):
         try:
-            path = os.path.join(os.getcwd(), 'sounds', 'start.mp3')
+            path = get_assets_path('sounds', 'start.mp3')
             playsound(path)
         except PlaysoundException as e:
             print(e)
@@ -654,7 +667,7 @@ class PlayPromptTone(threading.Thread):
     @classmethod
     def play_end_sound(cls):
         try:
-            path = os.path.join(os.getcwd(), 'sounds', 'end.mp3')
+            path = get_assets_path('sounds', 'end.mp3')
             playsound(path)
         except PlaysoundException as e:
             print(e)
