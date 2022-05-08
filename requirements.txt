@@ -1,6 +1,6 @@
-# Python3
+# Python3.10
 
-pywin32==301
+pywin32==302
 pyWinhook==1.6.2
 pyperclip==1.8.0
 playsound==1.2.2
