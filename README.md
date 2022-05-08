@@ -113,6 +113,14 @@ Monomux
 ```
 
 
+# 源码编译, 打包 exe 文件：
+```
+1. 安装 Python3.10
+2. pip install -r requiremennts.txt
+3. pip install pyinstaller
+4. pyinstaller -F --add-data ./assets;assets KeymouseGo.py
+```
+
 ----------------------
 
 # 赞赏支持
