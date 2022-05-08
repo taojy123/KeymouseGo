@@ -8,7 +8,8 @@
 
 该软件通过 `Python` 语言编写，已编译为 `windows` 平台可执行文件，未安装 `Python` 的用户可直接下载 `release` 版本 https://github.com/taojy123/KeymouseGo/releases ，直接点击 `KeymouseGo.exe` 运行
 
-![demo](https://user-images.githubusercontent.com/3334897/167301410-f65429cc-c526-487f-b061-9e37f3653d20.png)
+![sample](https://user-images.githubusercontent.com/3334897/167304098-59cca4a8-fea4-40e7-b5fb-1099ce53b98a.png)
+
 
 ----------------------
 
