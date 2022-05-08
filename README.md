@@ -1,4 +1,4 @@
-# KeymouseGo v3.2.2
+# KeymouseGo v4.0
 
 功能：记录用户的鼠标键盘操作，通过触发按钮自动执行之前记录的操作，可设定执行的次数，可以理解为 `精简绿色版` 的 `按键精灵`。
 
@@ -8,7 +8,7 @@
 
 该软件通过 `Python` 语言编写，已编译为 `windows` 平台可执行文件，未安装 `Python` 的用户可直接下载 `release` 版本 https://github.com/taojy123/KeymouseGo/releases ，直接点击 `KeymouseGo.exe` 运行
 
-<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/sample.jpg" width="355">
+![demo](https://user-images.githubusercontent.com/3334897/167301410-f65429cc-c526-487f-b061-9e37f3653d20.png)
 
 ----------------------
 
@@ -143,10 +143,17 @@ Monomux
 暂时没法打包 `x86` 版本，32 位系统的同学请自行源码编译，或 [下载v1.5老版本](https://github.com/taojy123/KeymouseGo/releases/tag/v1.5) 使用
 
 
+## v4.0
+
++ 使用 PySide2 重写 UI
++ 快捷键支持鼠标中键与侧键
++ 相关 issue 提出的功能需求实现
++ 4.0 代码基本由 <a href="https://github.com/Monomux">Monomux</a> 贡献，KeymouseGo 的整体品质有了较大提升。感谢付出！
+  
+
 ## v3.2.2
 
 + input 事件无法输入内容的 bug
-
 
 ## v3.2.1
 
