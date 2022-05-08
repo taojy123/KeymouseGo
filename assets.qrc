@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="pic">
+    <file>Mondrian.png</file>
+  </qresource>
+</RCC>

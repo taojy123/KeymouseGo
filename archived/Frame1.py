@@ -2,7 +2,6 @@
 #Boa:Frame:Frame1
 
 import os
-import sys
 import time
 import threading
 import datetime
@@ -17,7 +16,6 @@ from wx.adv import EVT_TASKBAR_LEFT_DCLICK
 import pyWinhook
 import win32con, win32print
 import win32api, win32gui
-import ctypes
 import pyperclip
 from playsound import playsound
 from playsound import PlaysoundException
@@ -255,9 +253,9 @@ class Frame1(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Bind(wx.EVT_ICONIZE, self.OnIconfiy)
 
-        if not os.path.exists('scripts'):
-            os.mkdir('scripts')
-        self.scripts = os.listdir('scripts')[::-1]
+        if not os.path.exists('../scripts'):
+            os.mkdir('../scripts')
+        self.scripts = os.listdir('../scripts')[::-1]
 
         self.scripts = list(filter(lambda s: s.endswith('.txt'), self.scripts))
         self.choice_script.SetItems(self.scripts)
@@ -467,7 +465,7 @@ class Frame1(wx.Frame):
         if i < 0:
             return ''
         script = self.scripts[i]
-        path = os.path.join(os.getcwd(), 'scripts', script)
+        path = os.path.join(os.getcwd(), '../scripts', script)
         print(path)
         return path
 
@@ -838,7 +836,7 @@ class PlayPromptTone(threading.Thread):
 
     def _play_start_sound(self):
         try:
-            path = os.path.join(os.getcwd(), 'sounds', 'start.mp3')
+            path = os.path.join(os.getcwd(), '../sounds', 'start.mp3')
             playsound(path)
         except PlaysoundException as e:
             print(e)
@@ -846,7 +844,7 @@ class PlayPromptTone(threading.Thread):
     @classmethod
     def play_end_sound(cls):
         try:
-            path = os.path.join(os.getcwd(), 'sounds', 'end.mp3')
+            path = os.path.join(os.getcwd(), '../sounds', 'end.mp3')
             playsound(path)
         except PlaysoundException as e:
             print(e)

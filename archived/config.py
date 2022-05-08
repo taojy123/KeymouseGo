@@ -36,9 +36,9 @@ def setdefaultconf(config):
     config.set('Config', 'Language', 'zh-cn')
 
 def getconfig():
-    if not os.path.exists('config.ini'):
+    if not os.path.exists('../config.ini'):
         setdefaultconf(conf)
-        conf.write(open('config.ini', 'w'))
+        conf.write(open('../config.ini', 'w'))
     else:
         conf.read('config.ini')
     return dict(conf.items('Config'))
@@ -52,4 +52,4 @@ def saveconfig(newConf):
     conf.set('Config', 'Precision', str(newConf['precision']))
     conf.set('Config', 'ExecuteSpeed', str(newConf['executespeed']))
     conf.set('Config', 'Language', str(newConf['language']))
-    conf.write(open('config.ini', 'w'))
+    conf.write(open('../config.ini', 'w'))
