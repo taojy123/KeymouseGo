@@ -12,7 +12,6 @@ import winreg
 
 import pyWinhook
 import pyperclip
-import pythoncom
 import win32api
 import win32con
 import win32gui
@@ -507,7 +506,7 @@ class RunScriptClass(threading.Thread):
             self.frame.btrecord.setEnabled(True)
 
     @classmethod
-    def run_script_once(cls, script_path, step, thd=None):
+    def run_script_once(cls, script_path, step, thd=None, speed=100):
 
         content = ''
 
@@ -541,7 +540,7 @@ class RunScriptClass(threading.Thread):
         for i in range(steps):
             print(s[i])
 
-            delay = s[i][0] / (thd.run_speed / 100)
+            delay = s[i][0] / ((thd.run_speed if thd else speed) / 100)
             event_type = s[i][1].upper()
             message = s[i][2].lower()
             action = s[i][3]
