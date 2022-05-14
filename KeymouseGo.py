@@ -30,7 +30,7 @@ from qt_material import apply_stylesheet
 def main():
     app = QtWidgets.QApplication(sys.argv)
     apply_stylesheet(app, theme='light_cyan_500.xml')
-    ui = UIFunc()
+    ui = UIFunc.UIFunc()
     ui.show()
     sys.exit(app.exec_())
 
@@ -95,9 +95,12 @@ if __name__ == '__main__':
                             )
         args = vars(parser.parse_args())
         print(args)
-        single_run(args['sctipts'],
-                   run_times=args['runtimes'],
-                   speed=args['speed']
-                   )
+        if args['speed'] <= 0:
+            print('Unsupported speed')
+        else:
+            single_run(args['sctipts'],
+                       run_times=args['runtimes'],
+                       speed=args['speed']
+                       )
     else:
         main()

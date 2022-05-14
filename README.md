@@ -62,6 +62,10 @@ Monomux
 
 6、`scripts` 下的脚本文件内容可以修改，修改时可参考如下所述 `脚本格式说明`。
 
+7、热键设置中的`Middle`指代鼠标中键，`XButton`指代鼠标侧键
+
+8、由于程序速度受限，当输入的鼠标速度大于一定值时脚本将无法以预期的输入速度执行
+
 
 部分系统环境中，可能出现无法录制完整的鼠标事件的情况，请以管理员身份运行此工具即可正常使用。
 
@@ -109,9 +113,15 @@ Monomux
 
 运行指定脚本3次:
 ```
-> KeymouseGo.exe scripts/0314_1452.txt 3
+> KeymouseGo.exe scripts/0314_1452.txt -rt 3
+> KeymouseGo.exe scripts/0314_1452.txt --runtimes 3
 ```
 
+以200%的速度运行指定脚本:
+```
+> KeymouseGo.exe scripts/0314_1452.txt -sp 200
+> KeymouseGo.exe scripts/0314_1452.txt --speed 200
+```
 
 # 源码编译, 打包 exe 文件：
 ```
