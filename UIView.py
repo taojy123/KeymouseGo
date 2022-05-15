@@ -102,6 +102,8 @@ class Ui_UIView(object):
 
         self.stimes = QSpinBox(self.formLayoutWidget_2)
         self.stimes.setObjectName(u"stimes")
+        self.stimes.setMinimum(0)
+        self.stimes.setMaximum(999999999)
         self.stimes.setValue(1)
 
         self.formLayout_2.setWidget(1, QFormLayout.FieldRole, self.stimes)

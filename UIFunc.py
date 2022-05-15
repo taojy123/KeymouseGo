@@ -12,7 +12,6 @@ import winreg
 
 import pyWinhook
 import pyperclip
-import pythoncom
 import win32api
 import win32con
 import win32gui
@@ -484,15 +483,18 @@ class RunScriptClass(threading.Thread):
             self.run_speed = self.frame.execute_speed.value()
 
             self.j = 0
-            while self.j < self.run_times or self.run_times == 0:
+            nointerrupt = True
+            while (self.j < self.run_times or self.run_times == 0) and nointerrupt:
                 self.j += 1
                 current_status = self.frame.tnumrd.text()
                 if current_status in ['broken', 'finished']:
                     self.frame.running = False
                     break
-                RunScriptClass.run_script_once(script_path, self.j, thd=self)
-
-            self.frame.tnumrd.setText('finished')
+                nointerrupt = nointerrupt and RunScriptClass.run_script_once(script_path, self.j, thd=self)
+            if nointerrupt:
+                self.frame.tnumrd.setText('finished')
+            else:
+                print('interrupted')
             self.frame.running = False
             PlayPromptTone.play_end_sound()
             print('script run finish!')
@@ -507,7 +509,7 @@ class RunScriptClass(threading.Thread):
             self.frame.btrecord.setEnabled(True)
 
     @classmethod
-    def run_script_once(cls, script_path, step, thd=None):
+    def run_script_once(cls, script_path, step, thd=None, speed=100):
 
         content = ''
 
@@ -539,9 +541,20 @@ class RunScriptClass(threading.Thread):
         steps = len(s)
 
         for i in range(steps):
+            if thd:
+                # current_status = thd.frame.tnumrd.GetLabel()
+                # if current_status in ['broken', 'finished']:
+                #     break
+                if thd.frame.isbrokenorfinish:
+                    thd.frame.tnumrd.setText('broken at %d/%d' % (i, steps))
+                    return False
+                thd.event.wait()
+                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j, thd.run_times, thd.run_speed)
+                thd.frame.tnumrd.setText(text)
+
             print(s[i])
 
-            delay = s[i][0] / (thd.run_speed / 100)
+            delay = s[i][0] / ((thd.run_speed if thd else speed) / 100)
             event_type = s[i][1].upper()
             message = s[i][2].lower()
             action = s[i][3]
@@ -557,7 +570,8 @@ class RunScriptClass(threading.Thread):
                 # if current_status in ['broken', 'finished']:
                 #     break
                 if thd.frame.isbrokenorfinish:
-                    break
+                    thd.frame.tnumrd.setText('broken at %d/%d' % (i + 1, steps))
+                    return False
                 thd.event.wait()
                 text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j, thd.run_times, thd.run_speed)
                 thd.frame.tnumrd.setText(text)
@@ -642,7 +656,7 @@ class RunScriptClass(threading.Thread):
                     win32api.keybd_event(162, 0, win32con.KEYEVENTF_KEYUP, 0)
                 else:
                     print('unknow extra event:', message)
-
+        return True
 
 class PlayPromptTone(threading.Thread):
 
