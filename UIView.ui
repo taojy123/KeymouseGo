@@ -143,6 +143,12 @@
         <property name="toolTip">
          <string>Execution times(0 for endless looping)</string>
         </property>
+        <property name="minimum">
+         <number>0</number>
+        </property>
+        <property name="maximum">
+         <number>999999999</number>
+        </property>
         <property name="value">
          <number>1</number>
         </property>
