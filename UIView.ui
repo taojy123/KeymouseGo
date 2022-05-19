@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ui version="4.0">
+<ui version="4.1">
  <class>UIView</class>
  <widget class="QMainWindow" name="UIView">
   <property name="geometry">
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>KeymomuseGo v4.0</string>
+   <string>KeymomuseGo v4.1</string>
   </property>
   <property name="windowIcon">
    <iconset resource="assets.qrc">

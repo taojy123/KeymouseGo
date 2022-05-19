@@ -161,6 +161,11 @@ Monomux
 暂时没法打包 `x86` 版本，32 位系统的同学请自行源码编译，或 [下载v1.5老版本](https://github.com/taojy123/KeymouseGo/releases/tag/v1.5) 使用
 
 
+## v4.1
+
++ 加入命令行执行功能
+
+
 ## v4.0
 
 + 使用 PySide2 重写 UI
