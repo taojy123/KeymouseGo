@@ -1,6 +1,9 @@
-# Python3
+# Python3.10
 
-wxPython>=3,<5
-pywin32==228
+pywin32==302
 pyWinhook==1.6.2
 pyperclip==1.8.0
+playsound==1.2.2
+future==0.18.2
+PySide2==5.15.2.1
+qt-material==2.11

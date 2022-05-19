@@ -1,0 +1,18 @@
+en:
+  script: Script
+  record: Record
+  finish: Finish
+  pause: Pause
+  pauserecord: Pause record
+  continuerecord: Continue
+  continue: Continue
+  launch: Launch
+  launchhotkey: Launch/Pause
+  terminatehotkey: Terminate
+  recordhotkey: Record/Pause
+  precision: Mouse precision
+  speed: Execution speed(%)
+  tip: Execution times(0 for endless looping)
+  tip2: The smaller the value is, the preciser the trace will be.
+  range: Range(20%-500%)
+  language: Language(Need restart)

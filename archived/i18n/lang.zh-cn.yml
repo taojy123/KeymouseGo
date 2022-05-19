@@ -1,0 +1,18 @@
+zh-cn:
+  script: 脚本
+  record: 录制
+  finish: 结束
+  pause: 暂停
+  pauserecord: 暂停录制
+  continuerecord: 继续录制
+  continue: 继续
+  launch: 启动
+  launchhotkey: 启动/暂停执行热键
+  terminatehotkey: 终止热键
+  recordhotkey: 开始/暂停录制热键
+  precision: 鼠标精度
+  speed: 执行速度(%)
+  tip: 执行次数(0为无限循环)
+  tip2: 数值越小鼠标轨迹越精准,为0则不记录
+  range: 范围(20%-500%)
+  language: 语言(需要重启程序)

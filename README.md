@@ -1,4 +1,4 @@
-# KeymouseGo v3.2.2
+# KeymouseGo v4.0
 
 功能：记录用户的鼠标键盘操作，通过触发按钮自动执行之前记录的操作，可设定执行的次数，可以理解为 `精简绿色版` 的 `按键精灵`。
 
@@ -8,7 +8,7 @@
 
 该软件通过 `Python` 语言编写，已编译为 `windows` 平台可执行文件，未安装 `Python` 的用户可直接下载 `release` 版本 https://github.com/taojy123/KeymouseGo/releases ，直接点击 `KeymouseGo.exe` 运行
 
-<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/sample.jpg" width="355">
+![image](https://user-images.githubusercontent.com/3334897/167304140-0d8bcfa4-b921-4611-a5bd-c8b01bf0f1e3.png)
 
 ----------------------
 
@@ -23,7 +23,20 @@
 
 我的邮箱: taojy123@163.com
 
+----------------------
 
+# 开源贡献者:
+
+如果您是开发爱好者，并对本项目感兴趣，欢迎参与项目的共同建设，您可以向本项目提交 Pull request 来贡献代码。
+
+在此，特别感谢积极贡献者：
+
+<a href="https://github.com/Monomux"><img src="https://avatars.githubusercontent.com/u/70839036?s=80&v=4" height="80"></a>
+  
+Monomux
+
+----------------------
+ 
 # 基本操作：
 
 1、点击 `录制` 按钮，开始录制。
@@ -49,19 +62,27 @@
 
 6、`scripts` 下的脚本文件内容可以修改，修改时可参考如下所述 `脚本格式说明`。
 
+7、热键设置中的`Middle`指代鼠标中键，`XButton`指代鼠标侧键
+
+8、由于程序速度受限，当输入的鼠标速度大于一定值时脚本将无法以预期的输入速度执行
+
+
+部分系统环境中，可能出现无法录制完整的鼠标事件的情况，请以管理员身份运行此工具即可正常使用。
+
 
 # 脚本语法说明：
+> 演示屏幕分辨率为`1920 * 1080`
 
 ```
 [
- [3000, "EM", "mouse right down", [100, 200]],    // 开始运行 `3000ms` 后，在屏幕坐标 `(100,200)` 处 `按下鼠标右键`；
- [50,   "EM", "mouse right up",   [100, 200]],    // 等待 `50ms` 后在相同位置 `抬起鼠标右键`；
- [1000, "EK", "key down",         (70, 'F', 0)],  // 等待 `1000ms` 后 `按下f键`；
- [50,   "EK", "key up",           (70, 'F', 0)],  // 等待 `50ms` 后 `抬起f键`；
- [100,  "EM", "mouse left down",  [500, 500]],    // 等待 `100ms` 后，在屏幕坐标 `(500, 500)` 处 `按下鼠标左键`；
- [100,  "EM", "mouse move",       [500, 600]],    // 等待 `100ms` 后，鼠标移动至 `(500, 600)` 位置；
- [100,  "EM", "mouse left down",  [600, 600]],    // 等待 `100ms` 后，在屏幕坐标 `(600, 600)` 处 `抬起鼠标左键`；
- [100,  "EX", "input",            "你好 world"],   // 等待 `100ms` 后，在当前位置输入 `你好 world` 文字。
+ [3000, "EM", "mouse right down", [0.05208%, 0.1852%]],    // 开始运行 `3000ms` 后，在屏幕相对坐标 `(0.05208, 0.1852)`即 `(100,200)` 处 `按下鼠标右键`；
+ [50,   "EM", "mouse right up",   [0.05208%, 0.1852%]],    // 等待 `50ms` 后在相同位置 `抬起鼠标右键`；
+ [1000, "EK", "key down",         (70, 'F', 0)],                                   // 等待 `1000ms` 后 `按下f键`；
+ [50,   "EK", "key up",           (70, 'F', 0)],                                   // 等待 `50ms` 后 `抬起f键`；
+ [100,  "EM", "mouse left down",  [0.2604%, 0.4630%]],      // 等待 `100ms` 后，在屏幕相对坐标 `(0.2604, 0.4630)`即 `(500, 500)` 处 `按下鼠标左键`；
+ [100,  "EM", "mouse move",       [0.2604%, 0.5556%]],       // 等待 `100ms` 后，鼠标移动至相对坐标 `(0.2604, 0.5556)`即 `(500, 600)` 位置；
+ [100,  "EM", "mouse left down",  [0.3125%, 0.5556%]],                   // 等待 `100ms` 后，在屏幕相对坐标 `(0.3125, 0.5556)`即 `(600, 600)` 处 `抬起鼠标左键`；
+ [100,  "EX", "input",            "你好 world"],                                   // 等待 `100ms` 后，在当前位置输入 `你好 world` 文字。
 ]
 ```
 
@@ -71,6 +92,8 @@
 + 每行的第 3 个元素表示动作的类型：
   + `mouse left down` 为鼠标左键按下，`mouse left up` 为鼠标左键抬起，
   + `mouse right down` 为鼠标右键按下，`mouse right up` 为鼠标右键抬起，
+  + `mouse middle down` 为鼠标中键按下， `mouse middle up` 为鼠标中键抬起，
+  + `mouse wheel up` 为鼠标滚轮上滑， `mouse wheel down` 为鼠标滚轮下滑，
   + `key down` 为键盘按键按下，`key up` 为键盘按键抬起，
   + `mouse move` 为鼠标滑过，`input` 输入文字。
 + 每行的第 4 个元素表示具体的动作参数
@@ -90,7 +113,22 @@
 
 运行指定脚本3次:
 ```
-> KeymouseGo.exe scripts/0314_1452.txt 3
+> KeymouseGo.exe scripts/0314_1452.txt -rt 3
+> KeymouseGo.exe scripts/0314_1452.txt --runtimes 3
+```
+
+以200%的速度运行指定脚本:
+```
+> KeymouseGo.exe scripts/0314_1452.txt -sp 200
+> KeymouseGo.exe scripts/0314_1452.txt --speed 200
+```
+
+# 源码编译, 打包 exe 文件：
+```
+1. 安装 Python3.10
+2. pip install -r requirements.txt
+3. pip install pyinstaller
+4. pyinstaller -F --add-data ./assets;assets KeymouseGo.py
 ```
 
 ----------------------
@@ -123,10 +161,17 @@
 暂时没法打包 `x86` 版本，32 位系统的同学请自行源码编译，或 [下载v1.5老版本](https://github.com/taojy123/KeymouseGo/releases/tag/v1.5) 使用
 
 
+## v4.0
+
++ 使用 PySide2 重写 UI
++ 快捷键支持鼠标中键与侧键
++ 相关 issue 提出的功能需求实现
++ 4.0 代码基本由 <a href="https://github.com/Monomux">Monomux</a> 贡献，KeymouseGo 的整体品质有了较大提升。感谢付出！
+  
+
 ## v3.2.2
 
 + 修复了 input 事件无法输入内容的 bug
-
 
 ## v3.2.1
 
