@@ -24,6 +24,11 @@ from pyWinhook import cpyHook, HookConstants
 
 from UIView import Ui_UIView
 
+# import importlib
+
+os.environ['QT_ENABLE_HIGHDPI_SCALING'] = "1"
+QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+
 HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
             'XButton1', 'XButton2', 'Middle']
 hDC = win32gui.GetDC(0)
@@ -127,6 +132,7 @@ class UIFunc(QMainWindow, Ui_UIView):
 
         self.hm = pyWinhook.HookManager()
 
+        # 鼠标操作录制逻辑
         def on_mouse_event(event):
 
             # print('MessageName:',event.MessageName)  #事件名称
@@ -183,6 +189,7 @@ class UIFunc(QMainWindow, Ui_UIView):
             self.tnumrd.setText(text)
             return True
 
+        # 键盘操作录制逻辑
         def on_keyboard_event(event):
 
             # print('MessageName:',event.MessageName)          #同上，共同属性不再赘述
@@ -237,6 +244,7 @@ class UIFunc(QMainWindow, Ui_UIView):
             self.tnumrd.setText(text)
             return True
 
+        # 热键响应逻辑
         def hotkeymethod(key_name):
             start_index = self.choice_start.currentIndex()
             stop_index = self.choice_stop.currentIndex()
@@ -303,6 +311,7 @@ class UIFunc(QMainWindow, Ui_UIView):
         self.MyMouseEvent = collections.namedtuple("MyMouseEvent", ["MessageName"])
         self.midashotkey = False
 
+        # 使用一般的HookMouse无法捕获鼠标侧键操作，因此采用cpyHook捕获鼠标操作
         def mouse_handler(msg, x, y, data, flags, time, hwnd, window_name):
             name = self.msgdic[msg]
             if name == 'mouse wheel':
@@ -657,6 +666,7 @@ class RunScriptClass(threading.Thread):
                 else:
                     print('unknow extra event:', message)
         return True
+
 
 class PlayPromptTone(threading.Thread):
 
