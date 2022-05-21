@@ -104,6 +104,68 @@ Monomux
 + 修改时请严格遵守格式，否则可能导致脚本无法运行，建议修改前先备份一下。
 
 
+# 自定义扩展功能：
+
+程序提供了插件扩展接口，默认扩展类位于`plugins/Extension.py`，可以通过派生`Extension`类实现自定义功能。
+`Extension`类提供以下四个接口:
+  + `onbeforeeachloop(currentloop)`，在每次执行脚本前执行，返回False时跳过本次执行
+  + `onrunbefore(event, currentindex)`，在每行脚本执行前执行，返回False时跳过本行执行
+  + `onrunafter(event, currentindex)`，在每行脚本执行后执行
+  + `onaftereachloop(currentloop)`，在每次执行脚本后执行
+
+`currentindex`和`currentloop`分别指代当前脚本执行到第几条和当前脚本循环了多少次
+
+`event`为当前脚本执行的操作，其内容包含
+  + `delay`操作延时(ms)
+  + `event_type`事件类型
+  + `message`操作类型
+  + `action`操作参数
+
+编写自定义扩展后，需要在脚本文件中显式指定编写的模块:
+```
+[
+  "模块名(不带.py后缀)",
+  // 录制的脚本
+]
+```
+如果扩展中继承`Extension`的类名与模块名不一致，则需要同时显式指定模块名和类名:
+```
+[
+  "模块名(不带.py后缀)",
+  "继承Extension的类名",
+  // 录制的脚本
+]
+```
+
+示例:
+
+需要在第二次脚本执行时跳过第1条脚本内容，在`plugins/`目录下新建`MyExtension.py`，其内容为:
+```python
+from plugins.MyExtension import MyExtension
+
+class MyExtension2(Extension):
+    def __init(self):
+        self.currentloop = 1
+        self.currentindex = 1
+
+    def onbeforeeachloop(self, currentloop):
+        self.currentloop = currentloop
+
+    def onrunbefore(self, event, currentindex):
+        if self.currentloop == 2 and self.currentindex == 1:
+            return False
+        else:
+            return True
+```
+在录制的脚本开头加入:
+```
+[
+  "MyExtension",
+  "MyExtension2",
+  // 录制的脚本
+]
+```
+
 # 使用命令行运行：
 
 直接运行指定脚本:
