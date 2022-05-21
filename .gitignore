@@ -60,3 +60,4 @@ scripts/
 # Custom configue file
 *.ini
 .github
+plugins/

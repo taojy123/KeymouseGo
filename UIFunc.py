@@ -1,6 +1,7 @@
 # -*- encoding:utf-8 -*-
 import collections
 import datetime
+import importlib
 import json
 import os
 import re
@@ -16,6 +17,7 @@ import win32api
 import win32con
 import win32gui
 import win32print
+from shutil import copyfile
 from PySide2 import QtCore
 from PySide2.QtCore import QTranslator, QCoreApplication
 from PySide2.QtWidgets import QMainWindow, QApplication
@@ -83,6 +85,11 @@ class UIFunc(QMainWindow, Ui_UIView):
         self.choice_script.addItems(self.scripts)
         if self.scripts:
             self.choice_script.setCurrentIndex(0)
+
+        if not os.path.exists('plugins'):
+            os.mkdir('plugins')
+            copyfile('{0}\\assets\\plugins\\Extension.py'.format(os.getcwd()),
+                     '{0}\\plugins\\Extension.py'.format(os.getcwd()))
 
         self.choice_start.addItems(HOT_KEYS)
         self.choice_stop.addItems(HOT_KEYS)
@@ -491,8 +498,8 @@ class RunScriptClass(threading.Thread):
             self.frame.tnumrd.setText(self.running_text)
             self.run_speed = self.frame.execute_speed.value()
 
-            # 解析脚本，返回事件集合
-            events = RunScriptClass.parsescript(script_path, thd=self)
+            # 解析脚本，返回事件集合与扩展类对象
+            events, extension = RunScriptClass.parsescript(script_path, thd=self)
 
             self.j = 0
             nointerrupt = True
@@ -502,7 +509,11 @@ class RunScriptClass(threading.Thread):
                 if current_status in ['broken', 'finished']:
                     self.frame.running = False
                     break
-                nointerrupt = nointerrupt and RunScriptClass.run_script_once(events, self.j, thd=self)
+                if extension.onbeforeeachloop(self.j):
+                    nointerrupt = nointerrupt and RunScriptClass.run_script_once(events, extension, self.j, thd=self)
+                else:
+                    nointerrupt = True
+                extension.onaftereachloop(self.j)
             if nointerrupt:
                 self.frame.tnumrd.setText('finished')
             else:
@@ -562,11 +573,13 @@ class RunScriptClass(threading.Thread):
                 'message': message,
                 'action': action
             }))
-        return events
+        module = importlib.import_module('plugins.Extension')
+        module_cls = getattr(module, 'Extension')
+        return events, module_cls()
 
     # 执行集合中的ScriptEvent
     @classmethod
-    def run_script_once(cls, events, step, thd=None):
+    def run_script_once(cls, events, extension, step, thd=None):
         steps = len(events)
         for i, event in enumerate(events):
             if thd:
@@ -581,8 +594,11 @@ class RunScriptClass(threading.Thread):
                 play = PlayPromptTone(1, event.delay)
                 play.start()
 
-            print(event)
-            event.execute()
+            if extension.onrunbefore(event, i+1):
+                print(event)
+                event.execute()
+
+            extension.onrunafter(event, i+1)
 
             if thd:
                 if thd.frame.isbrokenorfinish:
