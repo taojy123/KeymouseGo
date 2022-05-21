@@ -122,14 +122,14 @@ Monomux
   + `action`操作参数
 
 编写自定义扩展后，需要在脚本文件中显式指定编写的模块:
-```
+```json
 [
   "模块名(不带.py后缀)",
   // 录制的脚本
 ]
 ```
 如果扩展中继承`Extension`的类名与模块名不一致，则需要同时显式指定模块名和类名:
-```
+```json
 [
   "模块名(不带.py后缀)",
   "继承Extension的类名",
@@ -141,24 +141,25 @@ Monomux
 
 需要在第二次脚本执行时跳过第1条脚本内容，在`plugins/`目录下新建`MyExtension.py`，其内容为:
 ```python
-from plugins.MyExtension import MyExtension
+from plugins.Extension import Extension
+
 
 class MyExtension2(Extension):
     def __init(self):
         self.currentloop = 1
-        self.currentindex = 1
 
     def onbeforeeachloop(self, currentloop):
         self.currentloop = currentloop
+        return True
 
     def onrunbefore(self, event, currentindex):
-        if self.currentloop == 2 and self.currentindex == 1:
+        if self.currentloop == 2 and currentindex == 1:
             return False
         else:
             return True
 ```
 在录制的脚本开头加入:
-```
+```json
 [
   "MyExtension",
   "MyExtension2",
