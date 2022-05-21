@@ -563,12 +563,12 @@ class RunScriptClass(threading.Thread):
         rangestart = 1
         module_name = 'Extension'
         class_name = 'Extension'
-        if re.match('\[.+\]', str(s[0])) is None:
-            print('1param')
+        if steps >= 1 and re.match('\[.+\]', str(s[0])) is None:
+            # print('1param')
             module_name = s[0]
             class_name = s[0]
-            if re.match('\[.+\]', str(s[1])) is None:
-                print('2param')
+            if steps >= 2 and re.match('\[.+\]', str(s[1])) is None:
+                # print('2param')
                 class_name = s[1]
                 rangestart = 2
 
