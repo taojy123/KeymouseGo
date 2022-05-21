@@ -47,8 +47,10 @@ def single_run(script_path, run_times=1, speed=100):
             while j < run_times or run_times == 0:
                 j += 1
                 print('===========', j, '==============')
-                UIFunc.RunScriptClass.run_script_once(events, extension, j)
-            print(path + 'run finish')
+                if extension.onbeforeeachloop(j):
+                    UIFunc.RunScriptClass.run_script_once(events, extension, j)
+                extension.onaftereachloop(j)
+            print(path + ' run finish')
         print('scripts run finish!')
     except Exception as e:
         print(e)

@@ -560,9 +560,20 @@ class RunScriptClass(threading.Thread):
         print(content)
         s = json.loads(content)
         steps = len(s)
+        rangestart = 1
+        module_name = 'Extension'
+        class_name = 'Extension'
+        if re.match('\[.+\]', str(s[0])) is None:
+            print('1param')
+            module_name = s[0]
+            class_name = s[0]
+            if re.match('\[.+\]', str(s[1])) is None:
+                print('2param')
+                class_name = s[1]
+                rangestart = 2
 
         events = []
-        for i in range(steps):
+        for i in range(rangestart, steps):
             delay = s[i][0] / ((thd.run_speed if thd else speed) / 100)
             event_type = s[i][1].upper()
             message = s[i][2].lower()
@@ -573,8 +584,8 @@ class RunScriptClass(threading.Thread):
                 'message': message,
                 'action': action
             }))
-        module = importlib.import_module('plugins.Extension')
-        module_cls = getattr(module, 'Extension')
+        module = importlib.import_module('plugins.%s' % module_name)
+        module_cls = getattr(module, class_name)
         return events, module_cls()
 
     # 执行集合中的ScriptEvent
@@ -594,11 +605,11 @@ class RunScriptClass(threading.Thread):
                 play = PlayPromptTone(1, event.delay)
                 play.start()
 
-            if extension.onrunbefore(event, i+1):
+            if extension.onrunbefore(event, i + 1):
                 print(event)
                 event.execute()
 
-            extension.onrunafter(event, i+1)
+            extension.onrunafter(event, i + 1)
 
             if thd:
                 if thd.frame.isbrokenorfinish:
