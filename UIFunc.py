@@ -1,6 +1,7 @@
 # -*- encoding:utf-8 -*-
 import collections
 import datetime
+import importlib
 import json
 import os
 import re
@@ -16,6 +17,7 @@ import win32api
 import win32con
 import win32gui
 import win32print
+from shutil import copyfile
 from PySide2 import QtCore
 from PySide2.QtCore import QTranslator, QCoreApplication
 from PySide2.QtWidgets import QMainWindow, QApplication
@@ -23,6 +25,11 @@ from playsound import playsound, PlaysoundException
 from pyWinhook import cpyHook, HookConstants
 
 from UIView import Ui_UIView
+
+# import importlib
+
+os.environ['QT_ENABLE_HIGHDPI_SCALING'] = "1"
+QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
 HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
             'XButton1', 'XButton2', 'Middle']
@@ -79,6 +86,11 @@ class UIFunc(QMainWindow, Ui_UIView):
         if self.scripts:
             self.choice_script.setCurrentIndex(0)
 
+        if not os.path.exists('plugins'):
+            os.mkdir('plugins')
+            copyfile('{0}\\assets\\plugins\\Extension.py'.format(os.getcwd()),
+                     '{0}\\plugins\\Extension.py'.format(os.getcwd()))
+
         self.choice_start.addItems(HOT_KEYS)
         self.choice_stop.addItems(HOT_KEYS)
         self.choice_record.addItems(HOT_KEYS)
@@ -127,6 +139,7 @@ class UIFunc(QMainWindow, Ui_UIView):
 
         self.hm = pyWinhook.HookManager()
 
+        # 鼠标操作录制逻辑
         def on_mouse_event(event):
 
             # print('MessageName:',event.MessageName)  #事件名称
@@ -183,6 +196,7 @@ class UIFunc(QMainWindow, Ui_UIView):
             self.tnumrd.setText(text)
             return True
 
+        # 键盘操作录制逻辑
         def on_keyboard_event(event):
 
             # print('MessageName:',event.MessageName)          #同上，共同属性不再赘述
@@ -237,6 +251,7 @@ class UIFunc(QMainWindow, Ui_UIView):
             self.tnumrd.setText(text)
             return True
 
+        # 热键响应逻辑
         def hotkeymethod(key_name):
             start_index = self.choice_start.currentIndex()
             stop_index = self.choice_stop.currentIndex()
@@ -303,6 +318,7 @@ class UIFunc(QMainWindow, Ui_UIView):
         self.MyMouseEvent = collections.namedtuple("MyMouseEvent", ["MessageName"])
         self.midashotkey = False
 
+        # 使用一般的HookMouse无法捕获鼠标侧键操作，因此采用cpyHook捕获鼠标操作
         def mouse_handler(msg, x, y, data, flags, time, hwnd, window_name):
             name = self.msgdic[msg]
             if name == 'mouse wheel':
@@ -482,6 +498,9 @@ class RunScriptClass(threading.Thread):
             self.frame.tnumrd.setText(self.running_text)
             self.run_speed = self.frame.execute_speed.value()
 
+            # 解析脚本，返回事件集合与扩展类对象
+            events, extension = RunScriptClass.parsescript(script_path, thd=self)
+
             self.j = 0
             nointerrupt = True
             while (self.j < self.run_times or self.run_times == 0) and nointerrupt:
@@ -490,7 +509,11 @@ class RunScriptClass(threading.Thread):
                 if current_status in ['broken', 'finished']:
                     self.frame.running = False
                     break
-                nointerrupt = nointerrupt and RunScriptClass.run_script_once(script_path, self.j, thd=self)
+                if extension.onbeforeeachloop(self.j):
+                    nointerrupt = nointerrupt and RunScriptClass.run_script_once(events, extension, self.j, thd=self)
+                else:
+                    nointerrupt = True
+                extension.onaftereachloop(self.j)
             if nointerrupt:
                 self.frame.tnumrd.setText('finished')
             else:
@@ -508,13 +531,11 @@ class RunScriptClass(threading.Thread):
             self.frame.btrun.setEnabled(True)
             self.frame.btrecord.setEnabled(True)
 
+    # 解析脚本内容，转换为ScriptEvent集合
     @classmethod
-    def run_script_once(cls, script_path, step, thd=None, speed=100):
-
+    def parsescript(cls, script_path, thd=None, speed=100):
         content = ''
-
         lines = []
-
         try:
             lines = open(script_path, 'r', encoding='utf8').readlines()
         except Exception as e:
@@ -539,12 +560,40 @@ class RunScriptClass(threading.Thread):
         print(content)
         s = json.loads(content)
         steps = len(s)
+        rangestart = 1
+        module_name = 'Extension'
+        class_name = 'Extension'
+        if steps >= 1 and re.match('\[.+\]', str(s[0])) is None:
+            # print('1param')
+            module_name = s[0]
+            class_name = s[0]
+            if steps >= 2 and re.match('\[.+\]', str(s[1])) is None:
+                # print('2param')
+                class_name = s[1]
+                rangestart = 2
 
-        for i in range(steps):
+        events = []
+        for i in range(rangestart, steps):
+            delay = s[i][0] / ((thd.run_speed if thd else speed) / 100)
+            event_type = s[i][1].upper()
+            message = s[i][2].lower()
+            action = s[i][3]
+            events.append(ScriptEvent({
+                'delay': delay,
+                'event_type': event_type,
+                'message': message,
+                'action': action
+            }))
+        module = importlib.import_module('plugins.%s' % module_name)
+        module_cls = getattr(module, class_name)
+        return events, module_cls()
+
+    # 执行集合中的ScriptEvent
+    @classmethod
+    def run_script_once(cls, events, extension, step, thd=None):
+        steps = len(events)
+        for i, event in enumerate(events):
             if thd:
-                # current_status = thd.frame.tnumrd.GetLabel()
-                # if current_status in ['broken', 'finished']:
-                #     break
                 if thd.frame.isbrokenorfinish:
                     thd.frame.tnumrd.setText('broken at %d/%d' % (i, steps))
                     return False
@@ -552,111 +601,122 @@ class RunScriptClass(threading.Thread):
                 text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j, thd.run_times, thd.run_speed)
                 thd.frame.tnumrd.setText(text)
 
-            print(s[i])
-
-            delay = s[i][0] / ((thd.run_speed if thd else speed) / 100)
-            event_type = s[i][1].upper()
-            message = s[i][2].lower()
-            action = s[i][3]
-
             if 1 == step and 0 == i:
-                play = PlayPromptTone(1, delay)
+                play = PlayPromptTone(1, event.delay)
                 play.start()
 
-            time.sleep(delay / 1000.0)
+            if extension.onrunbefore(event, i + 1):
+                print(event)
+                event.execute()
+
+            extension.onrunafter(event, i + 1)
 
             if thd:
-                # current_status = thd.frame.tnumrd.GetLabel()
-                # if current_status in ['broken', 'finished']:
-                #     break
                 if thd.frame.isbrokenorfinish:
                     thd.frame.tnumrd.setText('broken at %d/%d' % (i + 1, steps))
                     return False
                 thd.event.wait()
                 text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j, thd.run_times, thd.run_speed)
                 thd.frame.tnumrd.setText(text)
-
-            if event_type == 'EM':
-                x, y = action
-                # 兼容旧版的绝对坐标
-                if not isinstance(x, int) and not isinstance(y, int):
-                    x = float(re.match('([0-1].[0-9]+)%', x).group(1))
-                    y = float(re.match('([0-1].[0-9]+)%', y).group(1))
-
-                if action == [-1, -1]:
-                    # 约定 [-1, -1] 表示鼠标保持原位置不动
-                    pass
-                else:
-                    # 挪动鼠标 普通做法
-                    # ctypes.windll.user32.SetCursorPos(x, y)
-                    # or
-                    # win32api.SetCursorPos([x, y])
-
-                    # 更好的兼容 win10 屏幕缩放问题
-                    if isinstance(x, int) and isinstance(y, int):
-                        nx = int(x * 65535 / SW)
-                        ny = int(y * 65535 / SH)
-                    else:
-                        nx = int(x * 65535)
-                        ny = int(y * 65535)
-                    win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE | win32con.MOUSEEVENTF_MOVE, nx, ny, 0, 0)
-
-                if message == 'mouse left down':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
-                elif message == 'mouse left up':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
-                elif message == 'mouse right down':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0)
-                elif message == 'mouse right up':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0)
-                elif message == 'mouse middle down':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_MIDDLEDOWN, 0, 0, 0, 0)
-                elif message == 'mouse middle up':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_MIDDLEUP, 0, 0, 0, 0)
-                elif message == 'mouse wheel up':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, win32con.WHEEL_DELTA, 0)
-                elif message == 'mouse wheel down':
-                    win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, -win32con.WHEEL_DELTA, 0)
-                elif message == 'mouse move':
-                    pass
-                else:
-                    print('unknow mouse event:', message)
-
-            elif event_type == 'EK':
-                key_code, key_name, extended = action
-
-                # shift ctrl alt
-                # if key_code >= 160 and key_code <= 165:
-                #     key_code = int(key_code/2) - 64
-
-                # 不执行热键
-                if key_name in HOT_KEYS:
-                    continue
-
-                base = 0
-                if extended:
-                    base = win32con.KEYEVENTF_EXTENDEDKEY
-
-                if message == 'key down':
-                    win32api.keybd_event(key_code, 0, base, 0)
-                elif message == 'key up':
-                    win32api.keybd_event(key_code, 0, base | win32con.KEYEVENTF_KEYUP, 0)
-                else:
-                    print('unknow keyboard event:', message)
-
-            elif event_type == 'EX':
-
-                if message == 'input':
-                    text = action
-                    pyperclip.copy(text)
-                    # Ctrl+V
-                    win32api.keybd_event(162, 0, 0, 0)  # ctrl
-                    win32api.keybd_event(86, 0, 0, 0)  # v
-                    win32api.keybd_event(86, 0, win32con.KEYEVENTF_KEYUP, 0)
-                    win32api.keybd_event(162, 0, win32con.KEYEVENTF_KEYUP, 0)
-                else:
-                    print('unknow extra event:', message)
         return True
+
+
+class ScriptEvent:
+    # 传入字典进行初始化
+    def __init__(self, content):
+        self.delay = content['delay']
+        self.event_type = content['event_type']
+        self.message = content['message']
+        self.action = content['action']
+
+    def __str__(self):
+        return '[%d, %s, %s, %s]' % (self.delay, self.event_type, self.message, self.action)
+
+    # 执行操作
+    def execute(self):
+        time.sleep(self.delay / 1000.0)
+
+        if self.event_type == 'EM':
+            x, y = self.action
+            # 兼容旧版的绝对坐标
+            if not isinstance(x, int) and not isinstance(y, int):
+                x = float(re.match('([0-1].[0-9]+)%', x).group(1))
+                y = float(re.match('([0-1].[0-9]+)%', y).group(1))
+
+            if self.action == [-1, -1]:
+                # 约定 [-1, -1] 表示鼠标保持原位置不动
+                pass
+            else:
+                # 挪动鼠标 普通做法
+                # ctypes.windll.user32.SetCursorPos(x, y)
+                # or
+                # win32api.SetCursorPos([x, y])
+
+                # 更好的兼容 win10 屏幕缩放问题
+                if isinstance(x, int) and isinstance(y, int):
+                    nx = int(x * 65535 / SW)
+                    ny = int(y * 65535 / SH)
+                else:
+                    nx = int(x * 65535)
+                    ny = int(y * 65535)
+                win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE | win32con.MOUSEEVENTF_MOVE, nx, ny, 0, 0)
+
+            if self.message == 'mouse left down':
+                win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
+            elif self.message == 'mouse left up':
+                win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
+            elif self.message == 'mouse right down':
+                win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0)
+            elif self.message == 'mouse right up':
+                win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0)
+            elif self.message == 'mouse middle down':
+                win32api.mouse_event(win32con.MOUSEEVENTF_MIDDLEDOWN, 0, 0, 0, 0)
+            elif self.message == 'mouse middle up':
+                win32api.mouse_event(win32con.MOUSEEVENTF_MIDDLEUP, 0, 0, 0, 0)
+            elif self.message == 'mouse wheel up':
+                win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, win32con.WHEEL_DELTA, 0)
+            elif self.message == 'mouse wheel down':
+                win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, -win32con.WHEEL_DELTA, 0)
+            elif self.message == 'mouse move':
+                pass
+            else:
+                print('unknow mouse event:', self.message)
+
+        elif self.event_type == 'EK':
+            key_code, key_name, extended = self.action
+
+            # shift ctrl alt
+            # if key_code >= 160 and key_code <= 165:
+            #     key_code = int(key_code/2) - 64
+
+            # 不执行热键
+            if key_name in HOT_KEYS:
+                return
+
+            base = 0
+            if extended:
+                base = win32con.KEYEVENTF_EXTENDEDKEY
+
+            if self.message == 'key down':
+                win32api.keybd_event(key_code, 0, base, 0)
+            elif self.message == 'key up':
+                win32api.keybd_event(key_code, 0, base | win32con.KEYEVENTF_KEYUP, 0)
+            else:
+                print('unknow keyboard event:', self.message)
+
+        elif self.event_type == 'EX':
+
+            if self.message == 'input':
+                text = self.action
+                pyperclip.copy(text)
+                # Ctrl+V
+                win32api.keybd_event(162, 0, 0, 0)  # ctrl
+                win32api.keybd_event(86, 0, 0, 0)  # v
+                win32api.keybd_event(86, 0, win32con.KEYEVENTF_KEYUP, 0)
+                win32api.keybd_event(162, 0, win32con.KEYEVENTF_KEYUP, 0)
+            else:
+                print('unknow extra event:', self.message)
+
 
 class PlayPromptTone(threading.Thread):
 
