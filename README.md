@@ -179,6 +179,12 @@ class MyExtension(Extension):
 > KeymouseGo.exe scripts/0314_1452.txt --speed 200
 ```
 
+加载自定义扩展`MyExtension`运行指定脚本:
+```
+> KeymouseGo.exe scripts/0314_1452.txt -m MyExtension
+> KeymouseGo.exe scripts/0314_1452.txt --module MyExtension
+```
+
 # 源码编译, 打包 exe 文件：
 ```
 1. 安装 Python3.10
