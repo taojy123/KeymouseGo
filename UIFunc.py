@@ -589,7 +589,7 @@ class RunScriptClass(threading.Thread):
     @logger.catch
     def getextension(cls, module_name='Extension'):
         if module_name == 'Extension':
-            module = SourceFileLoader(module_name, 'assets/plugins/Extension.py').load_module()
+            module = SourceFileLoader(module_name, get_assets_path('plugins', 'Extension.py')).load_module()
         else:
             module = SourceFileLoader(module_name,
                                       os.path.join(os.getcwd(), 'plugins', '%s.py' % module_name)).load_module()
