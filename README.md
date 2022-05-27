@@ -106,7 +106,7 @@ Monomux
 
 # 自定义扩展功能：
 
-程序提供了插件扩展接口，默认扩展类位于`plugins/Extension.py`，可以通过派生`Extension`类实现自定义功能。
+程序提供了插件扩展接口，默认扩展类位于`assets/plugins/Extension.py`，可以通过派生`Extension`类实现自定义功能。
 `Extension`类提供以下四个接口:
   + `onbeforeeachloop(currentloop)`，在每次执行脚本前执行，返回False时跳过本次执行
   + `onrunbefore(event, currentindex)`，在每行脚本执行前执行，返回False时跳过本行执行
@@ -136,12 +136,21 @@ Monomux
   // 录制的脚本
 ]
 ```
+__日志调试__:
+本程序使用`loguru`作为日志模块，在自定义扩展中可直接引入模块进行日志调试
+```python
+from loguru import logger
+```
+日志内容默认保存在主程序日志中，如果有其它的需求可以参阅loguru的[文档](https://loguru.readthedocs.io/en/stable/overview.html)进行改动
 
 示例:
 
 需要在第二次脚本执行时跳过第1条脚本内容，在`plugins/`目录下新建`MyExtension.py`，其内容为:
 ```python
-from assets.plugins.Extension import Extension
+from assets.plugins.Extension import *
+from loguru import logger
+
+logger.info('Import MyExtension2')
 
 
 class MyExtension2(Extension):
@@ -154,6 +163,7 @@ class MyExtension2(Extension):
 
     def onrunbefore(self, event, currentindex):
         if self.currentloop == 2 and currentindex == 1:
+            logger.info('Skipped event 1 in loop 2')
             return False
         else:
             return True
