@@ -107,11 +107,12 @@ Monomux
 # 自定义扩展功能：
 
 程序提供了插件扩展接口，默认扩展类位于`assets/plugins/Extension.py`，可以通过派生`Extension`类实现自定义功能。
-`Extension`类提供以下四个接口:
+`Extension`类提供以下接口:
   + `onbeforeeachloop(currentloop)`，在每次执行脚本前执行，返回False时跳过本次执行
   + `onrunbefore(event, currentindex)`，在每行脚本执行前执行，返回False时跳过本行执行
   + `onrunafter(event, currentindex)`，在每行脚本执行后执行
   + `onaftereachloop(currentloop)`，在每次执行脚本后执行
+  + `onrecord(event, currentindex)`，在每次录制到一个操作后执行，返回True记录本次操作
 
 `currentindex`和`currentloop`分别指代当前脚本执行到第几条和当前脚本循环了多少次
 
@@ -120,23 +121,12 @@ Monomux
   + `event_type`事件类型
   + `message`操作类型
   + `action`操作参数
+  + `addon`用户自定义内容，可以是任意数据类型，在自定义扩展中可使用
 
-编写自定义扩展后，需要在脚本文件中显式指定编写的模块:
-```
-[
-  "模块名(不带.py后缀)",
-  // 录制的脚本
-]
-```
-如果扩展中继承`Extension`的类名与模块名不一致，则需要同时显式指定模块名和类名:
-```
-[
-  "模块名(不带.py后缀)",
-  "继承Extension的类名",
-  // 录制的脚本
-]
-```
+定义`Extension`子类`<name>`时，确保模块名`<name>.py`与子类名`<name>`相同
+
 __日志调试__:
+
 本程序使用`loguru`作为日志模块，在自定义扩展中可直接引入模块进行日志调试
 ```python
 from loguru import logger
@@ -150,10 +140,10 @@ from loguru import logger
 from assets.plugins.Extension import *
 from loguru import logger
 
-logger.info('Import MyExtension2')
+logger.info('Import MyExtension')
 
 
-class MyExtension2(Extension):
+class MyExtension(Extension):
     def __init(self):
         self.currentloop = 1
 
@@ -168,14 +158,7 @@ class MyExtension2(Extension):
         else:
             return True
 ```
-在录制的脚本开头加入:
-```
-[
-  "MyExtension",
-  "MyExtension2",
-  // 录制的脚本
-]
-```
+
 
 # 使用命令行运行：
 

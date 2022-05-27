@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ui version="4.1">
+<ui version="4.0">
  <class>UIView</class>
  <widget class="QMainWindow" name="UIView">
   <property name="geometry">
@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>615</width>
-    <height>290</height>
+    <height>325</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
       <x>330</x>
       <y>10</y>
       <width>271</width>
-      <height>161</height>
+      <height>191</height>
      </rect>
     </property>
     <property name="title">
@@ -36,7 +36,7 @@
        <x>10</x>
        <y>30</y>
        <width>251</width>
-       <height>121</height>
+       <height>151</height>
       </rect>
      </property>
      <layout class="QFormLayout" name="formLayout">
@@ -90,6 +90,16 @@
       <item row="3" column="1">
        <widget class="QComboBox" name="choice_language"/>
       </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_extension">
+        <property name="text">
+         <string>Extension</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="choice_extension"/>
+      </item>
      </layout>
     </widget>
    </widget>
@@ -99,7 +109,7 @@
       <x>10</x>
       <y>10</y>
       <width>311</width>
-      <height>161</height>
+      <height>191</height>
      </rect>
     </property>
     <property name="title">
@@ -213,7 +223,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>220</y>
+      <y>250</y>
       <width>571</width>
       <height>20</height>
      </rect>
@@ -226,7 +236,7 @@
     <property name="geometry">
      <rect>
       <x>120</x>
-      <y>180</y>
+      <y>210</y>
       <width>361</width>
       <height>41</height>
      </rect>

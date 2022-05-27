@@ -14,8 +14,8 @@ import pyWinhook
 import pyperclip
 import win32api
 import win32con
-import win32gui
-import win32print
+from win32gui import GetDC
+from win32print import GetDeviceCaps
 from PySide2 import QtCore
 from PySide2.QtCore import QTranslator, QCoreApplication
 from PySide2.QtWidgets import QMainWindow, QApplication
@@ -31,9 +31,9 @@ QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
 HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
             'XButton1', 'XButton2', 'Middle']
-hDC = win32gui.GetDC(0)
-SW = win32print.GetDeviceCaps(hDC, win32con.DESKTOPHORZRES)
-SH = win32print.GetDeviceCaps(hDC, win32con.DESKTOPVERTRES)
+hDC = GetDC(0)
+SW = GetDeviceCaps(hDC, win32con.DESKTOPHORZRES)
+SH = GetDeviceCaps(hDC, win32con.DESKTOPVERTRES)
 
 # 是否切换主要/次要功能键
 swapmousebuttons = True if winreg.QueryValueEx(winreg.OpenKey(winreg.HKEY_CURRENT_USER,
@@ -90,8 +90,12 @@ class UIFunc(QMainWindow, Ui_UIView):
         if self.scripts:
             self.choice_script.setCurrentIndex(0)
 
+        self.choice_extension.addItems(['Extension'])
         if not os.path.exists('plugins'):
             os.mkdir('plugins')
+        for i in os.listdir('plugins'):
+            if i[-3:] == '.py':
+                self.choice_extension.addItems([i[:-3]])
 
         self.choice_start.addItems(HOT_KEYS)
         self.choice_stop.addItems(HOT_KEYS)
@@ -102,12 +106,14 @@ class UIFunc(QMainWindow, Ui_UIView):
         self.stimes.setValue(int(self.config.value("Config/LoopTimes")))
         self.mouse_move_interval_ms.setValue(int(self.config.value("Config/Precision")))
         self.execute_speed.setValue(int(self.config.value("Config/ExecuteSpeed")))
+        self.choice_extension.setCurrentText(self.config.value("Config/Extension"))
         self.choice_start.currentIndexChanged.connect(self.onconfigchange)
         self.choice_stop.currentIndexChanged.connect(self.onconfigchange)
         self.choice_record.currentIndexChanged.connect(self.onconfigchange)
         self.stimes.valueChanged.connect(self.onconfigchange)
         self.execute_speed.valueChanged.connect(self.onconfigchange)
         self.mouse_move_interval_ms.valueChanged.connect(self.onconfigchange)
+        self.choice_extension.currentIndexChanged.connect(self.onextensionchange)
 
         self.running = False
         self.recording = False
@@ -138,6 +144,9 @@ class UIFunc(QMainWindow, Ui_UIView):
         self.btrun.installEventFilter(self)
         self.btrecord.installEventFilter(self)
         self.btpauserecord.installEventFilter(self)
+        self.choice_extension.installEventFilter(self)
+
+        self.extension = RunScriptClass.getextension(self.choice_extension.currentText())
 
         self.hm = pyWinhook.HookManager()
 
@@ -188,14 +197,25 @@ class UIFunc(QMainWindow, Ui_UIView):
             ty = y / SH
             tpos = (tx, ty)
 
-            logger.debug('Recorded {0} {1} {2}'.format(delay, message, tpos))
+            sevent = ScriptEvent({
+                'delay': delay,
+                'event_type': 'EM',
+                'message': message,
+                'action': tpos,
+                'addon': None
+            })
+            if self.extension.onrecord(sevent, self.actioncount + 1):
+                # self.record.append([delay, 'EM', message, tpos])
+                tx, ty = sevent.action
+                if sevent.addon:
+                    self.record.append([sevent.delay, sevent.event_type, sevent.message, ['{0}%'.format(tx), '{0}%'.format(ty)], sevent.addon])
+                else:
+                    self.record.append([sevent.delay, sevent.event_type, sevent.message, ['{0}%'.format(tx), '{0}%'.format(ty)]])
+                self.actioncount = self.actioncount + 1
+                text = '%d actions recorded' % self.actioncount
+                logger.debug('Recorded %s' % sevent)
+                self.tnumrd.setText(text)
 
-            # self.record.append([delay, 'EM', message, tpos])
-            self.record.append([delay, 'EM', message, ['{0}%'.format(tx), '{0}%'.format(ty)]])
-            self.actioncount = self.actioncount + 1
-            text = '%d actions recorded' % self.actioncount
-
-            self.tnumrd.setText(text)
             return True
 
         # 键盘操作录制逻辑
@@ -245,12 +265,27 @@ class UIFunc(QMainWindow, Ui_UIView):
             if not self.record:
                 delay = 0
 
-            logger.debug('Recorded {0} {1} {2}'.format(delay, message, key_info))
+            sevent = ScriptEvent({
+                'delay': delay,
+                'event_type': 'EK',
+                'message': message,
+                'action': key_info,
+                'addon': None
+            })
+            if self.extension.onrecord(sevent, self.actioncount + 1):
+                logger.debug('Recorded %s' % sevent)
+                # self.record.append([delay, 'EK', message, key_info])
+                if sevent.addon:
+                    self.record.append(
+                        [sevent.delay, sevent.event_type, sevent.message, sevent.action,
+                         sevent.addon])
+                else:
+                    self.record.append(
+                        [sevent.delay, sevent.event_type, sevent.message, sevent.action])
+                self.actioncount = self.actioncount + 1
+                text = '%d actions recorded' % self.actioncount
+                self.tnumrd.setText(text)
 
-            self.record.append([delay, 'EK', message, key_info])
-            self.actioncount = self.actioncount + 1
-            text = '%d actions recorded' % self.actioncount
-            self.tnumrd.setText(text)
             return True
 
         # 热键响应逻辑
@@ -365,6 +400,11 @@ class UIFunc(QMainWindow, Ui_UIView):
         self.config.setValue("Config/LoopTimes", self.stimes.value())
         self.config.setValue("Config/Precision", self.mouse_move_interval_ms.value())
         self.config.setValue("Config/ExecuteSpeed", self.execute_speed.value())
+        self.config.setValue("Config/Extension", self.choice_extension.currentText())
+
+    def onextensionchange(self):
+        self.onconfigchange()
+        self.extension = RunScriptClass.getextension(self.choice_extension.currentText())
 
     def onchangelang(self):
         if self.choice_language.currentText() == '简体中文':
@@ -394,7 +434,8 @@ class UIFunc(QMainWindow, Ui_UIView):
                         'LoopTimes=1\n'
                         'Precision=200\n'
                         'ExecuteSpeed=100\n'
-                        'Language=zh-cn\n')
+                        'Language=zh-cn\n'
+                        'Extension=Extension\n')
         return QtCore.QSettings('config.ini', QtCore.QSettings.IniFormat)
 
     def get_script_path(self):
@@ -509,7 +550,8 @@ class RunScriptClass(threading.Thread):
 
             # 解析脚本，返回事件集合与扩展类对象
             logger.debug('Parse script..')
-            events, extension = RunScriptClass.parsescript(script_path, thd=self)
+            events = RunScriptClass.parsescript(script_path, thd=self)
+            extension = self.frame.extension
 
             self.j = 0
             nointerrupt = True
@@ -541,6 +583,19 @@ class RunScriptClass(threading.Thread):
         finally:
             self.frame.btrun.setEnabled(True)
             self.frame.btrecord.setEnabled(True)
+
+    # 获取扩展实例
+    @classmethod
+    @logger.catch
+    def getextension(cls, module_name='Extension'):
+        if module_name == 'Extension':
+            module = SourceFileLoader(module_name, 'assets/plugins/Extension.py').load_module()
+        else:
+            module = SourceFileLoader(module_name,
+                                      os.path.join(os.getcwd(), 'plugins', '%s.py' % module_name)).load_module()
+        module_cls = getattr(module, module_name)
+        logger.info('Loaded plugin class {0} in module {1}'.format(module_cls, module_name))
+        return module_cls()
 
     # 解析脚本内容，转换为ScriptEvent集合
     @classmethod
@@ -574,19 +629,6 @@ class RunScriptClass(threading.Thread):
         s = json.loads(content)
         steps = len(s)
         rangestart = 1
-        module_name = 'Extension'
-        class_name = 'Extension'
-        module = SourceFileLoader(class_name, 'assets/plugins/Extension.py').load_module()
-        if steps >= 1 and re.match('\[.+\]', str(s[0])) is None:
-            module_name = s[0]
-            class_name = s[0]
-            if steps >= 2 and re.match('\[.+\]', str(s[1])) is None:
-                class_name = s[1]
-                rangestart = 2
-            module = SourceFileLoader(class_name,
-                          os.path.join(os.getcwd(), 'plugins', '%s.py' % module_name)).load_module()
-        module_cls = getattr(module, class_name)
-        logger.info('Loaded plugin class {0} in module {1}'.format(module_cls, module_name))
 
         events = []
         for i in range(rangestart, steps):
@@ -594,13 +636,17 @@ class RunScriptClass(threading.Thread):
             event_type = s[i][1].upper()
             message = s[i][2].lower()
             action = s[i][3]
+            addon = None
+            if len(s[i]) > 4:
+                addon = s[i][4]
             events.append(ScriptEvent({
                 'delay': delay,
                 'event_type': event_type,
                 'message': message,
-                'action': action
+                'action': action,
+                'addon': addon
             }))
-        return events, module_cls()
+        return events
 
     # 执行集合中的ScriptEvent
     @classmethod
@@ -647,8 +693,11 @@ class ScriptEvent:
         self.event_type = content['event_type']
         self.message = content['message']
         self.action = content['action']
+        self.addon = content.get('addon')
 
     def __str__(self):
+        if self.addon:
+            return '[%d, %s, %s, %s, %s]' % (self.delay, self.event_type, self.message, self.action, str(self.addon))
         return '[%d, %s, %s, %s]' % (self.delay, self.event_type, self.message, self.action)
 
     # 执行操作

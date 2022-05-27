@@ -103,5 +103,10 @@
         <source>Finish</source>
         <translation>结束</translation>
     </message>
+    <message>
+        <location filename="UIView.py" line="195"/>
+        <source>Extension</source>
+        <translation type="unfinished">扩展插件</translation>
+    </message>
 </context>
 </TS>

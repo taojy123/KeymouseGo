@@ -15,6 +15,7 @@ import argparse
 from qt_material import apply_stylesheet
 from loguru import logger
 
+
 def main():
     app = QtWidgets.QApplication(sys.argv)
     apply_stylesheet(app, theme='light_cyan_500.xml')
@@ -24,14 +25,15 @@ def main():
 
 
 @logger.catch
-def single_run(script_path, run_times=1, speed=100):
+def single_run(script_path, run_times=1, speed=100, module_name='Extension'):
     t = HookThread()
     t.start()
 
     try:
         for path in script_path:
             logger.info('Script path:%s' % path)
-            events, extension = UIFunc.RunScriptClass.parsescript(path, speed=speed)
+            events = UIFunc.RunScriptClass.parsescript(path, speed=speed)
+            extension = UIFunc.RunScriptClass.getextension(module_name)
             j = 0
             while j < run_times or run_times == 0:
                 j += 1
@@ -84,6 +86,11 @@ if __name__ == '__main__':
                             type=int,
                             default=100
                             )
+        parser.add_argument('-m', '--module',
+                            help='Extension for the program',
+                            type=str,
+                            default='Extension'
+                            )
         args = vars(parser.parse_args())
         logger.debug(args)
         if args['speed'] <= 0:
@@ -91,7 +98,8 @@ if __name__ == '__main__':
         else:
             single_run(args['sctipts'],
                        run_times=args['runtimes'],
-                       speed=args['speed']
+                       speed=args['speed'],
+                       module_name=args['module']
                        )
     else:
         main()
