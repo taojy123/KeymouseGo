@@ -561,7 +561,6 @@ class RunScriptClass(threading.Thread):
             nointerrupt = True
             logger.debug('Run script..')
             while (self.j < self.run_times or self.run_times == 0) and nointerrupt:
-                self.j += 1
                 current_status = self.frame.tnumrd.text()
                 if current_status in ['broken', 'finished']:
                     self.frame.running = False
@@ -571,6 +570,7 @@ class RunScriptClass(threading.Thread):
                 else:
                     nointerrupt = True
                 extension.onaftereachloop(self.j)
+                self.j += 1
             if nointerrupt:
                 self.frame.tnumrd.setText('finished')
                 logger.info('Script run finish')

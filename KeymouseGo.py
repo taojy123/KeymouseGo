@@ -36,11 +36,11 @@ def single_run(script_path, run_times=1, speed=100, module_name='Extension'):
             extension = UIFunc.RunScriptClass.getextension(module_name)
             j = 0
             while j < run_times or run_times == 0:
-                j += 1
                 logger.info('===========%d==============' % j)
                 if extension.onbeforeeachloop(j):
                     UIFunc.RunScriptClass.run_script_once(events, extension, j)
                 extension.onaftereachloop(j)
+                j += 1
             logger.info('%s run finish' % path)
         logger.info('Scripts run finish!')
     except Exception as e:

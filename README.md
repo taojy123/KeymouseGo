@@ -135,7 +135,7 @@ from loguru import logger
 
 示例:
 
-需要在第二次脚本执行时跳过第1条脚本内容，在`plugins/`目录下新建`MyExtension.py`，其内容为:
+需要在第一次脚本执行完第1条(索引0)脚本内容后跳转到第3条脚本(索引2)， 在第二次脚本执行时跳过第1条(索引0)脚本内容，在`plugins/`目录下新建`MyExtension.py`，其内容为:
 ```python
 from assets.plugins.Extension import *
 from loguru import logger
@@ -145,18 +145,21 @@ logger.info('Import MyExtension')
 
 class MyExtension(Extension):
     def __init(self):
-        self.currentloop = 1
+        self.currentloop = 0
 
     def onbeforeeachloop(self, currentloop):
         self.currentloop = currentloop
         return True
 
     def onrunbefore(self, event, currentindex):
-        if self.currentloop == 2 and currentindex == 1:
-            logger.info('Skipped event 1 in loop 2')
+        if self.currentloop == 1 and currentindex == 0:
             return False
         else:
             return True
+
+    def onrunafter(self, event, currentindex):
+        if self.currentloop == 0 and currentindex == 0:
+            return 2
 ```
 
 
