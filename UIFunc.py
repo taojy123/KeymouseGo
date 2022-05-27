@@ -25,6 +25,7 @@ from pyWinhook import cpyHook, HookConstants
 from UIView import Ui_UIView
 from importlib.machinery import SourceFileLoader
 from loguru import logger
+from enum import IntEnum
 
 os.environ['QT_ENABLE_HIGHDPI_SCALING'] = "1"
 QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
@@ -208,9 +209,12 @@ class UIFunc(QMainWindow, Ui_UIView):
                 # self.record.append([delay, 'EM', message, tpos])
                 tx, ty = sevent.action
                 if sevent.addon:
-                    self.record.append([sevent.delay, sevent.event_type, sevent.message, ['{0}%'.format(tx), '{0}%'.format(ty)], sevent.addon])
+                    self.record.append(
+                        [sevent.delay, sevent.event_type, sevent.message, ['{0}%'.format(tx), '{0}%'.format(ty)],
+                         sevent.addon])
                 else:
-                    self.record.append([sevent.delay, sevent.event_type, sevent.message, ['{0}%'.format(tx), '{0}%'.format(ty)]])
+                    self.record.append(
+                        [sevent.delay, sevent.event_type, sevent.message, ['{0}%'.format(tx), '{0}%'.format(ty)]])
                 self.actioncount = self.actioncount + 1
                 text = '%d actions recorded' % self.actioncount
                 logger.debug('Recorded %s' % sevent)
@@ -628,10 +632,9 @@ class RunScriptClass(threading.Thread):
         logger.debug(content)
         s = json.loads(content)
         steps = len(s)
-        rangestart = 1
 
         events = []
-        for i in range(rangestart, steps):
+        for i in range(steps):
             delay = s[i][0] / ((thd.run_speed if thd else speed) / 100)
             event_type = s[i][1].upper()
             message = s[i][2].lower()
@@ -653,7 +656,8 @@ class RunScriptClass(threading.Thread):
     @logger.catch
     def run_script_once(cls, events, extension, step, thd=None):
         steps = len(events)
-        for i, event in enumerate(events):
+        i = 0
+        while i < steps:
             if thd:
                 if thd.frame.isbrokenorfinish:
                     logger.info('Broken at %d/%d' % (i, steps))
@@ -661,18 +665,47 @@ class RunScriptClass(threading.Thread):
                     return False
                 thd.event.wait()
                 text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j, thd.run_times, thd.run_speed)
-                logger.trace('%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j, thd.run_times, thd.run_speed))
+                logger.trace(
+                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j, thd.run_times, thd.run_speed))
                 thd.frame.tnumrd.setText(text)
+
+            event = events[i]
 
             if 1 == step and 0 == i:
                 play = PlayPromptTone(1, event.delay)
                 play.start()
 
-            if extension.onrunbefore(event, i + 1):
-                logger.debug(event)
-                event.execute()
+            flag = extension.onrunbefore(event, i)
 
-            extension.onrunafter(event, i + 1)
+            if type(flag) == bool:
+                if flag:
+                    logger.debug(event)
+                    event.execute()
+                else:
+                    logger.debug('Skipped %d' % i)
+            elif type(flag) == int:
+                if i < 0 or i >= steps:
+                    logger.error('Index out of range: Goto %d' % i)
+                else:
+                    logger.debug('Jump at %d' % flag)
+                    i = flag
+                    continue
+            else:
+                logger.error('Unsupported extension return value at onrunbefore')
+
+            flag = extension.onrunafter(event, i)
+            if flag:
+                if type(flag) == int:
+                    if i < 0 or i >= steps:
+                        logger.error('Index out of range: Goto %d' % i)
+                    else:
+                        logger.debug('Jump at %d' % flag)
+                        i = flag
+                        continue
+                else:
+                    logger.error('Unsupported extension return value at onrunafter')
+
+            i = i + 1
 
             if thd:
                 if thd.frame.isbrokenorfinish:
@@ -681,7 +714,8 @@ class RunScriptClass(threading.Thread):
                     return False
                 thd.event.wait()
                 text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j, thd.run_times, thd.run_speed)
-                logger.trace('%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j, thd.run_times, thd.run_speed))
+                logger.trace(
+                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j, thd.run_times, thd.run_speed))
                 thd.frame.tnumrd.setText(text)
         return True
 

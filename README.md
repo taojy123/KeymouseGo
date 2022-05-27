@@ -109,12 +109,12 @@ Monomux
 程序提供了插件扩展接口，默认扩展类位于`assets/plugins/Extension.py`，可以通过派生`Extension`类实现自定义功能。
 `Extension`类提供以下接口:
   + `onbeforeeachloop(currentloop)`，在每次执行脚本前执行，返回False时跳过本次执行
-  + `onrunbefore(event, currentindex)`，在每行脚本执行前执行，返回False时跳过本行执行
-  + `onrunafter(event, currentindex)`，在每行脚本执行后执行
-  + `onaftereachloop(currentloop)`，在每次执行脚本后执行
+  + `onrunbefore(event, currentindex)`，在每行脚本执行前执行，返回False时跳过本行执行，返回数字索引(从0开始)则跳转到索引对应脚本行继续执行
+  + `onrunafter(event, currentindex)`，在每行脚本执行后执行，默认无返回值，返回数字索引(从0开始)则跳转到索引对应脚本行继续执行
+  + `onaftereachloop(currentloop)`，在每次执行脚本后执行，默认无返回值
   + `onrecord(event, currentindex)`，在每次录制到一个操作后执行，返回True记录本次操作
 
-`currentindex`和`currentloop`分别指代当前脚本执行到第几条和当前脚本循环了多少次
+`currentindex`和`currentloop`分别指代当前脚本的行索引与循环索引(从0开始)
 
 `event`为当前脚本执行的操作，其内容包含
   + `delay`操作延时(ms)
