@@ -1,7 +1,6 @@
 # -*- encoding:utf-8 -*-
 import collections
 import datetime
-import importlib
 import json
 import os
 import re
@@ -25,8 +24,7 @@ from playsound import playsound, PlaysoundException
 from pyWinhook import cpyHook, HookConstants
 
 from UIView import Ui_UIView
-
-# import importlib
+from importlib.machinery import SourceFileLoader
 
 os.environ['QT_ENABLE_HIGHDPI_SCALING'] = "1"
 QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
@@ -88,8 +86,6 @@ class UIFunc(QMainWindow, Ui_UIView):
 
         if not os.path.exists('plugins'):
             os.mkdir('plugins')
-            copyfile('{0}\\assets\\plugins\\Extension.py'.format(os.getcwd()),
-                     '{0}\\plugins\\Extension.py'.format(os.getcwd()))
 
         self.choice_start.addItems(HOT_KEYS)
         self.choice_stop.addItems(HOT_KEYS)
@@ -584,7 +580,8 @@ class RunScriptClass(threading.Thread):
                 'message': message,
                 'action': action
             }))
-        module = importlib.import_module('plugins.%s' % module_name)
+        module = SourceFileLoader(class_name,
+                                  os.path.join(os.getcwd(), 'plugins', '%s.py' % module_name)).load_module()
         module_cls = getattr(module, class_name)
         return events, module_cls()
 
