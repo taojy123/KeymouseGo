@@ -663,9 +663,9 @@ class RunScriptClass(threading.Thread):
                     thd.frame.tnumrd.setText('broken at %d/%d' % (i, steps))
                     return False
                 thd.event.wait()
-                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j, thd.run_times, thd.run_speed)
+                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, thd.run_times, thd.run_speed)
                 logger.trace(
-                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j, thd.run_times, thd.run_speed))
+                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, thd.run_times, thd.run_speed))
                 thd.frame.tnumrd.setText(text)
 
             event = events[i]
@@ -712,9 +712,9 @@ class RunScriptClass(threading.Thread):
                     logger.info('Broken at %d/%d' % (i, steps))
                     return False
                 thd.event.wait()
-                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j, thd.run_times, thd.run_speed)
+                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, thd.run_times, thd.run_speed)
                 logger.trace(
-                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j, thd.run_times, thd.run_speed))
+                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, thd.run_times, thd.run_speed))
                 thd.frame.tnumrd.setText(text)
         return True
 
