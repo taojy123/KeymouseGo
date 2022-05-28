@@ -7,7 +7,7 @@ import threading
 
 import pyWinhook
 import pythoncom
-from PySide2 import QtWidgets
+from PySide2.QtWidgets import QApplication
 
 import UIFunc
 import argparse
@@ -17,7 +17,7 @@ from loguru import logger
 
 
 def main():
-    app = QtWidgets.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     apply_stylesheet(app, theme='light_cyan_500.xml')
     ui = UIFunc.UIFunc()
     ui.show()

@@ -9,26 +9,25 @@ import threading
 import time
 import traceback
 import winreg
+from importlib.machinery import SourceFileLoader
 
 import pyWinhook
 import pyperclip
 import win32api
 import win32con
-from win32gui import GetDC
-from win32print import GetDeviceCaps
-from PySide2 import QtCore
+from PySide2.QtCore import QSettings, Qt
 from PySide2.QtCore import QTranslator, QCoreApplication
 from PySide2.QtWidgets import QMainWindow, QApplication
+from loguru import logger
 from playsound import playsound, PlaysoundException
 from pyWinhook import cpyHook, HookConstants
+from win32gui import GetDC
+from win32print import GetDeviceCaps
 
 from UIView import Ui_UIView
-from importlib.machinery import SourceFileLoader
-from loguru import logger
-from enum import IntEnum
 
 os.environ['QT_ENABLE_HIGHDPI_SCALING'] = "1"
-QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
 HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
             'XButton1', 'XButton2', 'Middle']
@@ -75,7 +74,7 @@ class UIFunc(QMainWindow, Ui_UIView):
 
         self.config = self.loadconfig()
 
-        self.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.setFocusPolicy(Qt.NoFocus)
 
         self.trans = QTranslator(self)
         self.choice_language.addItems(['简体中文', 'English'])
@@ -440,7 +439,7 @@ class UIFunc(QMainWindow, Ui_UIView):
                         'ExecuteSpeed=100\n'
                         'Language=zh-cn\n'
                         'Extension=Extension\n')
-        return QtCore.QSettings('config.ini', QtCore.QSettings.IniFormat)
+        return QSettings('config.ini', QSettings.IniFormat)
 
     def get_script_path(self):
         i = self.choice_script.currentIndex()
