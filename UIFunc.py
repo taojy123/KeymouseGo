@@ -204,7 +204,7 @@ class UIFunc(QMainWindow, Ui_UIView):
                 'action': tpos,
                 'addon': None
             })
-            if self.extension.onrecord(sevent, self.actioncount + 1):
+            if self.extension.onrecord(sevent, self.actioncount):
                 # self.record.append([delay, 'EM', message, tpos])
                 tx, ty = sevent.action
                 if sevent.addon:
@@ -275,7 +275,7 @@ class UIFunc(QMainWindow, Ui_UIView):
                 'action': key_info,
                 'addon': None
             })
-            if self.extension.onrecord(sevent, self.actioncount + 1):
+            if self.extension.onrecord(sevent, self.actioncount):
                 logger.debug('Recorded %s' % sevent)
                 # self.record.append([delay, 'EK', message, key_info])
                 if sevent.addon:
