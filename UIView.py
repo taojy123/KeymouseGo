@@ -18,7 +18,7 @@ class Ui_UIView(object):
     def setupUi(self, UIView):
         if not UIView.objectName():
             UIView.setObjectName(u"UIView")
-        UIView.resize(615, 290)
+        UIView.resize(615, 325)
         icon = QIcon()
         icon.addFile(u":/pic/Mondrian.png", QSize(), QIcon.Normal, QIcon.Off)
         UIView.setWindowIcon(icon)
@@ -26,10 +26,10 @@ class Ui_UIView(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
-        self.groupBox.setGeometry(QRect(330, 10, 271, 161))
+        self.groupBox.setGeometry(QRect(330, 10, 271, 191))
         self.formLayoutWidget = QWidget(self.groupBox)
         self.formLayoutWidget.setObjectName(u"formLayoutWidget")
-        self.formLayoutWidget.setGeometry(QRect(10, 30, 251, 121))
+        self.formLayoutWidget.setGeometry(QRect(10, 30, 251, 151))
         self.formLayout = QFormLayout(self.formLayoutWidget)
         self.formLayout.setObjectName(u"formLayout")
         self.formLayout.setHorizontalSpacing(30)
@@ -75,9 +75,19 @@ class Ui_UIView(object):
 
         self.formLayout.setWidget(3, QFormLayout.FieldRole, self.choice_language)
 
+        self.label_extension = QLabel(self.formLayoutWidget)
+        self.label_extension.setObjectName(u"label_extension")
+
+        self.formLayout.setWidget(4, QFormLayout.LabelRole, self.label_extension)
+
+        self.choice_extension = QComboBox(self.formLayoutWidget)
+        self.choice_extension.setObjectName(u"choice_extension")
+
+        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.choice_extension)
+
         self.groupBox_2 = QGroupBox(self.centralwidget)
         self.groupBox_2.setObjectName(u"groupBox_2")
-        self.groupBox_2.setGeometry(QRect(10, 10, 311, 161))
+        self.groupBox_2.setGeometry(QRect(10, 10, 311, 191))
         self.formLayoutWidget_2 = QWidget(self.groupBox_2)
         self.formLayoutWidget_2.setObjectName(u"formLayoutWidget_2")
         self.formLayoutWidget_2.setGeometry(QRect(10, 30, 291, 121))
@@ -136,10 +146,10 @@ class Ui_UIView(object):
 
         self.tnumrd = QLabel(self.centralwidget)
         self.tnumrd.setObjectName(u"tnumrd")
-        self.tnumrd.setGeometry(QRect(10, 220, 571, 20))
+        self.tnumrd.setGeometry(QRect(10, 250, 571, 20))
         self.horizontalLayoutWidget = QWidget(self.centralwidget)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
-        self.horizontalLayoutWidget.setGeometry(QRect(120, 180, 361, 41))
+        self.horizontalLayoutWidget.setGeometry(QRect(120, 210, 361, 41))
         self.horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setSizeConstraint(QLayout.SetDefaultConstraint)
@@ -182,6 +192,7 @@ class Ui_UIView(object):
         self.label_record.setText(QCoreApplication.translate("UIView", u"Record/Pause", None))
         self.label_stop.setText(QCoreApplication.translate("UIView", u"Terminate", None))
         self.label_language.setText(QCoreApplication.translate("UIView", u"Language", None))
+        self.label_extension.setText(QCoreApplication.translate("UIView", u"Extension", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("UIView", u"Config", None))
         self.label_script.setText(QCoreApplication.translate("UIView", u"Sctipt", None))
 #if QT_CONFIG(tooltip)

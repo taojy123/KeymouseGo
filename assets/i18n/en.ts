@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="en" sourcelanguage="">
+<!DOCTYPE TS>
+<TS version="2.1" language="en">
 <context>
     <name>UIView</name>
     <message>
@@ -96,6 +97,11 @@
         <location filename="UIFunc.py" line="390"/>
         <source>Finish</source>
         <translation type="obsolete">Finish</translation>
+    </message>
+    <message>
+        <location filename="UIView.py" line="195"/>
+        <source>Extension</source>
+        <translation>Extension</translation>
     </message>
 </context>
 </TS>

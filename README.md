@@ -106,66 +106,62 @@ Monomux
 
 # 自定义扩展功能：
 
-程序提供了插件扩展接口，默认扩展类位于`plugins/Extension.py`，可以通过派生`Extension`类实现自定义功能。
-`Extension`类提供以下四个接口:
+程序提供了插件扩展接口，默认扩展类位于`assets/plugins/Extension.py`，可以通过派生`Extension`类实现自定义功能。
+`Extension`类提供以下接口:
   + `onbeforeeachloop(currentloop)`，在每次执行脚本前执行，返回False时跳过本次执行
-  + `onrunbefore(event, currentindex)`，在每行脚本执行前执行，返回False时跳过本行执行
-  + `onrunafter(event, currentindex)`，在每行脚本执行后执行
-  + `onaftereachloop(currentloop)`，在每次执行脚本后执行
+  + `onrunbefore(event, currentindex)`，在每行脚本执行前执行，返回False时跳过本行执行，返回数字索引(从0开始)则跳转到索引对应脚本行继续执行
+  + `onrunafter(event, currentindex)`，在每行脚本执行后执行，默认无返回值，返回数字索引(从0开始)则跳转到索引对应脚本行继续执行
+  + `onaftereachloop(currentloop)`，在每次执行脚本后执行，默认无返回值
+  + `onrecord(event, currentindex)`，在每次录制到一个操作后执行，返回True记录本次操作
 
-`currentindex`和`currentloop`分别指代当前脚本执行到第几条和当前脚本循环了多少次
+`currentindex`和`currentloop`分别指代当前脚本的行索引与循环索引(从0开始)
 
 `event`为当前脚本执行的操作，其内容包含
   + `delay`操作延时(ms)
   + `event_type`事件类型
   + `message`操作类型
   + `action`操作参数
+  + `addon`用户自定义内容，可以是任意数据类型，在自定义扩展中可使用
 
-编写自定义扩展后，需要在脚本文件中显式指定编写的模块:
-```json
-[
-  "模块名(不带.py后缀)",
-  // 录制的脚本
-]
+定义`Extension`子类`<name>`时，确保模块名`<name>.py`与子类名`<name>`相同
+
+__日志调试__:
+
+本程序使用`loguru`作为日志模块，在自定义扩展中可直接引入模块进行日志调试
+```python
+from loguru import logger
 ```
-如果扩展中继承`Extension`的类名与模块名不一致，则需要同时显式指定模块名和类名:
-```json
-[
-  "模块名(不带.py后缀)",
-  "继承Extension的类名",
-  // 录制的脚本
-]
-```
+日志内容默认保存在主程序日志中，如果有其它的需求可以参阅loguru的[文档](https://loguru.readthedocs.io/en/stable/overview.html)进行改动
 
 示例:
 
-需要在第二次脚本执行时跳过第1条脚本内容，在`plugins/`目录下新建`MyExtension.py`，其内容为:
+需要在第一次脚本执行完第1条(索引0)脚本内容后跳转到第3条脚本(索引2)， 在第二次脚本执行时跳过第1条(索引0)脚本内容，在`plugins/`目录下新建`MyExtension.py`，其内容为:
 ```python
-from plugins.Extension import Extension
+from assets.plugins.Extension import *
+from loguru import logger
+
+logger.info('Import MyExtension')
 
 
-class MyExtension2(Extension):
+class MyExtension(Extension):
     def __init(self):
-        self.currentloop = 1
+        self.currentloop = 0
 
     def onbeforeeachloop(self, currentloop):
         self.currentloop = currentloop
         return True
 
     def onrunbefore(self, event, currentindex):
-        if self.currentloop == 2 and currentindex == 1:
+        if self.currentloop == 1 and currentindex == 0:
             return False
         else:
             return True
+
+    def onrunafter(self, event, currentindex):
+        if self.currentloop == 0 and currentindex == 0:
+            return 2
 ```
-在录制的脚本开头加入:
-```json
-[
-  "MyExtension",
-  "MyExtension2",
-  // 录制的脚本
-]
-```
+
 
 # 使用命令行运行：
 
@@ -184,6 +180,12 @@ class MyExtension2(Extension):
 ```
 > KeymouseGo.exe scripts/0314_1452.txt -sp 200
 > KeymouseGo.exe scripts/0314_1452.txt --speed 200
+```
+
+加载自定义扩展`MyExtension`运行指定脚本:
+```
+> KeymouseGo.exe scripts/0314_1452.txt -m MyExtension
+> KeymouseGo.exe scripts/0314_1452.txt --module MyExtension
 ```
 
 # 源码编译, 打包 exe 文件：

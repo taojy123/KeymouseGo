@@ -61,3 +61,4 @@ scripts/
 *.ini
 .github
 plugins/
+logs/

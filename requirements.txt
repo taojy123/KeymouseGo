@@ -7,3 +7,4 @@ playsound==1.2.2
 future==0.18.2
 PySide2==5.15.2.1
 qt-material==2.11
+loguru==0.6.0
