@@ -144,7 +144,7 @@ logger.info('Import MyExtension')
 
 
 class MyExtension(Extension):
-    def __init(self):
+    def __init__(self):
         self.currentloop = 0
 
     def onbeforeeachloop(self, currentloop):
