@@ -113,7 +113,7 @@ class UIFunc(QMainWindow, Ui_UIView):
         self.stimes.valueChanged.connect(self.onconfigchange)
         self.execute_speed.valueChanged.connect(self.onconfigchange)
         self.mouse_move_interval_ms.valueChanged.connect(self.onconfigchange)
-        self.choice_extension.currentIndexChanged.connect(self.onextensionchange)
+        self.choice_extension.currentIndexChanged.connect(self.onconfigchange)
 
         self.running = False
         self.recording = False
@@ -146,7 +146,7 @@ class UIFunc(QMainWindow, Ui_UIView):
         self.btpauserecord.installEventFilter(self)
         self.choice_extension.installEventFilter(self)
 
-        self.extension = RunScriptClass.getextension(self.choice_extension.currentText())
+        self.extension = None
 
         self.hm = pyWinhook.HookManager()
 
@@ -405,10 +405,6 @@ class UIFunc(QMainWindow, Ui_UIView):
         self.config.setValue("Config/ExecuteSpeed", self.execute_speed.value())
         self.config.setValue("Config/Extension", self.choice_extension.currentText())
 
-    def onextensionchange(self):
-        self.onconfigchange()
-        self.extension = RunScriptClass.getextension(self.choice_extension.currentText())
-
     def onchangelang(self):
         if self.choice_language.currentText() == '简体中文':
             self.trans.load(get_assets_path('i18n', 'zh-cn'))
@@ -493,6 +489,7 @@ class UIFunc(QMainWindow, Ui_UIView):
             self.pauserecord = False
             self.btpauserecord.setText(QCoreApplication.translate("UIView", 'Pause Record', None))
         else:
+            self.extension = RunScriptClass.getextension(self.choice_extension.currentText())
             logger.info('Record start')
             self.recording = True
             self.ttt = current_ts()
@@ -554,7 +551,7 @@ class RunScriptClass(threading.Thread):
             # 解析脚本，返回事件集合与扩展类对象
             logger.debug('Parse script..')
             events = RunScriptClass.parsescript(script_path, thd=self)
-            extension = self.frame.extension
+            extension = RunScriptClass.getextension(self.frame.choice_extension.currentText())
 
             self.j = 0
             nointerrupt = True

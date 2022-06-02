@@ -5,6 +5,6 @@ pyWinhook==1.6.2
 pyperclip==1.8.0
 playsound==1.2.2
 future==0.18.2
-PySide2==5.15.2.1
+PySide2==5.15.4
 qt-material==2.11
 loguru==0.6.0
