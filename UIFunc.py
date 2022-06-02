@@ -425,7 +425,7 @@ class UIFunc(QMainWindow, Ui_UIView):
 
     def loadconfig(self):
         if not os.path.exists('config.ini'):
-            with open('config.ini', 'w') as f:
+            with open('config.ini', 'w', encoding='utf-8') as f:
                 f.write('[Config]\n'
                         'StartHotKeyIndex=3\n'
                         'StopHotKeyIndex=6\n'
@@ -475,11 +475,12 @@ class UIFunc(QMainWindow, Ui_UIView):
             logger.info('Record stop')
             self.recording = False
             self.record = self.record[:-2]
-            output = json.dumps(self.record, indent=1)
+            output = json.dumps(self.record, indent=1, ensure_ascii=False)
             output = output.replace('\r\n', '\n').replace('\r', '\n')
             output = output.replace('\n   ', '').replace('\n  ', '')
             output = output.replace('\n ]', ']')
-            open(self.new_script_path(), 'w').write(output)
+            with open(self.new_script_path(), 'w', encoding='utf-8') as f:
+                f.write(output)
             self.btrecord.setText(QCoreApplication.translate("UIView", 'Record', None))
             self.tnumrd.setText('finished')
             self.record = []
@@ -604,11 +605,13 @@ class RunScriptClass(threading.Thread):
         content = ''
         lines = []
         try:
-            lines = open(script_path, 'r', encoding='utf8').readlines()
+            with open(script_path, 'r', encoding='utf8') as f:
+                lines = f.readlines()
         except Exception as e:
             logger.warning(e)
             try:
-                lines = open(script_path, 'r', encoding='gbk').readlines()
+                with open(script_path, 'r', encoding='gbk') as f:
+                    lines = f.readlines()
             except Exception as e:
                 logger.error(e)
 
