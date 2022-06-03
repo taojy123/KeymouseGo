@@ -25,6 +25,7 @@ from win32gui import GetDC
 from win32print import GetDeviceCaps
 
 from UIView import Ui_UIView
+from assets.plugins.ProcessException import *
 
 os.environ['QT_ENABLE_HIGHDPI_SCALING'] = "1"
 QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -490,7 +491,9 @@ class UIFunc(QMainWindow, Ui_UIView):
             self.pauserecord = False
             self.btpauserecord.setText(QCoreApplication.translate("UIView", 'Pause Record', None))
         else:
-            self.extension = RunScriptClass.getextension(self.choice_extension.currentText())
+            self.extension = RunScriptClass.getextension(self.choice_extension.currentText(),
+                                                         runtimes=self.stimes.value(),
+                                                         speed=self.execute_speed.value())
             logger.info('Record start')
             self.recording = True
             self.ttt = current_ts()
@@ -523,6 +526,7 @@ class RunScriptClass(threading.Thread):
         self.event.set()
         super(RunScriptClass, self).__init__()
 
+    @logger.catch
     def run(self):
 
         status = self.frame.tnumrd.text()
@@ -543,31 +547,43 @@ class RunScriptClass(threading.Thread):
         self.frame.btrun.setEnabled(False)
         self.frame.btrecord.setEnabled(False)
         try:
-            self.run_times = self.frame.stimes.value()
             self.running_text = '%s running..' % script_path.split('/')[-1].split('\\')[-1]
             self.frame.tnumrd.setText(self.running_text)
-            self.run_speed = self.frame.execute_speed.value()
             logger.info('%s running..' % script_path.split('/')[-1].split('\\')[-1])
 
             # 解析脚本，返回事件集合与扩展类对象
             logger.debug('Parse script..')
-            events = RunScriptClass.parsescript(script_path, thd=self)
-            extension = RunScriptClass.getextension(self.frame.choice_extension.currentText())
+            events = RunScriptClass.parsescript(script_path, speed=self.frame.execute_speed.value())
+            extension = RunScriptClass.getextension(self.frame.choice_extension.currentText(),
+                                                    runtimes=self.frame.stimes.value(),
+                                                    speed=self.frame.execute_speed.value()
+                                                    )
 
             self.j = 0
             nointerrupt = True
             logger.debug('Run script..')
-            while (self.j < self.run_times or self.run_times == 0) and nointerrupt:
+            PlayPromptTone(1, 0).start()
+            while (self.j < extension.runtimes or extension.runtimes == 0) and nointerrupt:
+                logger.info('===========%d==============' % self.j)
                 current_status = self.frame.tnumrd.text()
                 if current_status in ['broken', 'finished']:
                     self.frame.running = False
                     break
-                if extension.onbeforeeachloop(self.j):
-                    nointerrupt = nointerrupt and RunScriptClass.run_script_once(events, extension, self.j, thd=self)
-                else:
-                    nointerrupt = True
-                extension.onaftereachloop(self.j)
-                self.j += 1
+                try:
+                    if extension.onbeforeeachloop(self.j):
+                        nointerrupt = nointerrupt and RunScriptClass.run_script_once(events, extension, thd=self)
+                    else:
+                        nointerrupt = True
+                    extension.onaftereachloop(self.j)
+                    self.j += 1
+                except BreakProcess:
+                    logger.debug('Break')
+                    self.j += 1
+                    continue
+                except EndProcess:
+                    logger.debug('End')
+                    break
+            extension.onendp()
             if nointerrupt:
                 self.frame.tnumrd.setText('finished')
                 logger.info('Script run finish')
@@ -587,8 +603,7 @@ class RunScriptClass(threading.Thread):
 
     # 获取扩展实例
     @classmethod
-    @logger.catch
-    def getextension(cls, module_name='Extension'):
+    def getextension(cls, module_name='Extension', runtimes=1, speed=100, swap=None):
         if module_name == 'Extension':
             module = SourceFileLoader(module_name, get_assets_path('plugins', 'Extension.py')).load_module()
         else:
@@ -596,12 +611,11 @@ class RunScriptClass(threading.Thread):
                                       os.path.join(os.getcwd(), 'plugins', '%s.py' % module_name)).load_module()
         module_cls = getattr(module, module_name)
         logger.info('Loaded plugin class {0} in module {1}'.format(module_cls, module_name))
-        return module_cls()
+        return module_cls(runtimes, speed, swap)
 
     # 解析脚本内容，转换为ScriptEvent集合
     @classmethod
-    @logger.catch
-    def parsescript(cls, script_path, thd=None, speed=100):
+    def parsescript(cls, script_path, speed=100):
         content = ''
         lines = []
         try:
@@ -634,7 +648,7 @@ class RunScriptClass(threading.Thread):
 
         events = []
         for i in range(steps):
-            delay = s[i][0] / ((thd.run_speed if thd else speed) / 100)
+            delay = s[i][0] / (speed / 100)
             event_type = s[i][1].upper()
             message = s[i][2].lower()
             action = s[i][3]
@@ -652,8 +666,7 @@ class RunScriptClass(threading.Thread):
 
     # 执行集合中的ScriptEvent
     @classmethod
-    @logger.catch
-    def run_script_once(cls, events, extension, step, thd=None):
+    def run_script_once(cls, events, extension, thd=None):
         steps = len(events)
         i = 0
         while i < steps:
@@ -663,48 +676,100 @@ class RunScriptClass(threading.Thread):
                     thd.frame.tnumrd.setText('broken at %d/%d' % (i, steps))
                     return False
                 thd.event.wait()
-                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, thd.run_times, thd.run_speed)
+                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, extension.runtimes, extension.speed)
                 logger.trace(
-                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, thd.run_times, thd.run_speed))
+                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, extension.runtimes, extension.speed))
                 thd.frame.tnumrd.setText(text)
 
             event = events[i]
 
-            if 1 == step and 0 == i:
-                play = PlayPromptTone(1, event.delay)
-                play.start()
-
-            flag = extension.onrunbefore(event, i)
-
-            if type(flag) == bool:
+            try:
+                flag = extension.onrunbefore(event, i)
                 if flag:
                     logger.debug(event)
                     event.execute()
                 else:
                     logger.debug('Skipped %d' % i)
-            elif type(flag) == int:
-                if i < 0 or i >= steps:
-                    logger.error('Index out of range: Goto %d' % i)
-                else:
-                    logger.debug('Jump at %d' % flag)
-                    i = flag
-                    continue
-            else:
-                logger.error('Unsupported extension return value at onrunbefore')
-
-            flag = extension.onrunafter(event, i)
-            if flag:
-                if type(flag) == int:
-                    if i < 0 or i >= steps:
-                        logger.error('Index out of range: Goto %d' % i)
-                    else:
-                        logger.debug('Jump at %d' % flag)
-                        i = flag
+            except JumpProcess as jp:
+                i = jp.index
+                logger.debug('Jump at %d' % i)
+                continue
+            except PushProcess as pp:
+                logger.debug('Push before %d' % i)
+                newevents = RunScriptClass.parsescript(pp.scriptpath, speed=pp.speed)
+                newextension = RunScriptClass.getextension(pp.extension,
+                                                           runtimes=pp.runtimes,
+                                                           speed=pp.speed,
+                                                           swap=extension.swap
+                                                           )
+                logger.info('Script path:%s' % pp.scriptpath)
+                k = 0
+                while k < newextension.runtimes or newextension.runtimes == 0:
+                    logger.info('===========%d==============' % k)
+                    try:
+                        if newextension.onbeforeeachloop(k):
+                            RunScriptClass.run_script_once(newevents, newextension, thd)
+                        newextension.onaftereachloop(k)
+                        k += 1
+                    except BreakProcess:
+                        logger.debug('Break')
+                        k += 1
                         continue
-                else:
-                    logger.error('Unsupported extension return value at onrunafter')
+                    except EndProcess:
+                        logger.debug('End')
+                        break
+                newextension.onendp()
+                logger.info('%s run finish' % pp.scriptpath)
+                logger.debug('Pop')
+                i = i + 1
+            except AdditionProcess as ap:
+                logger.debug('Additional events')
+                for nevent in ap.events:
+                    logger.debug(nevent)
+                    nevent.execute()
+                i = i + 1
 
-            i = i + 1
+            try:
+                extension.onrunafter(event, i)
+                i = i + 1
+            except JumpProcess as jp:
+                i = jp.index
+                logger.debug('Jump at %d' % i)
+                continue
+            except PushProcess as pp:
+                logger.debug('Push after %d' % i)
+                newevents = RunScriptClass.parsescript(pp.scriptpath, speed=pp.speed)
+                newextension = RunScriptClass.getextension(pp.extension,
+                                                           runtimes=pp.runtimes,
+                                                           speed=pp.speed,
+                                                           swap=extension.swap
+                                                           )
+                logger.info('Script path:%s' % pp.scriptpath)
+                k = 0
+                while k < newextension.runtimes or newextension.runtimes == 0:
+                    logger.info('===========%d==============' % k)
+                    try:
+                        if newextension.onbeforeeachloop(k):
+                            RunScriptClass.run_script_once(newevents, newextension, thd)
+                        newextension.onaftereachloop(k)
+                        k += 1
+                    except BreakProcess:
+                        logger.debug('Break')
+                        k += 1
+                        continue
+                    except EndProcess:
+                        logger.debug('End')
+                        break
+                newextension.onendp()
+                logger.info('%s run finish' % pp.scriptpath)
+                logger.debug('Pop')
+                i = i + 1
+            except AdditionProcess as ap:
+                logger.debug('Additional events')
+                for nevent in ap.events:
+                    logger.debug(nevent)
+                    nevent.execute()
+                i = i + 1
 
             if thd:
                 if thd.frame.isbrokenorfinish:
@@ -712,10 +777,11 @@ class RunScriptClass(threading.Thread):
                     logger.info('Broken at %d/%d' % (i, steps))
                     return False
                 thd.event.wait()
-                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, thd.run_times, thd.run_speed)
+                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, extension.runtimes, extension.speed)
                 logger.trace(
-                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, thd.run_times, thd.run_speed))
+                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, extension.runtimes, extension.speed))
                 thd.frame.tnumrd.setText(text)
+
         return True
 
 

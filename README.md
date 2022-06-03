@@ -107,12 +107,21 @@ Monomux
 # 自定义扩展功能：
 
 程序提供了插件扩展接口，默认扩展类位于`assets/plugins/Extension.py`，可以通过派生`Extension`类实现自定义功能。
+
+`Extension`类初始化函数包含以下参数:
+  + `runtimes`脚本执行次数
+  + `speed`脚本执行速度(%)
+  + `swap`默认为`None`，捕捉到`PushProcess`异常时会将`swap`的内容传递给新扩展对象
+
+在执行过程中，修改`runtimes`的值会影响脚本的实际执行次数。
+
 `Extension`类提供以下接口:
   + `onbeforeeachloop(currentloop)`，在每次执行脚本前执行，返回False时跳过本次执行
-  + `onrunbefore(event, currentindex)`，在每行脚本执行前执行，返回False时跳过本行执行，返回数字索引(从0开始)则跳转到索引对应脚本行继续执行
-  + `onrunafter(event, currentindex)`，在每行脚本执行后执行，默认无返回值，返回数字索引(从0开始)则跳转到索引对应脚本行继续执行
-  + `onaftereachloop(currentloop)`，在每次执行脚本后执行，默认无返回值
+  + `onrunbefore(event, currentindex)`，在每行脚本执行前执行，返回False时跳过本行执行
+  + `onrunafter(event, currentindex)`，在每行脚本执行后执行，无返回值
+  + `onaftereachloop(currentloop)`，在每次执行脚本后执行，无返回值
   + `onrecord(event, currentindex)`，在每次录制到一个操作后执行，返回True记录本次操作
+  + `onendp()`，在全部循环执行完成后执行
 
 `currentindex`和`currentloop`分别指代当前脚本的行索引与循环索引(从0开始)
 
@@ -125,7 +134,16 @@ Monomux
 
 定义`Extension`子类`<name>`时，确保模块名`<name>.py`与子类名`<name>`相同
 
-__日志调试__:
+__流程控制__
+
+程序对脚本执行流程提供了以下方法，均以异常形式定义，使用时通过`raise`异常实现流程控制:
+  + `JumpProcess(index)`跳转到索引为`index`的脚本行
+  + `PushProcess(scriptpath, extension='Extension', runtimes=1, speed=100)`暂停当前脚本执行转而加载`extension`指定的扩展以`speed`%的速度执行`scriptpth`处的脚本`runtimes`次，执行完成后从暂停的位置继续执行当前脚本。当`extension`扩展初始化时，原扩展对象内的`swap`内容会传入新扩展对象。
+  + `AdditionalProcess(events)`执行列表`events`中的操作，操作需要实例化为`ScriptEvent`对象
+  + `BreakProcess`结束本次执行
+  + `EndProcess`结束全部执行
+
+__日志调试__
 
 本程序使用`loguru`作为日志模块，在自定义扩展中可直接引入模块进行日志调试
 ```python
@@ -133,19 +151,35 @@ from loguru import logger
 ```
 日志内容默认保存在主程序日志中，如果有其它的需求可以参阅loguru的[文档](https://loguru.readthedocs.io/en/stable/overview.html)进行改动
 
-示例:
+__示例__:
 
-需要在第一次脚本执行完第1条(索引0)脚本内容后跳转到第3条脚本(索引2)， 在第二次脚本执行时跳过第1条(索引0)脚本内容，在`plugins/`目录下新建`MyExtension.py`，其内容为:
+在`Script`目录下存在录制的脚本`1.txt`，`2.txt`，其内容均多于3行，程序先执行`1.txt`中内容。
+
+扩展操作：
+  + 在第一次脚本执行中，执行完第一条(索引0)脚本内容后跳转到第3条脚本(索引2)
+  + 在第一次脚本执行中，执行完第3条脚本后转而加载新的扩展，以相同的速度执行`2.txt`内容2次，新的扩展操作包括:
+    + 在第一次执行中，执行完第1条脚本后跳过本次循环
+    + 在第一次执行中，执行完第2条脚本后结束执行
+    + 结束执行后，显示从原扩展中转递过来的数据
+  + 在第二次脚本执行中，跳过第1条(索引0)脚本内容
+  + 在第二次脚本执行中，执行完第2条脚本后重复执行一次第二条脚本
+  + 限制脚本执行次数为3次
+
+在`plugins/`目录下新建`MyExtension.py`，其内容为:
 ```python
 from assets.plugins.Extension import *
+from assets.plugins.ProcessException import *
 from loguru import logger
 
 logger.info('Import MyExtension')
 
 
 class MyExtension(Extension):
-    def __init__(self):
+    def __init__(self, runtimes, speed, swap=None):
+        super().__init__(runtimes, speed, swap)
         self.currentloop = 0
+        self.swap = 'Helloworld'
+        self.runtimes = 3
 
     def onbeforeeachloop(self, currentloop):
         self.currentloop = currentloop
@@ -159,9 +193,39 @@ class MyExtension(Extension):
 
     def onrunafter(self, event, currentindex):
         if self.currentloop == 0 and currentindex == 0:
-            return 2
+            raise JumpProcess(2)
+        elif self.currentloop == 0 and currentindex == 2:
+            raise PushProcess('scripts/2.txt', speed=self.speed, runtimes=2, extension='MyExtension2')
+        elif self.currentloop == 1 and currentindex == 1:
+            raise AdditionProcess([event])
 ```
+在`plugins/`目录下新建`MyExtension2.py`，其内容为:
+```python
+from assets.plugins.Extension import *
+from assets.plugins.ProcessException import *
+from loguru import logger
 
+logger.info('Import MyExtension2')
+
+
+class MyExtension2(Extension):
+    def __init__(self, runtimes, speed, swap=None):
+        super().__init__(runtimes, speed, swap)
+        self.currentloop = 0
+
+    def onbeforeeachloop(self, currentloop):
+        self.currentloop = currentloop
+        return True
+
+    def onrunafter(self, event, currentindex):
+        if self.currentloop == 0:
+            raise BreakProcess()
+        elif self.currentloop == 1 and currentindex == 1:
+            raise EndProcess()
+
+    def onendp(self):
+        logger.info(self.swap)
+```
 
 # 使用命令行运行：
 

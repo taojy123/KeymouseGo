@@ -15,6 +15,8 @@ import argparse
 from qt_material import apply_stylesheet
 from loguru import logger
 
+from assets.plugins.ProcessException import BreakProcess, EndProcess
+
 
 def main():
     app = QApplication(sys.argv)
@@ -33,14 +35,23 @@ def single_run(script_path, run_times=1, speed=100, module_name='Extension'):
         for path in script_path:
             logger.info('Script path:%s' % path)
             events = UIFunc.RunScriptClass.parsescript(path, speed=speed)
-            extension = UIFunc.RunScriptClass.getextension(module_name)
+            extension = UIFunc.RunScriptClass.getextension(module_name, runtimes=run_times, speed=speed)
             j = 0
-            while j < run_times or run_times == 0:
+            while j < extension.runtimes or extension.runtimes == 0:
                 logger.info('===========%d==============' % j)
-                if extension.onbeforeeachloop(j):
-                    UIFunc.RunScriptClass.run_script_once(events, extension, j)
-                extension.onaftereachloop(j)
-                j += 1
+                try:
+                    if extension.onbeforeeachloop(j):
+                        UIFunc.RunScriptClass.run_script_once(events, extension)
+                    extension.onaftereachloop(j)
+                    j += 1
+                except BreakProcess:
+                    logger.debug('Break')
+                    j += 1
+                    continue
+                except EndProcess:
+                    logger.debug('End')
+                    break
+            extension.onendp()
             logger.info('%s run finish' % path)
         logger.info('Scripts run finish!')
     except Exception as e:

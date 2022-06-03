@@ -62,3 +62,4 @@ scripts/
 .github
 plugins/
 logs/
+!assets/
