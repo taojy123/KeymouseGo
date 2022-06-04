@@ -553,11 +553,12 @@ class RunScriptClass(threading.Thread):
 
             # 解析脚本，返回事件集合与扩展类对象
             logger.debug('Parse script..')
-            events = RunScriptClass.parsescript(script_path, speed=self.frame.execute_speed.value())
-            extension = RunScriptClass.getextension(self.frame.choice_extension.currentText(),
-                                                    runtimes=self.frame.stimes.value(),
-                                                    speed=self.frame.execute_speed.value()
-                                                    )
+            events, module_name = RunScriptClass.parsescript(script_path, speed=self.frame.execute_speed.value())
+            extension = RunScriptClass.getextension(
+                module_name if module_name is not None else self.frame.choice_extension.currentText(),
+                runtimes=self.frame.stimes.value(),
+                speed=self.frame.execute_speed.value()
+                )
 
             self.j = 0
             nointerrupt = True
@@ -647,7 +648,12 @@ class RunScriptClass(threading.Thread):
         steps = len(s)
 
         events = []
-        for i in range(steps):
+        startindex = 0
+        module_name = None
+        if steps >= 1 and re.match('\[.+\]', str(s[0])) is None:
+            module_name = s[0]
+            startindex = 1
+        for i in range(startindex, steps):
             delay = s[i][0] / (speed / 100)
             event_type = s[i][1].upper()
             message = s[i][2].lower()
@@ -662,16 +668,17 @@ class RunScriptClass(threading.Thread):
                 'action': action,
                 'addon': addon
             }))
-        return events
+        return events, module_name
 
     @classmethod
     def run_sub_sctript(cls, pp: PushProcess, extension, thd):
-        newevents = RunScriptClass.parsescript(pp.scriptpath, speed=pp.speed)
-        newextension = RunScriptClass.getextension(pp.extension,
-                                                   runtimes=pp.runtimes,
-                                                   speed=pp.speed,
-                                                   swap=extension.swap
-                                                   )
+        newevents, module_name = RunScriptClass.parsescript(pp.scriptpath, speed=pp.speed)
+        newextension = RunScriptClass.getextension(
+            module_name if module_name is not None else pp.extension,
+            runtimes=pp.runtimes,
+            speed=pp.speed,
+            swap=extension.swap
+            )
         logger.info('Script path:%s' % pp.scriptpath)
         k = 0
         while k < newextension.runtimes or newextension.runtimes == 0:
