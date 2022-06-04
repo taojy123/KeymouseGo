@@ -111,7 +111,7 @@ Monomux
 `Extension`类初始化函数包含以下参数:
   + `runtimes`脚本执行次数
   + `speed`脚本执行速度(%)
-  + `swap`默认为`None`，捕捉到`PushProcess`异常时会将`swap`的内容传递给新扩展对象
+  + `swap`默认为`None`，捕捉到`PushProcess`异常时会将`swap`的内容传递给新扩展对象，在子流程结束后接收新扩展对象`swap`的内容
 
 在执行过程中，修改`runtimes`的值会影响脚本的实际执行次数。
 
@@ -138,7 +138,7 @@ __流程控制__
 
 程序对脚本执行流程提供了以下方法，均以异常形式定义，使用时通过`raise`异常实现流程控制:
   + `JumpProcess(index)`跳转到索引为`index`的脚本行
-  + `PushProcess(scriptpath, extension='Extension', runtimes=1, speed=100)`暂停当前脚本执行转而加载`extension`指定的扩展以`speed`%的速度执行`scriptpth`处的脚本`runtimes`次，执行完成后从暂停的位置继续执行当前脚本。当`extension`扩展初始化时，原扩展对象内的`swap`内容会传入新扩展对象。
+  + `PushProcess(scriptpath, extension='Extension', runtimes=1, speed=100)`暂停当前脚本执行转而加载`extension`指定的扩展以`speed`%的速度执行`scriptpth`处的脚本`runtimes`次，执行完成后从暂停的位置继续执行当前脚本。当`extension`扩展初始化时，原扩展对象内的`swap`内容会传入新扩展对象，子脚本执行完成后，新扩展对象的`swap`内容会传入原扩展对象。
   + `AdditionalProcess(events)`执行列表`events`中的操作，操作需要实例化为`ScriptEvent`对象
   + `BreakProcess`结束本次执行
   + `EndProcess`结束全部执行

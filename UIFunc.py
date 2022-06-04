@@ -664,6 +664,33 @@ class RunScriptClass(threading.Thread):
             }))
         return events
 
+    @classmethod
+    def run_sub_sctript(cls, pp: PushProcess, extension, thd):
+        newevents = RunScriptClass.parsescript(pp.scriptpath, speed=pp.speed)
+        newextension = RunScriptClass.getextension(pp.extension,
+                                                   runtimes=pp.runtimes,
+                                                   speed=pp.speed,
+                                                   swap=extension.swap
+                                                   )
+        logger.info('Script path:%s' % pp.scriptpath)
+        k = 0
+        while k < newextension.runtimes or newextension.runtimes == 0:
+            logger.info('===========%d==============' % k)
+            try:
+                if newextension.onbeforeeachloop(k):
+                    RunScriptClass.run_script_once(newevents, newextension, thd)
+                newextension.onaftereachloop(k)
+                k += 1
+            except BreakProcess:
+                logger.debug('Break')
+                k += 1
+                continue
+            except EndProcess:
+                logger.debug('End')
+                break
+        newextension.onendp()
+        extension.swap = newextension.swap
+
     # 执行集合中的ScriptEvent
     @classmethod
     def run_script_once(cls, events, extension, thd=None):
@@ -696,29 +723,7 @@ class RunScriptClass(threading.Thread):
                 continue
             except PushProcess as pp:
                 logger.debug('Push before %d' % i)
-                newevents = RunScriptClass.parsescript(pp.scriptpath, speed=pp.speed)
-                newextension = RunScriptClass.getextension(pp.extension,
-                                                           runtimes=pp.runtimes,
-                                                           speed=pp.speed,
-                                                           swap=extension.swap
-                                                           )
-                logger.info('Script path:%s' % pp.scriptpath)
-                k = 0
-                while k < newextension.runtimes or newextension.runtimes == 0:
-                    logger.info('===========%d==============' % k)
-                    try:
-                        if newextension.onbeforeeachloop(k):
-                            RunScriptClass.run_script_once(newevents, newextension, thd)
-                        newextension.onaftereachloop(k)
-                        k += 1
-                    except BreakProcess:
-                        logger.debug('Break')
-                        k += 1
-                        continue
-                    except EndProcess:
-                        logger.debug('End')
-                        break
-                newextension.onendp()
+                RunScriptClass.run_sub_sctript(pp, extension, thd)
                 logger.info('%s run finish' % pp.scriptpath)
                 logger.debug('Pop')
                 i = i + 1
@@ -738,29 +743,7 @@ class RunScriptClass(threading.Thread):
                 continue
             except PushProcess as pp:
                 logger.debug('Push after %d' % i)
-                newevents = RunScriptClass.parsescript(pp.scriptpath, speed=pp.speed)
-                newextension = RunScriptClass.getextension(pp.extension,
-                                                           runtimes=pp.runtimes,
-                                                           speed=pp.speed,
-                                                           swap=extension.swap
-                                                           )
-                logger.info('Script path:%s' % pp.scriptpath)
-                k = 0
-                while k < newextension.runtimes or newextension.runtimes == 0:
-                    logger.info('===========%d==============' % k)
-                    try:
-                        if newextension.onbeforeeachloop(k):
-                            RunScriptClass.run_script_once(newevents, newextension, thd)
-                        newextension.onaftereachloop(k)
-                        k += 1
-                    except BreakProcess:
-                        logger.debug('Break')
-                        k += 1
-                        continue
-                    except EndProcess:
-                        logger.debug('End')
-                        break
-                newextension.onendp()
+                RunScriptClass.run_sub_sctript(pp, extension, thd)
                 logger.info('%s run finish' % pp.scriptpath)
                 logger.debug('Pop')
                 i = i + 1
