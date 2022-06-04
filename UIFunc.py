@@ -453,6 +453,7 @@ class UIFunc(QMainWindow, Ui_UIView):
         if script in self.scripts:
             script = '%s.txt' % now.strftime('%m%d_%H%M%S')
         self.scripts.insert(0, script)
+        self.choice_script.clear()
         self.choice_script.addItems(self.scripts)
         self.choice_script.setCurrentIndex(0)
         return self.get_script_path()
@@ -489,6 +490,7 @@ class UIFunc(QMainWindow, Ui_UIView):
             self.btrun.setEnabled(True)
             self.actioncount = 0
             self.pauserecord = False
+            self.choice_script.setCurrentIndex(0)
             self.btpauserecord.setText(QCoreApplication.translate("UIView", 'Pause Record', None))
         else:
             self.extension = RunScriptClass.getextension(self.choice_extension.currentText(),
@@ -502,7 +504,6 @@ class UIFunc(QMainWindow, Ui_UIView):
                 return
             self.btrecord.setText(QCoreApplication.translate("UIView", 'Finish', None))
             self.tnumrd.setText('0 actions recorded')
-            self.choice_script.setCurrentIndex(-1)
             self.record = []
             self.btpauserecord.setEnabled(True)
             self.btrun.setEnabled(False)
