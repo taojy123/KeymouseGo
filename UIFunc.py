@@ -476,7 +476,6 @@ class UIFunc(QMainWindow, Ui_UIView):
         if self.recording:
             logger.info('Record stop')
             self.recording = False
-            self.record = self.record[:-2]
             output = json.dumps(self.record, indent=1, ensure_ascii=False)
             output = output.replace('\r\n', '\n').replace('\r', '\n')
             output = output.replace('\n   ', '').replace('\n  ', '')
@@ -509,6 +508,8 @@ class UIFunc(QMainWindow, Ui_UIView):
             self.btrun.setEnabled(False)
 
     def OnBtrecordButton(self):
+        if self.recording:
+            self.record = self.record[:-2]
         self.recordMethod()
 
     def OnBtrunButton(self):
