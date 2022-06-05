@@ -147,10 +147,17 @@ __流程控制__
 
 程序对脚本执行流程提供了以下方法，均以异常形式定义，使用时通过`raise`异常实现流程控制:
   + `JumpProcess(index)`跳转到索引为`index`的脚本行
-  + `PushProcess(scriptpath, extension='Extension', runtimes=1, speed=100)`暂停当前脚本执行转而加载`extension`指定的扩展以`speed`%的速度执行`scriptpth`处的脚本`runtimes`次，执行完成后从暂停的位置继续执行当前脚本。当`extension`扩展初始化时，原扩展对象内的`swap`内容会传入新扩展对象，子脚本执行完成后，新扩展对象的`swap`内容会传入原扩展对象。
-  + `AdditionalProcess(events)`执行列表`events`中的操作，操作需要实例化为`ScriptEvent`对象
   + `BreakProcess`结束本次执行
   + `EndProcess`结束全部执行
+
+各接口接受的流程控制异常:
+
+| - | onbeforeeachloop | onrunbefore | onrunafter | onafterloop | onendp | onrecord |
+| :---: | :---: | :---: | :---: | :---: | :---: |:--------:|
+| Jump | × | √ | √ | × | × |    ×     |
+| Break | √ | √ | √ | √ | × |    ×     |
+| End | √ | √ | √ | √ | × |    ×     |
+
 
 __日志调试__
 
@@ -178,6 +185,7 @@ __示例__:
 ```python
 from assets.plugins.Extension import *
 from assets.plugins.ProcessException import *
+from UIFunc import RunScriptClass
 from loguru import logger
 
 logger.info('Import MyExtension')
@@ -204,9 +212,13 @@ class MyExtension(Extension):
         if self.currentloop == 0 and currentindex == 0:
             raise JumpProcess(2)
         elif self.currentloop == 0 and currentindex == 2:
-            raise PushProcess('scripts/2.txt', speed=self.speed, runtimes=2, extension='MyExtension2')
+            RunScriptClass.run_sub_sctript(self, 'scripts/0603_1013.txt', 
+                                           speed=self.speed, 
+                                           runtimes=2, 
+                                           subextension_name='MyExtension2'
+                                           )
         elif self.currentloop == 1 and currentindex == 1:
-            raise AdditionProcess([event])
+            event.execute()
 ```
 在`plugins/`目录下新建`MyExtension2.py`，其内容为:
 ```python

@@ -672,15 +672,16 @@ class RunScriptClass(threading.Thread):
         return events, module_name
 
     @classmethod
-    def run_sub_sctript(cls, pp: PushProcess, extension, thd):
-        newevents, module_name = RunScriptClass.parsescript(pp.scriptpath, speed=pp.speed)
+    def run_sub_sctript(cls, extension, scriptpath: str, subextension_name: str = 'Extension',
+                        runtimes: int = 1, speed: int = 100, thd=None):
+        newevents, module_name = RunScriptClass.parsescript(scriptpath, speed=speed)
         newextension = RunScriptClass.getextension(
-            module_name if module_name is not None else pp.extension,
-            runtimes=pp.runtimes,
-            speed=pp.speed,
+            module_name if module_name is not None else subextension_name,
+            runtimes=runtimes,
+            speed=speed,
             swap=extension.swap
             )
-        logger.info('Script path:%s' % pp.scriptpath)
+        logger.info('Script path:%s' % scriptpath)
         k = 0
         while k < newextension.runtimes or newextension.runtimes == 0:
             logger.info('===========%d==============' % k)
@@ -725,42 +726,12 @@ class RunScriptClass(threading.Thread):
                     event.execute()
                 else:
                     logger.debug('Skipped %d' % i)
-            except JumpProcess as jp:
-                i = jp.index
-                logger.debug('Jump at %d' % i)
-                continue
-            except PushProcess as pp:
-                logger.debug('Push before %d' % i)
-                RunScriptClass.run_sub_sctript(pp, extension, thd)
-                logger.info('%s run finish' % pp.scriptpath)
-                logger.debug('Pop')
-                i = i + 1
-            except AdditionProcess as ap:
-                logger.debug('Additional events')
-                for nevent in ap.events:
-                    logger.debug(nevent)
-                    nevent.execute()
-                i = i + 1
-
-            try:
                 extension.onrunafter(event, i)
                 i = i + 1
             except JumpProcess as jp:
                 i = jp.index
                 logger.debug('Jump at %d' % i)
                 continue
-            except PushProcess as pp:
-                logger.debug('Push after %d' % i)
-                RunScriptClass.run_sub_sctript(pp, extension, thd)
-                logger.info('%s run finish' % pp.scriptpath)
-                logger.debug('Pop')
-                i = i + 1
-            except AdditionProcess as ap:
-                logger.debug('Additional events')
-                for nevent in ap.events:
-                    logger.debug(nevent)
-                    nevent.execute()
-                i = i + 1
 
             if thd:
                 if thd.frame.isbrokenorfinish:
