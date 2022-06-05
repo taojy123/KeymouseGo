@@ -228,30 +228,30 @@ class MyExtension(Extension):
         #     raise JumpProcess(2)
         # 完成功能2
         # elif self.currentloop == 0 and currentindex == 2:
-            """
-            run_sub_script包含5个参数，
-            extension: 父流程的扩展对象，在这里输入self即可
-            scriptpath: 子流程执行的脚本路径，采用相对路径或是绝对路径均可
-            speed: 子流程执行的速度，默认为100(%)
-            runtimes: 子流程执行次数，默认为1
-            subextension_name: 子流程加载的扩展模块，默认为Extension
-            """
-            # RunScriptClass.run_sub_script(self, 'scripts/0603_1013.txt', 
-            #                                speed=self.speed, 
-            #                                runtimes=2, 
-            #                                subextension_name='MyExtension2'
-            #                                )
+        #     """
+        #     run_sub_script包含5个参数，
+        #     extension: 父流程的扩展对象，在这里输入self即可
+        #     scriptpath: 子流程执行的脚本路径，采用相对路径或是绝对路径均可
+        #     speed: 子流程执行的速度，默认为100(%)
+        #     runtimes: 子流程执行次数，默认为1
+        #     subextension_name: 子流程加载的扩展模块，默认为Extension
+        #     """
+        #     RunScriptClass.run_sub_script(self, 'scripts/0603_1013.txt', 
+        #                                    speed=self.speed, 
+        #                                    runtimes=2, 
+        #                                    subextension_name='MyExtension2'
+        #                                    )
         # 完成功能4
         # elif self.currentloop == 1 and currentindex == 1:
-            """
-            在程序中，每个操作被封装为一个ScriptEvent对象，其内容包含
-            event.delay: int类型，为操作延时(ms)
-            event.event_type: str类型，为事件类型
-            event.message: str类型，为操作类型
-            event.action: str类型，为操作参数
-            event.addon: 任意类型，添加的类型需要实现__str__方法以便保存
-            """
-            # event.execute()
+        #     """
+        #     在程序中，每个操作被封装为一个ScriptEvent对象，其内容包含
+        #     event.delay: int类型，为操作延时(ms)
+        #     event.event_type: str类型，为事件类型
+        #     event.message: str类型，为操作类型
+        #     event.action: str类型，为操作参数
+        #     event.addon: 任意类型，添加的类型需要实现__str__方法以便保存
+        #     """
+        #     event.execute()
 ```
 在`plugins/`目录下新建`MyExtension2.py`，其内容为:
 ```python

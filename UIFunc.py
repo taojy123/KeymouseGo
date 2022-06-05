@@ -606,6 +606,7 @@ class RunScriptClass(threading.Thread):
 
     # 获取扩展实例
     @classmethod
+    @logger.catch
     def getextension(cls, module_name='Extension', runtimes=1, speed=100, swap=None):
         if module_name == 'Extension':
             module = SourceFileLoader(module_name, get_assets_path('plugins', 'Extension.py')).load_module()
