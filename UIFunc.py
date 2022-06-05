@@ -672,7 +672,7 @@ class RunScriptClass(threading.Thread):
         return events, module_name
 
     @classmethod
-    def run_sub_sctript(cls, extension, scriptpath: str, subextension_name: str = 'Extension',
+    def run_sub_script(cls, extension, scriptpath: str, subextension_name: str = 'Extension',
                         runtimes: int = 1, speed: int = 100, thd=None):
         newevents, module_name = RunScriptClass.parsescript(scriptpath, speed=speed)
         newextension = RunScriptClass.getextension(
@@ -729,9 +729,15 @@ class RunScriptClass(threading.Thread):
                 extension.onrunafter(event, i)
                 i = i + 1
             except JumpProcess as jp:
-                i = jp.index
-                logger.debug('Jump at %d' % i)
-                continue
+                if jp.index < 0:
+                    logger.error('Jump index out of range: %d' % jp.index)
+                elif jp.index >= steps:
+                    logger.warning('Jump index exceed events range: %d/%d, ends current loop' % (jp.index, steps))
+                    break
+                else:
+                    i = jp.index
+                    logger.debug('Jump at %d' % i)
+                    continue
 
             if thd:
                 if thd.frame.isbrokenorfinish:

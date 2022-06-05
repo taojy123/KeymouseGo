@@ -172,14 +172,14 @@ __示例__:
 在`Script`目录下存在录制的脚本`1.txt`，`2.txt`，其内容均多于3行，程序先执行`1.txt`中内容。
 
 扩展操作：
-  + 在第一次脚本执行中，执行完第一条(索引0)脚本内容后跳转到第3条脚本(索引2)
-  + 在第一次脚本执行中，执行完第3条脚本后转而加载新的扩展，以相同的速度执行`2.txt`内容2次，新的扩展操作包括:
-    + 在第一次执行中，执行完第1条脚本后跳过本次循环
-    + 在第一次执行中，执行完第2条脚本后结束执行
-    + 结束执行后，显示从原扩展中转递过来的数据
-  + 在第二次脚本执行中，跳过第1条(索引0)脚本内容
-  + 在第二次脚本执行中，执行完第2条脚本后重复执行一次第二条脚本
-  + 限制脚本执行次数为3次
+  1. 在第一次脚本执行中，执行完第一条(索引0)脚本内容后跳转到第3条脚本(索引2)
+  2. 在第一次脚本执行中，执行完第3条脚本后转而加载新的扩展，以相同的速度执行`2.txt`内容2次，新的扩展操作包括:
+      1. 在第一次执行中，执行完第1条脚本后跳过本次循环
+      2. 在第一次执行中，执行完第2条脚本后结束执行
+      3. 结束执行后，显示从原扩展中转递过来的数据
+  3. 在第二次脚本执行中，跳过第1条(索引0)脚本内容
+  4. 在第二次脚本执行中，执行完第2条脚本后重复执行一次第二条脚本
+  5. 限制脚本执行次数为3次
 
 在`plugins/`目录下新建`MyExtension.py`，其内容为:
 ```python
@@ -193,32 +193,65 @@ logger.info('Import MyExtension')
 
 class MyExtension(Extension):
     def __init__(self, runtimes, speed, swap=None):
+        # 默认的构造函数将参数分别赋给self.runtimes,self.speed,self.swap
         super().__init__(runtimes, speed, swap)
+        # 保存当前执行次数
         self.currentloop = 0
-        self.swap = 'Helloworld'
-        self.runtimes = 3
+        
+        # 传递给子扩展的数据，传递时采用=赋值而不是浅/深复制
+        # self.swap = 'Helloworld'
+        
+        """
+        完成功能5
+        GUI界面或命令行设置的执行次数通过runtimes参数传入，并保存到self.runtimes
+        修改此值可以改变实际执行次数
+        """ 
+        # self.runtimes = 3
 
     def onbeforeeachloop(self, currentloop):
+        # 更新当前执行次数
         self.currentloop = currentloop
         return True
 
     def onrunbefore(self, event, currentindex):
-        if self.currentloop == 1 and currentindex == 0:
-            return False
-        else:
-            return True
+        return True
+        # 完成功能3
+        # if self.currentloop == 1 and currentindex == 0:
+        #     return False
+        # else:
+        #     return True
 
     def onrunafter(self, event, currentindex):
-        if self.currentloop == 0 and currentindex == 0:
-            raise JumpProcess(2)
-        elif self.currentloop == 0 and currentindex == 2:
-            RunScriptClass.run_sub_sctript(self, 'scripts/0603_1013.txt', 
-                                           speed=self.speed, 
-                                           runtimes=2, 
-                                           subextension_name='MyExtension2'
-                                           )
-        elif self.currentloop == 1 and currentindex == 1:
-            event.execute()
+        pass
+        # 完成功能1
+        # if self.currentloop == 0 and currentindex == 0:
+        #     raise JumpProcess(2)
+        # 完成功能2
+        # elif self.currentloop == 0 and currentindex == 2:
+            """
+            run_sub_script包含5个参数，
+            extension: 父流程的扩展对象，在这里输入self即可
+            scriptpath: 子流程执行的脚本路径，采用相对路径或是绝对路径均可
+            speed: 子流程执行的速度，默认为100(%)
+            runtimes: 子流程执行次数，默认为1
+            subextension_name: 子流程加载的扩展模块，默认为Extension
+            """
+            # RunScriptClass.run_sub_script(self, 'scripts/0603_1013.txt', 
+            #                                speed=self.speed, 
+            #                                runtimes=2, 
+            #                                subextension_name='MyExtension2'
+            #                                )
+        # 完成功能4
+        # elif self.currentloop == 1 and currentindex == 1:
+            """
+            在程序中，每个操作被封装为一个ScriptEvent对象，其内容包含
+            event.delay: int类型，为操作延时(ms)
+            event.event_type: str类型，为事件类型
+            event.message: str类型，为操作类型
+            event.action: str类型，为操作参数
+            event.addon: 任意类型，添加的类型需要实现__str__方法以便保存
+            """
+            # event.execute()
 ```
 在`plugins/`目录下新建`MyExtension2.py`，其内容为:
 ```python
@@ -239,13 +272,18 @@ class MyExtension2(Extension):
         return True
 
     def onrunafter(self, event, currentindex):
-        if self.currentloop == 0:
-            raise BreakProcess()
-        elif self.currentloop == 1 and currentindex == 1:
-            raise EndProcess()
+        pass
+        # 完成功能2.i
+        # if self.currentloop == 0:
+        #     raise BreakProcess()
+        # 完成功能2.ii
+        # elif self.currentloop == 1 and currentindex == 1:
+        #     raise EndProcess()
 
     def onendp(self):
-        logger.info(self.swap)
+        pass
+        # 完成功能2.iii
+        # logger.info(self.swap)
 ```
 
 # 使用命令行运行：
