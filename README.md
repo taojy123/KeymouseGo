@@ -118,8 +118,8 @@ Monomux
 `Extension`类提供以下接口:
   + `onbeforeeachloop(currentloop)`，在每次执行脚本前执行，返回False时跳过本次执行
   + `onrunbefore(event, currentindex)`，在每行脚本执行前执行，返回False时跳过本行执行
-  + `onrunafter(event, currentindex)`，在每行脚本执行后执行，无返回值
-  + `onaftereachloop(currentloop)`，在每次执行脚本后执行，无返回值
+  + `onrunafter(event, currentindex)`，在每行脚本后执行，无论`onrunbefore`返回值如何，无返回值
+  + `onaftereachloop(currentloop)`，在每次执行完脚本后执行，无论`onbeforeeachloop`返回值如何，无返回值
   + `onrecord(event, currentindex)`，在每次录制到一个操作后执行，返回True记录本次操作
   + `onendp()`，在全部循环执行完成后执行
 
