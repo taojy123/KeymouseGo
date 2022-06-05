@@ -111,6 +111,7 @@ Monomux
 `Extension`类初始化函数包含以下参数:
   + `runtimes`脚本执行次数
   + `speed`脚本执行速度(%)
+  + `thd`执行脚本的线程对象
   + `swap`默认为`None`，捕捉到`PushProcess`异常时会将`swap`的内容传递给新扩展对象，在子流程结束后接收新扩展对象`swap`的内容
 
 在执行过程中，修改`runtimes`的值会影响脚本的实际执行次数。
@@ -192,9 +193,9 @@ logger.info('Import MyExtension')
 
 
 class MyExtension(Extension):
-    def __init__(self, runtimes, speed, swap=None):
+    def __init__(self, runtimes, speed, thd=None, swap=None):
         # 默认的构造函数将参数分别赋给self.runtimes,self.speed,self.swap
-        super().__init__(runtimes, speed, swap)
+        super().__init__(runtimes, speed, thd, swap)
         # 保存当前执行次数
         self.currentloop = 0
         
@@ -239,7 +240,8 @@ class MyExtension(Extension):
         #     RunScriptClass.run_sub_script(self, 'scripts/0603_1013.txt', 
         #                                    speed=self.speed, 
         #                                    runtimes=2, 
-        #                                    subextension_name='MyExtension2'
+        #                                    subextension_name='MyExtension2',
+        #                                    thd=self.thd
         #                                    )
         # 完成功能4
         # elif self.currentloop == 1 and currentindex == 1:
@@ -263,8 +265,8 @@ logger.info('Import MyExtension2')
 
 
 class MyExtension2(Extension):
-    def __init__(self, runtimes, speed, swap=None):
-        super().__init__(runtimes, speed, swap)
+    def __init__(self, runtimes, speed, thd=None, swap=None):
+        super().__init__(runtimes, speed, thd, swap)
         self.currentloop = 0
 
     def onbeforeeachloop(self, currentloop):

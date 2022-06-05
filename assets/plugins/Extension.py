@@ -2,9 +2,10 @@ from UIFunc import ScriptEvent
 
 
 class Extension:
-    def __init__(self, runtimes, speed, swap=None):
+    def __init__(self, runtimes, speed, thd=None, swap=None):
         self.runtimes = runtimes
         self.speed = speed
+        self.thd = thd
         self.swap = swap
 
     # 每次录制事件后需要做的事,返回True保存事件

@@ -559,7 +559,8 @@ class RunScriptClass(threading.Thread):
             extension = RunScriptClass.getextension(
                 module_name if module_name is not None else self.frame.choice_extension.currentText(),
                 runtimes=self.frame.stimes.value(),
-                speed=self.frame.execute_speed.value()
+                speed=self.frame.execute_speed.value(),
+                thd=self
                 )
 
             self.j = 0
@@ -607,7 +608,7 @@ class RunScriptClass(threading.Thread):
     # 获取扩展实例
     @classmethod
     @logger.catch
-    def getextension(cls, module_name='Extension', runtimes=1, speed=100, swap=None):
+    def getextension(cls, module_name='Extension', runtimes=1, speed=100, thd=None, swap=None):
         if module_name == 'Extension':
             module = SourceFileLoader(module_name, get_assets_path('plugins', 'Extension.py')).load_module()
         else:
@@ -615,7 +616,7 @@ class RunScriptClass(threading.Thread):
                                       os.path.join(os.getcwd(), 'plugins', '%s.py' % module_name)).load_module()
         module_cls = getattr(module, module_name)
         logger.info('Loaded plugin class {0} in module {1}'.format(module_cls, module_name))
-        return module_cls(runtimes, speed, swap)
+        return module_cls(runtimes, speed, thd, swap)
 
     # 解析脚本内容，转换为ScriptEvent集合
     @classmethod
@@ -681,15 +682,17 @@ class RunScriptClass(threading.Thread):
             module_name if module_name is not None else subextension_name,
             runtimes=runtimes,
             speed=speed,
-            swap=extension.swap
+            swap=extension.swap,
+            thd=thd
             )
         logger.info('Script path:%s' % scriptpath)
         k = 0
-        while k < newextension.runtimes or newextension.runtimes == 0:
-            logger.info('===========%d==============' % k)
+        nointerrupt = True
+        while (k < newextension.runtimes or newextension.runtimes == 0) and nointerrupt:
+            logger.info('========%d========' % k)
             try:
                 if newextension.onbeforeeachloop(k):
-                    RunScriptClass.run_script_once(newevents, newextension, thd)
+                    nointerrupt = nointerrupt and RunScriptClass.run_script_once(newevents, newextension, thd)
                 newextension.onaftereachloop(k)
                 k += 1
             except BreakProcess:
@@ -701,6 +704,10 @@ class RunScriptClass(threading.Thread):
                 break
         newextension.onendp()
         extension.swap = newextension.swap
+        if nointerrupt:
+            logger.info('Subscript run finish')
+        else:
+            logger.info('Subscript run interrupted at loop %d' % k)
 
     # 执行集合中的ScriptEvent
     @classmethod
@@ -743,7 +750,7 @@ class RunScriptClass(threading.Thread):
 
             if thd:
                 if thd.frame.isbrokenorfinish:
-                    thd.frame.tnumrd.setText('broken at %d/%d' % (i + 1, steps))
+                    thd.frame.tnumrd.setText('broken at %d/%d' % (i, steps))
                     logger.info('Broken at %d/%d' % (i, steps))
                     return False
                 thd.event.wait()
