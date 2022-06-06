@@ -112,6 +112,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.mouse_move_interval_ms.setValue(int(self.config.value("Config/Precision")))
         self.execute_speed.setValue(int(self.config.value("Config/ExecuteSpeed")))
         self.choice_extension.setCurrentText(self.config.value("Config/Extension"))
+        self.choice_theme.setCurrentText(self.config.value("Config/Theme"))
         self.choice_start.currentIndexChanged.connect(self.onconfigchange)
         self.choice_stop.currentIndexChanged.connect(self.onconfigchange)
         self.choice_record.currentIndexChanged.connect(self.onconfigchange)
@@ -120,7 +121,8 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.mouse_move_interval_ms.valueChanged.connect(self.onconfigchange)
         self.choice_extension.currentIndexChanged.connect(self.onconfigchange)
         self.choice_theme.currentTextChanged.connect(self.onchangetheme)
-        self.choice_theme.setCurrentText(self.config.value("Config/Theme"))
+
+        self.onchangetheme()
 
         self.running = False
         self.recording = False
@@ -339,7 +341,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 self.isbrokenorfinish = True
                 if self.paused:
                     self.paused = False
-                    self.pause_event.set()
+                self.pause_event.set()
                 logger.debug('{0} host stop'.format(key_name))
             elif key_name == stop_name and self.recording:
                 self.recordMethod()
@@ -433,6 +435,11 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
     def closeEvent(self, event):
         self.config.sync()
+        if self.running:
+            self.isbrokenorfinish = True
+            if self.paused:
+                self.paused = False
+            self.pause_event.set()
         event.accept()
 
     def loadconfig(self):
@@ -744,7 +751,7 @@ class RunScriptClass(threading.Thread):
                 flag = extension.onrunbefore(event, i)
                 if flag:
                     logger.debug(event)
-                    event.execute()
+                    event.execute(thd)
                 else:
                     logger.debug('Skipped %d' % i)
                 extension.onrunafter(event, i)
@@ -789,8 +796,13 @@ class ScriptEvent:
         return '[%d, %s, %s, %s]' % (self.delay, self.event_type, self.message, self.action)
 
     # 执行操作
-    def execute(self):
-        time.sleep(self.delay / 1000.0)
+    def execute(self, thd=None):
+        if thd:
+            thd.event.clear()
+            thd.event.wait(timeout=self.delay / 1000.0)
+            thd.event.set()
+        else:
+            time.sleep(self.delay / 1000.0)
 
         if self.event_type == 'EM':
             x, y = self.action
