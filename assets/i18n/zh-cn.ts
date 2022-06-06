@@ -106,7 +106,12 @@
     <message>
         <location filename="UIView.py" line="195"/>
         <source>Extension</source>
-        <translation type="unfinished">扩展插件</translation>
+        <translation>扩展插件</translation>
+    </message>
+    <message>
+        <location filename="UIView.py" line="232"/>
+        <source>Theme</source>
+        <translation>主题</translation>
     </message>
 </context>
 </TS>

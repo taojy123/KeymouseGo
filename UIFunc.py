@@ -15,6 +15,7 @@ import pyWinhook
 import pyperclip
 import win32api
 import win32con
+from qt_material import list_themes, QtStyleTools
 from PySide2.QtCore import QSettings, Qt
 from PySide2.QtCore import QTranslator, QCoreApplication
 from PySide2.QtWidgets import QMainWindow, QApplication
@@ -65,13 +66,15 @@ def get_assets_path(*paths):
     return os.path.join(root, 'assets', *paths)
 
 
-class UIFunc(QMainWindow, Ui_UIView):
-    def __init__(self):
+class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
+    def __init__(self, app):
         super(UIFunc, self).__init__()
 
         logger.info('assets root:{0}'.format(get_assets_path()))
 
         self.setupUi(self)
+
+        self.app = app
 
         self.config = self.loadconfig()
 
@@ -98,6 +101,7 @@ class UIFunc(QMainWindow, Ui_UIView):
             if i[-3:] == '.py':
                 self.choice_extension.addItems([i[:-3]])
 
+        self.choice_theme.addItems(list_themes())
         self.choice_start.addItems(HOT_KEYS)
         self.choice_stop.addItems(HOT_KEYS)
         self.choice_record.addItems(HOT_KEYS)
@@ -115,6 +119,8 @@ class UIFunc(QMainWindow, Ui_UIView):
         self.execute_speed.valueChanged.connect(self.onconfigchange)
         self.mouse_move_interval_ms.valueChanged.connect(self.onconfigchange)
         self.choice_extension.currentIndexChanged.connect(self.onconfigchange)
+        self.choice_theme.currentTextChanged.connect(self.onchangetheme)
+        self.choice_theme.setCurrentText(self.config.value("Config/Theme"))
 
         self.running = False
         self.recording = False
@@ -405,6 +411,7 @@ class UIFunc(QMainWindow, Ui_UIView):
         self.config.setValue("Config/Precision", self.mouse_move_interval_ms.value())
         self.config.setValue("Config/ExecuteSpeed", self.execute_speed.value())
         self.config.setValue("Config/Extension", self.choice_extension.currentText())
+        self.config.setValue("Config/Theme", self.choice_theme.currentText())
 
     def onchangelang(self):
         if self.choice_language.currentText() == '简体中文':
@@ -419,6 +426,10 @@ class UIFunc(QMainWindow, Ui_UIView):
             self.retranslateUi(self)
         self.retranslateUi(self)
         self.config.setValue("Config/Language", self.choice_language.currentText())
+
+    def onchangetheme(self):
+        self.apply_stylesheet(self.app, theme=self.choice_theme.currentText())
+        self.config.setValue("Config/Theme", self.choice_theme.currentText())
 
     def closeEvent(self, event):
         self.config.sync()
@@ -435,7 +446,8 @@ class UIFunc(QMainWindow, Ui_UIView):
                         'Precision=200\n'
                         'ExecuteSpeed=100\n'
                         'Language=zh-cn\n'
-                        'Extension=Extension\n')
+                        'Extension=Extension\n'
+                        'Theme=light_cyan_500.xml\n')
         return QSettings('config.ini', QSettings.IniFormat)
 
     def get_script_path(self):

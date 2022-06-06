@@ -20,8 +20,7 @@ from assets.plugins.ProcessException import BreakProcess, EndProcess
 
 def main():
     app = QApplication(sys.argv)
-    apply_stylesheet(app, theme='light_cyan_500.xml')
-    ui = UIFunc.UIFunc()
+    ui = UIFunc.UIFunc(app)
     ui.show()
     sys.exit(app.exec_())
 
