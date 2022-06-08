@@ -117,12 +117,13 @@ Monomux
 在执行过程中，修改`runtimes`的值会影响脚本的实际执行次数。
 
 `Extension`类提供以下接口:
+  + `onbeginp()`，在脚本执行前，扩展模块实例化后执行，默认包含提示音播放
   + `onbeforeeachloop(currentloop)`，在每次执行脚本前执行，返回False时跳过本次执行
   + `onrunbefore(event, currentindex)`，在每行脚本执行前执行，返回False时跳过本行执行
   + `onrunafter(event, currentindex)`，在每行脚本后执行，无论`onrunbefore`返回值如何，无返回值
   + `onaftereachloop(currentloop)`，在每次执行完脚本后执行，无论`onbeforeeachloop`返回值如何，无返回值
   + `onrecord(event, currentindex)`，在每次录制到一个操作后执行，返回True记录本次操作
-  + `onendp()`，在全部循环执行完成后执行
+  + `onendp()`，在全部循环执行完成后执行，默认包含提示音播放
 
 `currentindex`和`currentloop`分别指代当前脚本的行索引与循环索引(从0开始)
 
@@ -153,11 +154,11 @@ __流程控制__
 
 各接口接受的流程控制异常:
 
-| - | onbeforeeachloop | onrunbefore | onrunafter | onafterloop | onendp | onrecord |
-| :---: | :---: | :---: | :---: | :---: | :---: |:--------:|
-| Jump | × | √ | √ | × | × |    ×     |
-| Break | √ | √ | √ | √ | × |    ×     |
-| End | √ | √ | √ | √ | × |    ×     |
+|   -   | onbeginp | onbeforeeachloop | onrunbefore | onrunafter | onafterloop | onendp | onrecord |
+|:-----:| :---: | :---: | :---: | :---: | :---: | :---: |:--------:|
+| Jump  | × | × | √ | √ | × | × |    ×     |
+| Break | × | √ | √ | √ | √ | × |    ×     |
+|  End  | × | √ | √ | √ | √ | × |    ×     |
 
 
 __日志调试__

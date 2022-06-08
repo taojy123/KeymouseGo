@@ -585,7 +585,7 @@ class RunScriptClass(threading.Thread):
             self.j = 0
             nointerrupt = True
             logger.debug('Run script..')
-            PlayPromptTone(1, 0).start()
+            extension.onbeginp()
             while (self.j < extension.runtimes or extension.runtimes == 0) and nointerrupt:
                 logger.info('===========%d==============' % self.j)
                 current_status = self.frame.tnumrd.text()
@@ -613,7 +613,6 @@ class RunScriptClass(threading.Thread):
             else:
                 logger.info('Script run interrupted')
             self.frame.running = False
-            PlayPromptTone.play_end_sound()
 
         except Exception as e:
             logger.error('Run error {0}'.format(e))
@@ -773,9 +772,9 @@ class RunScriptClass(threading.Thread):
                     logger.info('Broken at %d/%d' % (i, steps))
                     return False
                 thd.event.wait()
-                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, extension.runtimes, extension.speed)
+                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i, steps, thd.j + 1, extension.runtimes, extension.speed)
                 logger.trace(
-                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, extension.runtimes, extension.speed))
+                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i, steps, thd.j + 1, extension.runtimes, extension.speed))
                 thd.frame.tnumrd.setText(text)
 
         return True

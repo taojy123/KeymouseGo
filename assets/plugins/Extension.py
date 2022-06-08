@@ -1,4 +1,4 @@
-from UIFunc import ScriptEvent
+from UIFunc import ScriptEvent, PlayPromptTone
 
 
 class Extension:
@@ -7,6 +7,10 @@ class Extension:
         self.speed = speed
         self.thd = thd
         self.swap = swap
+
+    # 脚本执行前需要做的事
+    def onbeginp(self):
+        PlayPromptTone(1, 0).start()
 
     # 每次录制事件后需要做的事,返回True保存事件
     def onrecord(self, event, currentindex):
@@ -30,4 +34,4 @@ class Extension:
 
     # 全部循环全部执行完后需要做的事
     def onendp(self):
-        pass
+        PlayPromptTone.play_end_sound()
