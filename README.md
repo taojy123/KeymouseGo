@@ -145,6 +145,24 @@ Monomux
 ]
 ```
 
+程序启动时默认添加plugins文件夹到库搜索路径，如果需要添加其它库搜索路径，可以通过在扩展开头添加以下内容：
+
+示例：添加程序目录下的plugins文件夹到搜索路径
+```python
+import os
+from KeymouseGo import add_lib_path
+add_lib_path([
+    os.path.join(os.getcwd(), "plugins")
+])
+```
+
+在相应文件夹添加入搜索路径后，该文件夹下模块的引入可以直接通过`import`或`from ... import ...`实现：
+
+例如，假设`plugins`文件夹下存在`Util.py`，可直接通过以下指令引入模块
+```python
+import Util
+```
+
 __流程控制__
 
 程序对脚本执行流程提供了以下方法，均以异常形式定义，使用时通过`raise`异常实现流程控制:

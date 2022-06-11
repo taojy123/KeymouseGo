@@ -615,7 +615,7 @@ class RunScriptClass(threading.Thread):
             self.frame.running = False
 
         except Exception as e:
-            logger.error('Run error {0}'.format(e))
+            logger.error('Run error: {0}'.format(e))
             traceback.print_exc()
             self.frame.tnumrd.setText('failed')
             self.frame.running = False
@@ -633,7 +633,7 @@ class RunScriptClass(threading.Thread):
             module = SourceFileLoader(module_name,
                                       os.path.join(os.getcwd(), 'plugins', '%s.py' % module_name)).load_module()
         module_cls = getattr(module, module_name)
-        logger.info('Loaded plugin class {0} in module {1}'.format(module_cls, module_name))
+        logger.info('Load plugin class {0} in module {1}'.format(module_cls, module_name))
         return module_cls(runtimes, speed, thd, swap)
 
     # 解析脚本内容，转换为ScriptEvent集合
