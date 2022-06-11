@@ -9,6 +9,12 @@ import threading
 import time
 import traceback
 import winreg
+import platform
+import subprocess
+import tkinter as tk
+from tkinter import messagebox 
+from tkinter import simpledialog
+from tkinter.filedialog import *
 from importlib.machinery import SourceFileLoader
 
 import pyWinhook
@@ -24,7 +30,7 @@ from playsound import playsound, PlaysoundException
 from pyWinhook import cpyHook, HookConstants
 from win32gui import GetDC
 from win32print import GetDeviceCaps
-
+ 
 from UIView import Ui_UIView
 from assets.plugins.ProcessException import *
 
@@ -66,8 +72,29 @@ def get_assets_path(*paths):
     return os.path.join(root, 'assets', *paths)
 
 
+scripts = []
+scripts_map = {'current_index': 0}
+
+def get_script_list_from_dir():
+    global scripts
+
+    if not os.path.exists('scripts'):
+        os.mkdir('scripts')
+    scripts = os.listdir('scripts')[::-1]
+    scripts = list(filter(lambda s: s.endswith('.txt'), scripts))
+
+
+def update_script_map():
+    global scripts_map
+    
+    for (i, item) in enumerate(scripts):
+        scripts_map[item] = i
+
+
 class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
     def __init__(self, app):
+        global scripts
+
         super(UIFunc, self).__init__()
 
         logger.info('assets root:{0}'.format(get_assets_path()))
@@ -86,10 +113,9 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.choice_language.setCurrentText(self.config.value("Config/Language"))
         self.onchangelang()
 
-        if not os.path.exists('scripts'):
-            os.mkdir('scripts')
-        self.scripts = os.listdir('scripts')[::-1]
-        self.scripts = list(filter(lambda s: s.endswith('.txt'), self.scripts))
+        get_script_list_from_dir()
+        update_script_map()
+        self.scripts = scripts
         self.choice_script.addItems(self.scripts)
         if self.scripts:
             self.choice_script.setCurrentIndex(0)
@@ -478,6 +504,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         if script in self.scripts:
             script = '%s.txt' % now.strftime('%m%d_%H%M%S')
         self.scripts.insert(0, script)
+        update_script_map()
         self.choice_script.clear()
         self.choice_script.addItems(self.scripts)
         self.choice_script.setCurrentIndex(0)
@@ -498,10 +525,15 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.pauseRecordMethod()
 
     def OnBtOpenScriptFilesButton(self):
-        # messageBox = QMessageBox()
-        # messageBox.setText("clicked open script files")
-        # messageBox.exec()
-        pass
+        global scripts_map
+
+        index = scripts_map['current_index'] = self.choice_script.currentIndex()
+        dialog = FileDialog()
+        dialog.main()
+        # 重新设置的为点击按钮时, 所处的位置
+        self.choice_script.clear()
+        self.choice_script.addItems(scripts)
+        self.choice_script.setCurrentIndex(index)
 
     def recordMethod(self):
         if self.recording:
@@ -924,3 +956,82 @@ class PlayPromptTone(threading.Thread):
             playsound(path)
         except PlaysoundException as e:
             logger.error(e)
+
+ 
+
+
+class FileDialog():
+    def __init__(self):
+        global scripts
+        global scripts_map
+
+        # print(scripts)
+        # print(scripts_map)
+        # print(scripts_map['current_index'])
+        # print(scripts[scripts_map['current_index']])
+        self.root = tk.Tk()
+        self.filename = tk.StringVar(value=scripts[scripts_map['current_index']])
+        self.path = os.path.join(os.getcwd(), "scripts")
+
+
+    def init(self):
+        self.root.iconphoto(False, tk.PhotoImage(file='Mondrian.png'))
+        self.root.geometry('590x50+' + str(int(SW/2) - 295) + '+' + str(int(SH/2) - 25))
+        # 构建“选择文件”这一行的标签、输入框以及启动按钮，同时我们希望当用户选择图片之后能够显示原图的基本信息
+        tk.Label(self.root, text='选择文件').grid(row=1, column=0, padx=5, pady=5)
+        tk.Entry(self.root, textvariable=self.filename).grid(row=1, column=1, padx=5, pady=5)
+        tk.Button(self.root, text='选择文件', command=self.change_file).grid(row=1, column=2, padx=5, pady=5)
+        tk.Button(self.root, text='编辑脚本', command=self.edit_file).grid(row=1, column=3, padx=5, pady=5)
+        tk.Button(self.root, text='重命名文件', command=self.rename).grid(row=1, column=4, padx=5, pady=5)
+
+
+    def change_file(self):
+        file = askopenfilename(initialdir=self.path, filetypes=(("Text Files", "*.txt"),))
+        file_name = re.split(r'\\|\/', file)[-1]
+        if file_name != '':
+            self.filename.set(file_name)
+
+
+    def edit_file(self):
+        # Mac打开文件防止以后需要
+        # if userPlatform == 'Darwin':
+        #     subprocess.call(['open', filename.get()])
+        user_paltform = platform.system()
+        try:
+            if user_paltform == 'Linux':
+                subprocess.call(['xdg-open', os.path.join(self.path, self.filename.get())])
+            else:
+                os.startfile(os.path.join(self.path, self.filename.get()))
+        except FileNotFoundError:
+            messagebox.showwarning(message='文件没有被找到')
+            self.filename.set('')
+
+
+    def rename(self):
+        global scripts
+        global scripts_map
+
+        new_file_name = simpledialog.askstring(title='重命名文件', prompt='请输入新文件名: ')
+        if new_file_name != None and new_file_name.strip() != '':
+            if not new_file_name.endswith('.txt'):
+                new_file_name = new_file_name + '.txt'
+
+            try:
+                os.rename(os.path.join(self.path, self.filename.get()), os.path.join(self.path, new_file_name))
+                messagebox.showinfo(message='更新成功')
+                # 更新
+                filename = self.filename.get()
+                index = scripts_map.get(filename)
+                scripts_map.pop(filename)
+                scripts_map[new_file_name] = index
+                scripts[index] = new_file_name
+                self.filename.set(new_file_name)
+            except FileNotFoundError:
+                messagebox.showwarning(message='文件没有被找到')
+        else:
+            messagebox.showwarning(message='文件名不能为空或空格')
+
+
+    def main(self):
+        self.init()
+        self.root.mainloop()
