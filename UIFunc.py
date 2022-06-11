@@ -976,13 +976,13 @@ class FileDialog():
 
     def init(self):
         self.root.iconphoto(False, tk.PhotoImage(file='Mondrian.png'))
-        self.root.geometry('590x50+' + str(int(SW/2) - 295) + '+' + str(int(SH/2) - 25))
-        # 构建“选择文件”这一行的标签、输入框以及启动按钮，同时我们希望当用户选择图片之后能够显示原图的基本信息
+        self.root.geometry('300x100+' + str(int(SW/2) - 150) + '+' + str(int(SH/2) - 50))
+        self.root.title('文件管理')
         tk.Label(self.root, text='选择文件').grid(row=1, column=0, padx=5, pady=5)
-        tk.Entry(self.root, textvariable=self.filename).grid(row=1, column=1, padx=5, pady=5)
-        tk.Button(self.root, text='选择文件', command=self.change_file).grid(row=1, column=2, padx=5, pady=5)
-        tk.Button(self.root, text='编辑脚本', command=self.edit_file).grid(row=1, column=3, padx=5, pady=5)
-        tk.Button(self.root, text='重命名文件', command=self.rename).grid(row=1, column=4, padx=5, pady=5)
+        tk.Entry(self.root, textvariable=self.filename).grid(row=1, column=1, padx=5, pady=5, columnspan=2)
+        tk.Button(self.root, text='选择文件', command=self.change_file).grid(row=2, column=0, padx=5, pady=5)
+        tk.Button(self.root, text='编辑脚本', command=self.edit_file).grid(row=2, column=1, padx=5, pady=5)
+        tk.Button(self.root, text='重命名文件', command=self.rename).grid(row=2, column=2, padx=5, pady=5)
 
 
     def change_file(self):
