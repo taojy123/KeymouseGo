@@ -12,10 +12,18 @@ from PySide2.QtWidgets import QApplication
 import UIFunc
 import argparse
 
-from qt_material import apply_stylesheet
 from loguru import logger
 
 from assets.plugins.ProcessException import BreakProcess, EndProcess
+
+
+def add_lib_path(libpaths):
+    for libpath in libpaths:
+        if os.path.exists(libpath) and (libpath not in sys.path):
+            sys.path.append(libpath)
+
+
+add_lib_path([os.path.join(os.getcwd(), 'plugins')])
 
 
 def main():
