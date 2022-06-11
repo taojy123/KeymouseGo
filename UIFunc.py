@@ -148,6 +148,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.btrun.clicked.connect(self.OnBtrunButton)
         self.btrecord.clicked.connect(self.OnBtrecordButton)
         self.btpauserecord.clicked.connect(self.OnPauseRecordButton)
+        self.bt_open_script_files.clicked.connect(self.OnBtOpenScriptFilesButton)
         self.choice_record.installEventFilter(self)
         self.choice_language.installEventFilter(self)
         self.choice_stop.installEventFilter(self)
@@ -156,6 +157,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.btrun.installEventFilter(self)
         self.btrecord.installEventFilter(self)
         self.btpauserecord.installEventFilter(self)
+        self.bt_open_script_files.installEventFilter(self)
         self.choice_extension.installEventFilter(self)
 
         self.extension = None
@@ -494,6 +496,12 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
     def OnPauseRecordButton(self):
         self.pauseRecordMethod()
+
+    def OnBtOpenScriptFilesButton(self):
+        # messageBox = QMessageBox()
+        # messageBox.setText("clicked open script files")
+        # messageBox.exec()
+        pass
 
     def recordMethod(self):
         if self.recording:
