@@ -113,6 +113,8 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.execute_speed.setValue(int(self.config.value("Config/ExecuteSpeed")))
         self.choice_extension.setCurrentText(self.config.value("Config/Extension"))
         self.choice_theme.setCurrentText(self.config.value("Config/Theme"))
+        if self.config.value('Config/Script') is not None and self.config.value('Config/Script') in self.scripts:
+            self.choice_script.setCurrentText(self.config.value('Config/Script'))
         self.choice_start.currentIndexChanged.connect(self.onconfigchange)
         self.choice_stop.currentIndexChanged.connect(self.onconfigchange)
         self.choice_record.currentIndexChanged.connect(self.onconfigchange)
@@ -121,6 +123,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.mouse_move_interval_ms.valueChanged.connect(self.onconfigchange)
         self.choice_extension.currentIndexChanged.connect(self.onconfigchange)
         self.choice_theme.currentTextChanged.connect(self.onchangetheme)
+        self.choice_script.currentTextChanged.connect(self.onconfigchange)
 
         self.onchangetheme()
 
@@ -414,6 +417,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.config.setValue("Config/ExecuteSpeed", self.execute_speed.value())
         self.config.setValue("Config/Extension", self.choice_extension.currentText())
         self.config.setValue("Config/Theme", self.choice_theme.currentText())
+        self.config.setValue("Config/Script", self.choice_script.currentText())
 
     def onchangelang(self):
         if self.choice_language.currentText() == '简体中文':
