@@ -73,7 +73,7 @@ def get_assets_path(*paths):
 
 
 scripts = []
-scripts_map = {'current_index': 0}
+scripts_map = {'current_index': 0, 'choice_language': '简体中文'}
 
 def get_script_list_from_dir():
     global scripts
@@ -448,16 +448,20 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.config.setValue("Config/Script", self.choice_script.currentText())
 
     def onchangelang(self):
+        global scripts_map
+
         if self.choice_language.currentText() == '简体中文':
             self.trans.load(get_assets_path('i18n', 'zh-cn'))
             _app = QApplication.instance()
             _app.installTranslator(self.trans)
             self.retranslateUi(self)
+            scripts_map['choice_language'] = '简体中文'
         elif self.choice_language.currentText() == 'English':
             self.trans.load(get_assets_path('i18n', 'en'))
             _app = QApplication.instance()
             _app.installTranslator(self.trans)
             self.retranslateUi(self)
+            scripts_map['choice_language'] = 'English'
         self.retranslateUi(self)
         self.config.setValue("Config/Language", self.choice_language.currentText())
 
@@ -972,27 +976,32 @@ class FileDialog():
         self.root = tk.Tk()
         self.filename = tk.StringVar(value=scripts[scripts_map['current_index']])
         self.path = os.path.join(os.getcwd(), "scripts")
+        i18n_language = {
+            '简体中文': ['文件管理', '当前文件', '选择文件', '编辑脚本', '重命名文件', '文件没有被找到', '请输入新文件名: ', '更新成功', '文件名不能为空或空格'], 
+            'English': ['File', 'Current file', 'Choice', 'Edit', 'Rename', 'File not found', 'Please input new name', 'Success', 'File name cannot be empty or space']
+            }
+        self.language = i18n_language[scripts_map['choice_language']]
 
 
     def init(self):
         self.root.iconphoto(False, tk.PhotoImage(file='Mondrian.png'))
         self.root.geometry('300x100+' + str(int(SW/2) - 150) + '+' + str(int(SH/2) - 50))
-        self.root.title('文件管理')
-        tk.Label(self.root, text='选择文件').grid(row=1, column=0, padx=5, pady=5)
+        self.root.title(self.language[0])
+        tk.Label(self.root, text=self.language[1]).grid(row=1, column=0, padx=5, pady=5)
         tk.Entry(self.root, textvariable=self.filename).grid(row=1, column=1, padx=5, pady=5, columnspan=2)
-        tk.Button(self.root, text='选择文件', command=self.change_file).grid(row=2, column=0, padx=5, pady=5)
-        tk.Button(self.root, text='编辑脚本', command=self.edit_file).grid(row=2, column=1, padx=5, pady=5)
-        tk.Button(self.root, text='重命名文件', command=self.rename).grid(row=2, column=2, padx=5, pady=5)
+        tk.Button(self.root, text=self.language[2], command=self.choice_file, width=8).grid(row=2, column=0, padx=5, pady=5)
+        tk.Button(self.root, text=self.language[3], command=self.edit, width=8).grid(row=2, column=1, padx=5, pady=5)
+        tk.Button(self.root, text=self.language[4], command=self.rename, width=8).grid(row=2, column=2, padx=5, pady=5)
 
 
-    def change_file(self):
+    def choice_file(self):
         file = askopenfilename(initialdir=self.path, filetypes=(("Text Files", "*.txt"),))
         file_name = re.split(r'\\|\/', file)[-1]
         if file_name != '':
             self.filename.set(file_name)
 
 
-    def edit_file(self):
+    def edit(self):
         # Mac打开文件防止以后需要
         # if userPlatform == 'Darwin':
         #     subprocess.call(['open', filename.get()])
@@ -1003,7 +1012,7 @@ class FileDialog():
             else:
                 os.startfile(os.path.join(self.path, self.filename.get()))
         except FileNotFoundError:
-            messagebox.showwarning(message='文件没有被找到')
+            messagebox.showwarning(message=self.language[5])
             self.filename.set('')
 
 
@@ -1011,14 +1020,14 @@ class FileDialog():
         global scripts
         global scripts_map
 
-        new_file_name = simpledialog.askstring(title='重命名文件', prompt='请输入新文件名: ')
+        new_file_name = simpledialog.askstring(title=self.language[4], prompt=self.language[6])
         if new_file_name != None and new_file_name.strip() != '':
             if not new_file_name.endswith('.txt'):
                 new_file_name = new_file_name + '.txt'
 
             try:
                 os.rename(os.path.join(self.path, self.filename.get()), os.path.join(self.path, new_file_name))
-                messagebox.showinfo(message='更新成功')
+                messagebox.showinfo(message=self.language[7])
                 # 更新
                 filename = self.filename.get()
                 index = scripts_map.get(filename)
@@ -1027,9 +1036,9 @@ class FileDialog():
                 scripts[index] = new_file_name
                 self.filename.set(new_file_name)
             except FileNotFoundError:
-                messagebox.showwarning(message='文件没有被找到')
+                messagebox.showwarning(message=self.language[5])
         else:
-            messagebox.showwarning(message='文件名不能为空或空格')
+            messagebox.showwarning(message=self.language[8])
 
 
     def main(self):
