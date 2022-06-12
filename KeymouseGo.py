@@ -12,14 +12,23 @@ from PySide2.QtWidgets import QApplication
 import UIFunc
 import argparse
 
-from qt_material import apply_stylesheet
 from loguru import logger
+
+from assets.plugins.ProcessException import BreakProcess, EndProcess
+
+
+def add_lib_path(libpaths):
+    for libpath in libpaths:
+        if os.path.exists(libpath) and (libpath not in sys.path):
+            sys.path.append(libpath)
+
+
+add_lib_path([os.path.join(os.getcwd(), 'plugins')])
 
 
 def main():
     app = QApplication(sys.argv)
-    apply_stylesheet(app, theme='light_cyan_500.xml')
-    ui = UIFunc.UIFunc()
+    ui = UIFunc.UIFunc(app)
     ui.show()
     sys.exit(app.exec_())
 
@@ -32,15 +41,27 @@ def single_run(script_path, run_times=1, speed=100, module_name='Extension'):
     try:
         for path in script_path:
             logger.info('Script path:%s' % path)
-            events = UIFunc.RunScriptClass.parsescript(path, speed=speed)
-            extension = UIFunc.RunScriptClass.getextension(module_name)
+            events, smodule_name = UIFunc.RunScriptClass.parsescript(path, speed=speed)
+            extension = UIFunc.RunScriptClass.getextension(
+                smodule_name if smodule_name is not None else module_name,
+                runtimes=run_times,
+                speed=speed)
             j = 0
-            while j < run_times or run_times == 0:
+            while j < extension.runtimes or extension.runtimes == 0:
                 logger.info('===========%d==============' % j)
-                if extension.onbeforeeachloop(j):
-                    UIFunc.RunScriptClass.run_script_once(events, extension, j)
-                extension.onaftereachloop(j)
-                j += 1
+                try:
+                    if extension.onbeforeeachloop(j):
+                        UIFunc.RunScriptClass.run_script_once(events, extension)
+                    extension.onaftereachloop(j)
+                    j += 1
+                except BreakProcess:
+                    logger.debug('Break')
+                    j += 1
+                    continue
+                except EndProcess:
+                    logger.debug('End')
+                    break
+            extension.onendp()
             logger.info('%s run finish' % path)
         logger.info('Scripts run finish!')
     except Exception as e:

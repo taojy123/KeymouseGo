@@ -121,7 +121,7 @@
        <x>10</x>
        <y>30</y>
        <width>291</width>
-       <height>121</height>
+       <height>151</height>
       </rect>
      </property>
      <layout class="QFormLayout" name="formLayout_2">
@@ -215,6 +215,19 @@
          <number>100</number>
         </property>
        </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_theme">
+        <property name="toolTip">
+         <string>Range(20%-500%)</string>
+        </property>
+        <property name="text">
+         <string>Theme</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="choice_theme"/>
       </item>
      </layout>
     </widget>

@@ -90,7 +90,7 @@ class Ui_UIView(object):
         self.groupBox_2.setGeometry(QRect(10, 10, 311, 191))
         self.formLayoutWidget_2 = QWidget(self.groupBox_2)
         self.formLayoutWidget_2.setObjectName(u"formLayoutWidget_2")
-        self.formLayoutWidget_2.setGeometry(QRect(10, 30, 291, 121))
+        self.formLayoutWidget_2.setGeometry(QRect(10, 30, 291, 151))
         self.formLayout_2 = QFormLayout(self.formLayoutWidget_2)
         self.formLayout_2.setObjectName(u"formLayout_2")
         self.formLayout_2.setHorizontalSpacing(20)
@@ -143,6 +143,16 @@ class Ui_UIView(object):
         self.execute_speed.setValue(100)
 
         self.formLayout_2.setWidget(3, QFormLayout.FieldRole, self.execute_speed)
+
+        self.label_theme = QLabel(self.formLayoutWidget_2)
+        self.label_theme.setObjectName(u"label_theme")
+
+        self.formLayout_2.setWidget(4, QFormLayout.LabelRole, self.label_theme)
+
+        self.choice_theme = QComboBox(self.formLayoutWidget_2)
+        self.choice_theme.setObjectName(u"choice_theme")
+
+        self.formLayout_2.setWidget(4, QFormLayout.FieldRole, self.choice_theme)
 
         self.tnumrd = QLabel(self.centralwidget)
         self.tnumrd.setObjectName(u"tnumrd")
@@ -216,6 +226,10 @@ class Ui_UIView(object):
 #if QT_CONFIG(tooltip)
         self.execute_speed.setToolTip(QCoreApplication.translate("UIView", u"Range(20%-500%)", None))
 #endif // QT_CONFIG(tooltip)
+#if QT_CONFIG(tooltip)
+        self.label_theme.setToolTip(QCoreApplication.translate("UIView", u"Range(20%-500%)", None))
+#endif // QT_CONFIG(tooltip)
+        self.label_theme.setText(QCoreApplication.translate("UIView", u"Theme", None))
         self.tnumrd.setText(QCoreApplication.translate("UIView", u"Ready...", None))
         self.btrecord.setText(QCoreApplication.translate("UIView", u"Record", None))
         self.btrun.setText(QCoreApplication.translate("UIView", u"Launch", None))

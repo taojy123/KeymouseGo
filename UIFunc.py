@@ -15,6 +15,7 @@ import pyWinhook
 import pyperclip
 import win32api
 import win32con
+from qt_material import list_themes, QtStyleTools
 from PySide2.QtCore import QSettings, Qt
 from PySide2.QtCore import QTranslator, QCoreApplication
 from PySide2.QtWidgets import QMainWindow, QApplication
@@ -25,6 +26,7 @@ from win32gui import GetDC
 from win32print import GetDeviceCaps
 
 from UIView import Ui_UIView
+from assets.plugins.ProcessException import *
 
 os.environ['QT_ENABLE_HIGHDPI_SCALING'] = "1"
 QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -64,13 +66,15 @@ def get_assets_path(*paths):
     return os.path.join(root, 'assets', *paths)
 
 
-class UIFunc(QMainWindow, Ui_UIView):
-    def __init__(self):
+class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
+    def __init__(self, app):
         super(UIFunc, self).__init__()
 
         logger.info('assets root:{0}'.format(get_assets_path()))
 
         self.setupUi(self)
+
+        self.app = app
 
         self.config = self.loadconfig()
 
@@ -97,6 +101,7 @@ class UIFunc(QMainWindow, Ui_UIView):
             if i[-3:] == '.py':
                 self.choice_extension.addItems([i[:-3]])
 
+        self.choice_theme.addItems(list_themes())
         self.choice_start.addItems(HOT_KEYS)
         self.choice_stop.addItems(HOT_KEYS)
         self.choice_record.addItems(HOT_KEYS)
@@ -107,13 +112,20 @@ class UIFunc(QMainWindow, Ui_UIView):
         self.mouse_move_interval_ms.setValue(int(self.config.value("Config/Precision")))
         self.execute_speed.setValue(int(self.config.value("Config/ExecuteSpeed")))
         self.choice_extension.setCurrentText(self.config.value("Config/Extension"))
+        self.choice_theme.setCurrentText(self.config.value("Config/Theme"))
+        if self.config.value('Config/Script') is not None and self.config.value('Config/Script') in self.scripts:
+            self.choice_script.setCurrentText(self.config.value('Config/Script'))
         self.choice_start.currentIndexChanged.connect(self.onconfigchange)
         self.choice_stop.currentIndexChanged.connect(self.onconfigchange)
         self.choice_record.currentIndexChanged.connect(self.onconfigchange)
         self.stimes.valueChanged.connect(self.onconfigchange)
         self.execute_speed.valueChanged.connect(self.onconfigchange)
         self.mouse_move_interval_ms.valueChanged.connect(self.onconfigchange)
-        self.choice_extension.currentIndexChanged.connect(self.onextensionchange)
+        self.choice_extension.currentIndexChanged.connect(self.onconfigchange)
+        self.choice_theme.currentTextChanged.connect(self.onchangetheme)
+        self.choice_script.currentTextChanged.connect(self.onconfigchange)
+
+        self.onchangetheme()
 
         self.running = False
         self.recording = False
@@ -146,7 +158,7 @@ class UIFunc(QMainWindow, Ui_UIView):
         self.btpauserecord.installEventFilter(self)
         self.choice_extension.installEventFilter(self)
 
-        self.extension = RunScriptClass.getextension(self.choice_extension.currentText())
+        self.extension = None
 
         self.hm = pyWinhook.HookManager()
 
@@ -332,7 +344,7 @@ class UIFunc(QMainWindow, Ui_UIView):
                 self.isbrokenorfinish = True
                 if self.paused:
                     self.paused = False
-                    self.pause_event.set()
+                self.pause_event.set()
                 logger.debug('{0} host stop'.format(key_name))
             elif key_name == stop_name and self.recording:
                 self.recordMethod()
@@ -404,10 +416,8 @@ class UIFunc(QMainWindow, Ui_UIView):
         self.config.setValue("Config/Precision", self.mouse_move_interval_ms.value())
         self.config.setValue("Config/ExecuteSpeed", self.execute_speed.value())
         self.config.setValue("Config/Extension", self.choice_extension.currentText())
-
-    def onextensionchange(self):
-        self.onconfigchange()
-        self.extension = RunScriptClass.getextension(self.choice_extension.currentText())
+        self.config.setValue("Config/Theme", self.choice_theme.currentText())
+        self.config.setValue("Config/Script", self.choice_script.currentText())
 
     def onchangelang(self):
         if self.choice_language.currentText() == '简体中文':
@@ -423,13 +433,22 @@ class UIFunc(QMainWindow, Ui_UIView):
         self.retranslateUi(self)
         self.config.setValue("Config/Language", self.choice_language.currentText())
 
+    def onchangetheme(self):
+        self.apply_stylesheet(self.app, theme=self.choice_theme.currentText())
+        self.config.setValue("Config/Theme", self.choice_theme.currentText())
+
     def closeEvent(self, event):
         self.config.sync()
+        if self.running:
+            self.isbrokenorfinish = True
+            if self.paused:
+                self.paused = False
+            self.pause_event.set()
         event.accept()
 
     def loadconfig(self):
         if not os.path.exists('config.ini'):
-            with open('config.ini', 'w') as f:
+            with open('config.ini', 'w', encoding='utf-8') as f:
                 f.write('[Config]\n'
                         'StartHotKeyIndex=3\n'
                         'StopHotKeyIndex=6\n'
@@ -438,7 +457,8 @@ class UIFunc(QMainWindow, Ui_UIView):
                         'Precision=200\n'
                         'ExecuteSpeed=100\n'
                         'Language=zh-cn\n'
-                        'Extension=Extension\n')
+                        'Extension=Extension\n'
+                        'Theme=light_cyan_500.xml\n')
         return QSettings('config.ini', QSettings.IniFormat)
 
     def get_script_path(self):
@@ -456,6 +476,7 @@ class UIFunc(QMainWindow, Ui_UIView):
         if script in self.scripts:
             script = '%s.txt' % now.strftime('%m%d_%H%M%S')
         self.scripts.insert(0, script)
+        self.choice_script.clear()
         self.choice_script.addItems(self.scripts)
         self.choice_script.setCurrentIndex(0)
         return self.get_script_path()
@@ -478,12 +499,12 @@ class UIFunc(QMainWindow, Ui_UIView):
         if self.recording:
             logger.info('Record stop')
             self.recording = False
-            self.record = self.record[:-2]
-            output = json.dumps(self.record, indent=1)
+            output = json.dumps(self.record, indent=1, ensure_ascii=False)
             output = output.replace('\r\n', '\n').replace('\r', '\n')
             output = output.replace('\n   ', '').replace('\n  ', '')
             output = output.replace('\n ]', ']')
-            open(self.new_script_path(), 'w').write(output)
+            with open(self.new_script_path(), 'w', encoding='utf-8') as f:
+                f.write(output)
             self.btrecord.setText(QCoreApplication.translate("UIView", 'Record', None))
             self.tnumrd.setText('finished')
             self.record = []
@@ -491,8 +512,12 @@ class UIFunc(QMainWindow, Ui_UIView):
             self.btrun.setEnabled(True)
             self.actioncount = 0
             self.pauserecord = False
+            self.choice_script.setCurrentIndex(0)
             self.btpauserecord.setText(QCoreApplication.translate("UIView", 'Pause Record', None))
         else:
+            self.extension = RunScriptClass.getextension(self.choice_extension.currentText(),
+                                                         runtimes=self.stimes.value(),
+                                                         speed=self.execute_speed.value())
             logger.info('Record start')
             self.recording = True
             self.ttt = current_ts()
@@ -501,12 +526,13 @@ class UIFunc(QMainWindow, Ui_UIView):
                 return
             self.btrecord.setText(QCoreApplication.translate("UIView", 'Finish', None))
             self.tnumrd.setText('0 actions recorded')
-            self.choice_script.setCurrentIndex(-1)
             self.record = []
             self.btpauserecord.setEnabled(True)
             self.btrun.setEnabled(False)
 
     def OnBtrecordButton(self):
+        if self.recording:
+            self.record = self.record[:-2]
         self.recordMethod()
 
     def OnBtrunButton(self):
@@ -525,6 +551,7 @@ class RunScriptClass(threading.Thread):
         self.event.set()
         super(RunScriptClass, self).__init__()
 
+    @logger.catch
     def run(self):
 
         status = self.frame.tnumrd.text()
@@ -545,41 +572,54 @@ class RunScriptClass(threading.Thread):
         self.frame.btrun.setEnabled(False)
         self.frame.btrecord.setEnabled(False)
         try:
-            self.run_times = self.frame.stimes.value()
             self.running_text = '%s running..' % script_path.split('/')[-1].split('\\')[-1]
             self.frame.tnumrd.setText(self.running_text)
-            self.run_speed = self.frame.execute_speed.value()
             logger.info('%s running..' % script_path.split('/')[-1].split('\\')[-1])
 
             # 解析脚本，返回事件集合与扩展类对象
             logger.debug('Parse script..')
-            events = RunScriptClass.parsescript(script_path, thd=self)
-            extension = self.frame.extension
+            events, module_name = RunScriptClass.parsescript(script_path, speed=self.frame.execute_speed.value())
+            extension = RunScriptClass.getextension(
+                module_name if module_name is not None else self.frame.choice_extension.currentText(),
+                runtimes=self.frame.stimes.value(),
+                speed=self.frame.execute_speed.value(),
+                thd=self
+                )
 
             self.j = 0
             nointerrupt = True
             logger.debug('Run script..')
-            while (self.j < self.run_times or self.run_times == 0) and nointerrupt:
+            extension.onbeginp()
+            while (self.j < extension.runtimes or extension.runtimes == 0) and nointerrupt:
+                logger.info('===========%d==============' % self.j)
                 current_status = self.frame.tnumrd.text()
                 if current_status in ['broken', 'finished']:
                     self.frame.running = False
                     break
-                if extension.onbeforeeachloop(self.j):
-                    nointerrupt = nointerrupt and RunScriptClass.run_script_once(events, extension, self.j, thd=self)
-                else:
-                    nointerrupt = True
-                extension.onaftereachloop(self.j)
-                self.j += 1
+                try:
+                    if extension.onbeforeeachloop(self.j):
+                        nointerrupt = nointerrupt and RunScriptClass.run_script_once(events, extension, thd=self)
+                    else:
+                        nointerrupt = True
+                    extension.onaftereachloop(self.j)
+                    self.j += 1
+                except BreakProcess:
+                    logger.debug('Break')
+                    self.j += 1
+                    continue
+                except EndProcess:
+                    logger.debug('End')
+                    break
+            extension.onendp()
             if nointerrupt:
                 self.frame.tnumrd.setText('finished')
                 logger.info('Script run finish')
             else:
                 logger.info('Script run interrupted')
             self.frame.running = False
-            PlayPromptTone.play_end_sound()
 
         except Exception as e:
-            logger.error('Run error {0}'.format(e))
+            logger.error('Run error: {0}'.format(e))
             traceback.print_exc()
             self.frame.tnumrd.setText('failed')
             self.frame.running = False
@@ -590,28 +630,29 @@ class RunScriptClass(threading.Thread):
     # 获取扩展实例
     @classmethod
     @logger.catch
-    def getextension(cls, module_name='Extension'):
+    def getextension(cls, module_name='Extension', runtimes=1, speed=100, thd=None, swap=None):
         if module_name == 'Extension':
             module = SourceFileLoader(module_name, get_assets_path('plugins', 'Extension.py')).load_module()
         else:
             module = SourceFileLoader(module_name,
                                       os.path.join(os.getcwd(), 'plugins', '%s.py' % module_name)).load_module()
         module_cls = getattr(module, module_name)
-        logger.info('Loaded plugin class {0} in module {1}'.format(module_cls, module_name))
-        return module_cls()
+        logger.info('Load plugin class {0} in module {1}'.format(module_cls, module_name))
+        return module_cls(runtimes, speed, thd, swap)
 
     # 解析脚本内容，转换为ScriptEvent集合
     @classmethod
-    @logger.catch
-    def parsescript(cls, script_path, thd=None, speed=100):
+    def parsescript(cls, script_path, speed=100):
         content = ''
         lines = []
         try:
-            lines = open(script_path, 'r', encoding='utf8').readlines()
+            with open(script_path, 'r', encoding='utf8') as f:
+                lines = f.readlines()
         except Exception as e:
             logger.warning(e)
             try:
-                lines = open(script_path, 'r', encoding='gbk').readlines()
+                with open(script_path, 'r', encoding='gbk') as f:
+                    lines = f.readlines()
             except Exception as e:
                 logger.error(e)
 
@@ -633,8 +674,13 @@ class RunScriptClass(threading.Thread):
         steps = len(s)
 
         events = []
-        for i in range(steps):
-            delay = s[i][0] / ((thd.run_speed if thd else speed) / 100)
+        startindex = 0
+        module_name = None
+        if steps >= 1 and re.match('\[.+\]', str(s[0])) is None:
+            module_name = s[0]
+            startindex = 1
+        for i in range(startindex, steps):
+            delay = s[i][0] / (speed / 100)
             event_type = s[i][1].upper()
             message = s[i][2].lower()
             action = s[i][3]
@@ -648,12 +694,46 @@ class RunScriptClass(threading.Thread):
                 'action': action,
                 'addon': addon
             }))
-        return events
+        return events, module_name
+
+    @classmethod
+    def run_sub_script(cls, extension, scriptpath: str, subextension_name: str = 'Extension',
+                        runtimes: int = 1, speed: int = 100, thd=None):
+        newevents, module_name = RunScriptClass.parsescript(scriptpath, speed=speed)
+        newextension = RunScriptClass.getextension(
+            module_name if module_name is not None else subextension_name,
+            runtimes=runtimes,
+            speed=speed,
+            swap=extension.swap,
+            thd=thd
+            )
+        logger.info('Script path:%s' % scriptpath)
+        k = 0
+        nointerrupt = True
+        while (k < newextension.runtimes or newextension.runtimes == 0) and nointerrupt:
+            logger.info('========%d========' % k)
+            try:
+                if newextension.onbeforeeachloop(k):
+                    nointerrupt = nointerrupt and RunScriptClass.run_script_once(newevents, newextension, thd)
+                newextension.onaftereachloop(k)
+                k += 1
+            except BreakProcess:
+                logger.debug('Break')
+                k += 1
+                continue
+            except EndProcess:
+                logger.debug('End')
+                break
+        newextension.onendp()
+        extension.swap = newextension.swap
+        if nointerrupt:
+            logger.info('Subscript run finish')
+        else:
+            logger.info('Subscript run interrupted at loop %d' % k)
 
     # 执行集合中的ScriptEvent
     @classmethod
-    @logger.catch
-    def run_script_once(cls, events, extension, step, thd=None):
+    def run_script_once(cls, events, extension, thd=None):
         steps = len(events)
         i = 0
         while i < steps:
@@ -663,59 +743,44 @@ class RunScriptClass(threading.Thread):
                     thd.frame.tnumrd.setText('broken at %d/%d' % (i, steps))
                     return False
                 thd.event.wait()
-                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, thd.run_times, thd.run_speed)
+                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, extension.runtimes, extension.speed)
                 logger.trace(
-                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, thd.run_times, thd.run_speed))
+                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, extension.runtimes, extension.speed))
                 thd.frame.tnumrd.setText(text)
 
             event = events[i]
 
-            if 1 == step and 0 == i:
-                play = PlayPromptTone(1, event.delay)
-                play.start()
-
-            flag = extension.onrunbefore(event, i)
-
-            if type(flag) == bool:
+            try:
+                flag = extension.onrunbefore(event, i)
                 if flag:
                     logger.debug(event)
-                    event.execute()
+                    event.execute(thd)
                 else:
                     logger.debug('Skipped %d' % i)
-            elif type(flag) == int:
-                if i < 0 or i >= steps:
-                    logger.error('Index out of range: Goto %d' % i)
+                extension.onrunafter(event, i)
+                i = i + 1
+            except JumpProcess as jp:
+                if jp.index < 0:
+                    logger.error('Jump index out of range: %d' % jp.index)
+                elif jp.index >= steps:
+                    logger.warning('Jump index exceed events range: %d/%d, ends current loop' % (jp.index, steps))
+                    break
                 else:
-                    logger.debug('Jump at %d' % flag)
-                    i = flag
+                    i = jp.index
+                    logger.debug('Jump at %d' % i)
                     continue
-            else:
-                logger.error('Unsupported extension return value at onrunbefore')
-
-            flag = extension.onrunafter(event, i)
-            if flag:
-                if type(flag) == int:
-                    if i < 0 or i >= steps:
-                        logger.error('Index out of range: Goto %d' % i)
-                    else:
-                        logger.debug('Jump at %d' % flag)
-                        i = flag
-                        continue
-                else:
-                    logger.error('Unsupported extension return value at onrunafter')
-
-            i = i + 1
 
             if thd:
                 if thd.frame.isbrokenorfinish:
-                    thd.frame.tnumrd.setText('broken at %d/%d' % (i + 1, steps))
+                    thd.frame.tnumrd.setText('broken at %d/%d' % (i, steps))
                     logger.info('Broken at %d/%d' % (i, steps))
                     return False
                 thd.event.wait()
-                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, thd.run_times, thd.run_speed)
+                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i, steps, thd.j + 1, extension.runtimes, extension.speed)
                 logger.trace(
-                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, thd.run_times, thd.run_speed))
+                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i, steps, thd.j + 1, extension.runtimes, extension.speed))
                 thd.frame.tnumrd.setText(text)
+
         return True
 
 
@@ -734,8 +799,13 @@ class ScriptEvent:
         return '[%d, %s, %s, %s]' % (self.delay, self.event_type, self.message, self.action)
 
     # 执行操作
-    def execute(self):
-        time.sleep(self.delay / 1000.0)
+    def execute(self, thd=None):
+        if thd:
+            thd.event.clear()
+            thd.event.wait(timeout=self.delay / 1000.0)
+            thd.event.set()
+        else:
+            time.sleep(self.delay / 1000.0)
 
         if self.event_type == 'EM':
             x, y = self.action

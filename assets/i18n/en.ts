@@ -103,5 +103,10 @@
         <source>Extension</source>
         <translation>Extension</translation>
     </message>
+    <message>
+        <location filename="UIView.py" line="232"/>
+        <source>Theme</source>
+        <translation>Theme</translation>
+    </message>
 </context>
 </TS>
