@@ -11,6 +11,7 @@ import traceback
 import winreg
 import platform
 import subprocess
+import locale
 import tkinter as tk
 from tkinter import messagebox 
 from tkinter import simpledialog
@@ -110,7 +111,10 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.trans = QTranslator(self)
         self.choice_language.addItems(['简体中文', 'English'])
         self.choice_language.currentTextChanged.connect(self.onchangelang)
-        self.choice_language.setCurrentText(self.config.value("Config/Language"))
+
+        # 获取默认的地区设置
+        language = '简体中文' if locale.getdefaultlocale()[0] == 'zh_CN' else 'English'
+        self.choice_language.setCurrentText(language)
         self.onchangelang()
 
         get_script_list_from_dir()
@@ -463,7 +467,6 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             self.retranslateUi(self)
             scripts_map['choice_language'] = 'English'
         self.retranslateUi(self)
-        self.config.setValue("Config/Language", self.choice_language.currentText())
 
     def onchangetheme(self):
         self.apply_stylesheet(self.app, theme=self.choice_theme.currentText())
