@@ -538,7 +538,9 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
         index = scripts_map['current_index'] = self.choice_script.currentIndex()
         dialog = FileDialog()
+        self.bt_open_script_files.setDisabled(True)
         dialog.main()
+        self.bt_open_script_files.setDisabled(False)
         # 重新设置的为点击按钮时, 所处的位置
         self.choice_script.clear()
         self.choice_script.addItems(scripts)
