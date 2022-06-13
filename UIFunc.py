@@ -13,8 +13,7 @@ import platform
 import subprocess
 import locale
 import tkinter as tk
-from tkinter import messagebox 
-from tkinter import simpledialog
+from tkinter import messagebox, simpledialog
 from tkinter.filedialog import *
 from importlib.machinery import SourceFileLoader
 
@@ -34,6 +33,7 @@ from win32print import GetDeviceCaps
  
 from UIView import Ui_UIView
 from assets.plugins.ProcessException import *
+from preload import playsoundWin
 
 os.environ['QT_ENABLE_HIGHDPI_SCALING'] = "1"
 QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -156,6 +156,8 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.choice_script.currentTextChanged.connect(self.onconfigchange)
 
         self.onchangetheme()
+
+        # playsoundWin(get_assets_path('sounds', 'start.mp3'))
 
         self.running = False
         self.recording = False
@@ -987,7 +989,15 @@ class FileDialog():
 
 
     def init(self):
-        self.root.iconphoto(False, tk.PhotoImage(file='Mondrian.png'))
+        import base64
+        from assets_rc import icon
+
+        tmp = open("tmp.png","wb+")
+        tmp.write(base64.b64decode(icon))
+        tmp.close()
+        self.root.iconphoto(True, tk.PhotoImage(file="tmp.png"))
+        os.remove("tmp.png")
+        
         self.root.geometry('300x100+' + str(int(SW/2) - 150) + '+' + str(int(SH/2) - 50))
         self.root.title(self.language[0])
         tk.Label(self.root, text=self.language[1]).grid(row=1, column=0, padx=5, pady=5)
