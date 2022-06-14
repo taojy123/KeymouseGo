@@ -100,10 +100,20 @@ class Ui_UIView(object):
 
         self.formLayout_2.setWidget(0, QFormLayout.LabelRole, self.label_script)
 
+        self.gridLayout = QGridLayout()
+        self.gridLayout.setObjectName(u"gridLayout")
         self.choice_script = QComboBox(self.formLayoutWidget_2)
         self.choice_script.setObjectName(u"choice_script")
 
-        self.formLayout_2.setWidget(0, QFormLayout.FieldRole, self.choice_script)
+        self.gridLayout.addWidget(self.choice_script, 0, 0, 1, 3)
+
+        self.bt_open_script_files = QPushButton(self.formLayoutWidget_2)
+        self.bt_open_script_files.setObjectName(u"bt_open_script_files")
+
+        self.gridLayout.addWidget(self.bt_open_script_files, 0, 4, 1, 1)
+
+
+        self.formLayout_2.setLayout(0, QFormLayout.FieldRole, self.gridLayout)
 
         self.label_run_times = QLabel(self.formLayoutWidget_2)
         self.label_run_times.setObjectName(u"label_run_times")
@@ -205,6 +215,7 @@ class Ui_UIView(object):
         self.label_extension.setText(QCoreApplication.translate("UIView", u"Extension", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("UIView", u"Config", None))
         self.label_script.setText(QCoreApplication.translate("UIView", u"Sctipt", None))
+        self.bt_open_script_files.setText(QCoreApplication.translate("UIView", u"...", None))
 #if QT_CONFIG(tooltip)
         self.label_run_times.setToolTip(QCoreApplication.translate("UIView", u"Execution times(0 for endless looping)", None))
 #endif // QT_CONFIG(tooltip)
@@ -235,4 +246,3 @@ class Ui_UIView(object):
         self.btrun.setText(QCoreApplication.translate("UIView", u"Launch", None))
         self.btpauserecord.setText(QCoreApplication.translate("UIView", u"Pause Record", None))
     # retranslateUi
-

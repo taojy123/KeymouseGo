@@ -42,6 +42,15 @@ qt_resource_struct = b"\
 \x00\x00\x01\x80\x8e\x02\xff\x81\
 "
 
+icon = b"\
+iVBORw0KGgoAAAANSUhEUgAAAC\
+AAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAHFJREFUWIXt1j\
+sKgDAQRdF7xY25cpcWC60kioI6Fm/ahHBCMh+BRmGMnAgEWnvPpzK8dv\
+rFCCCAcoD8og4c5Lr6WB3Q3l1TBwLYPuF3YS1gn1HphgEEEABcKERrGy\
+0E3B0HFJg7C1N/f/kTBBBA+Vi+AMkgFEvBPD17AAAAAElFTkSuQmCC\
+"
+
+
 def qInitResources():
     QtCore.qRegisterResourceData(0x03, qt_resource_struct, qt_resource_name, qt_resource_data)
 
