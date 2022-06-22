@@ -18,7 +18,7 @@ class Ui_UIView(object):
     def setupUi(self, UIView):
         if not UIView.objectName():
             UIView.setObjectName(u"UIView")
-        UIView.resize(615, 325)
+        UIView.resize(638, 405)
         icon = QIcon()
         icon.addFile(u":/pic/Mondrian.png", QSize(), QIcon.Normal, QIcon.Off)
         UIView.setWindowIcon(icon)
@@ -26,7 +26,7 @@ class Ui_UIView(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
-        self.groupBox.setGeometry(QRect(330, 10, 271, 191))
+        self.groupBox.setGeometry(QRect(360, 10, 271, 191))
         self.formLayoutWidget = QWidget(self.groupBox)
         self.formLayoutWidget.setObjectName(u"formLayoutWidget")
         self.formLayoutWidget.setGeometry(QRect(10, 30, 251, 151))
@@ -87,12 +87,13 @@ class Ui_UIView(object):
 
         self.groupBox_2 = QGroupBox(self.centralwidget)
         self.groupBox_2.setObjectName(u"groupBox_2")
-        self.groupBox_2.setGeometry(QRect(10, 10, 311, 191))
+        self.groupBox_2.setGeometry(QRect(10, 10, 341, 191))
         self.formLayoutWidget_2 = QWidget(self.groupBox_2)
         self.formLayoutWidget_2.setObjectName(u"formLayoutWidget_2")
-        self.formLayoutWidget_2.setGeometry(QRect(10, 30, 291, 151))
+        self.formLayoutWidget_2.setGeometry(QRect(10, 30, 321, 153))
         self.formLayout_2 = QFormLayout(self.formLayoutWidget_2)
         self.formLayout_2.setObjectName(u"formLayout_2")
+        self.formLayout_2.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
         self.formLayout_2.setHorizontalSpacing(20)
         self.formLayout_2.setContentsMargins(0, 0, 0, 0)
         self.label_script = QLabel(self.formLayoutWidget_2)
@@ -102,16 +103,21 @@ class Ui_UIView(object):
 
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
+        self.gridLayout.setSizeConstraint(QLayout.SetFixedSize)
+        self.gridLayout.setVerticalSpacing(7)
+        self.gridLayout.setContentsMargins(0, 0, -1, -1)
         self.choice_script = QComboBox(self.formLayoutWidget_2)
         self.choice_script.setObjectName(u"choice_script")
 
-        self.gridLayout.addWidget(self.choice_script, 0, 0, 1, 3)
+        self.gridLayout.addWidget(self.choice_script, 0, 0, 1, 1)
 
         self.bt_open_script_files = QPushButton(self.formLayoutWidget_2)
         self.bt_open_script_files.setObjectName(u"bt_open_script_files")
 
-        self.gridLayout.addWidget(self.bt_open_script_files, 0, 4, 1, 1)
+        self.gridLayout.addWidget(self.bt_open_script_files, 0, 1, 1, 1)
 
+        self.gridLayout.setColumnStretch(0, 3)
+        self.gridLayout.setColumnStretch(1, 1)
 
         self.formLayout_2.setLayout(0, QFormLayout.FieldRole, self.gridLayout)
 
@@ -164,12 +170,9 @@ class Ui_UIView(object):
 
         self.formLayout_2.setWidget(4, QFormLayout.FieldRole, self.choice_theme)
 
-        self.tnumrd = QLabel(self.centralwidget)
-        self.tnumrd.setObjectName(u"tnumrd")
-        self.tnumrd.setGeometry(QRect(10, 250, 571, 20))
         self.horizontalLayoutWidget = QWidget(self.centralwidget)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
-        self.horizontalLayoutWidget.setGeometry(QRect(120, 210, 361, 41))
+        self.horizontalLayoutWidget.setGeometry(QRect(130, 210, 361, 41))
         self.horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setSizeConstraint(QLayout.SetDefaultConstraint)
@@ -190,10 +193,36 @@ class Ui_UIView(object):
 
         self.horizontalLayout.addWidget(self.btpauserecord)
 
+        self.verticalLayoutWidget = QWidget(self.centralwidget)
+        self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
+        self.verticalLayoutWidget.setGeometry(QRect(10, 260, 621, 91))
+        self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.tnumrd = QLabel(self.verticalLayoutWidget)
+        self.tnumrd.setObjectName(u"tnumrd")
+
+        self.verticalLayout.addWidget(self.tnumrd)
+
+        self.tevent1 = QLabel(self.verticalLayoutWidget)
+        self.tevent1.setObjectName(u"tevent1")
+
+        self.verticalLayout.addWidget(self.tevent1)
+
+        self.tevent2 = QLabel(self.verticalLayoutWidget)
+        self.tevent2.setObjectName(u"tevent2")
+
+        self.verticalLayout.addWidget(self.tevent2)
+
+        self.tevent3 = QLabel(self.verticalLayoutWidget)
+        self.tevent3.setObjectName(u"tevent3")
+
+        self.verticalLayout.addWidget(self.tevent3)
+
         UIView.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(UIView)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 615, 26))
+        self.menubar.setGeometry(QRect(0, 0, 638, 26))
         UIView.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(UIView)
         self.statusbar.setObjectName(u"statusbar")
@@ -241,8 +270,12 @@ class Ui_UIView(object):
         self.label_theme.setToolTip(QCoreApplication.translate("UIView", u"Range(20%-500%)", None))
 #endif // QT_CONFIG(tooltip)
         self.label_theme.setText(QCoreApplication.translate("UIView", u"Theme", None))
-        self.tnumrd.setText(QCoreApplication.translate("UIView", u"Ready...", None))
         self.btrecord.setText(QCoreApplication.translate("UIView", u"Record", None))
         self.btrun.setText(QCoreApplication.translate("UIView", u"Launch", None))
         self.btpauserecord.setText(QCoreApplication.translate("UIView", u"Pause Record", None))
+        self.tnumrd.setText(QCoreApplication.translate("UIView", u"Ready...", None))
+        self.tevent1.setText(QCoreApplication.translate("UIView", u"...", None))
+        self.tevent2.setText(QCoreApplication.translate("UIView", u"...", None))
+        self.tevent3.setText(QCoreApplication.translate("UIView", u"...", None))
     # retranslateUi
+

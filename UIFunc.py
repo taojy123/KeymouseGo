@@ -24,7 +24,7 @@ import win32con
 from qt_material import list_themes, QtStyleTools
 from PySide2.QtCore import QSettings, Qt
 from PySide2.QtCore import QTranslator, QCoreApplication
-from PySide2.QtWidgets import QMainWindow, QApplication
+from PySide2.QtWidgets import QMainWindow, QApplication, QGraphicsOpacityEffect
 from loguru import logger
 from playsound import playsound, PlaysoundException
 from pyWinhook import cpyHook, HookConstants
@@ -156,6 +156,14 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.choice_script.currentTextChanged.connect(self.onconfigchange)
 
         self.onchangetheme()
+
+        # Opacity of labels below
+        self.tevent1opacity = QGraphicsOpacityEffect()
+        self.tevent1opacity.setOpacity(0.6)
+        self.tevent1.setGraphicsEffect(self.tevent1opacity)
+        self.tevent3opacity = QGraphicsOpacityEffect()
+        self.tevent3opacity.setOpacity(0.8)
+        self.tevent3.setGraphicsEffect(self.tevent3opacity)
 
         # playsoundWin(get_assets_path('sounds', 'start.mp3'))
 
@@ -647,6 +655,8 @@ class RunScriptClass(threading.Thread):
                 if current_status in ['broken', 'finished']:
                     self.frame.running = False
                     break
+                self.frame.tnumrd.setText('{0}... Looptimes [{1}/{2}]'.format(
+                    self.running_text, self.j + 1, extension.runtimes))
                 try:
                     if extension.onbeforeeachloop(self.j):
                         nointerrupt = nointerrupt and RunScriptClass.run_script_once(events, extension, thd=self)
@@ -790,14 +800,23 @@ class RunScriptClass(threading.Thread):
         while i < steps:
             if thd:
                 if thd.frame.isbrokenorfinish:
-                    logger.info('Broken at %d/%d' % (i, steps))
-                    thd.frame.tnumrd.setText('broken at %d/%d' % (i, steps))
+                    logger.info('Broken at [%d/%d]' % (i, steps))
                     return False
                 thd.event.wait()
-                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, extension.runtimes, extension.speed)
                 logger.trace(
                     '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, extension.runtimes, extension.speed))
-                thd.frame.tnumrd.setText(text)
+                if i > 0:
+                    thd.frame.tevent1.setText('Previous: {0} [{1}/{2}]'.format(
+                        events[i - 1].summarystr(), i, steps))
+                else:
+                    thd.frame.tevent1.setText('Previous: ...')
+                thd.frame.tevent2.setText('Current: {0} [{1}/{2}]'.format(
+                        events[i].summarystr(), i + 1, steps))
+                if i < steps - 1:
+                    thd.frame.tevent3.setText('Next: {0} [{1}/{2}]'.format(
+                        events[i + 1].summarystr(), i + 2, steps))
+                else:
+                    thd.frame.tevent3.setText('Next: ...')
 
             event = events[i]
 
@@ -820,18 +839,6 @@ class RunScriptClass(threading.Thread):
                     i = jp.index
                     logger.debug('Jump at %d' % i)
                     continue
-
-            if thd:
-                if thd.frame.isbrokenorfinish:
-                    thd.frame.tnumrd.setText('broken at %d/%d' % (i, steps))
-                    logger.info('Broken at %d/%d' % (i, steps))
-                    return False
-                thd.event.wait()
-                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i, steps, thd.j + 1, extension.runtimes, extension.speed)
-                logger.trace(
-                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i, steps, thd.j + 1, extension.runtimes, extension.speed))
-                thd.frame.tnumrd.setText(text)
-
         return True
 
 
@@ -848,6 +855,12 @@ class ScriptEvent:
         if self.addon:
             return '[%d, %s, %s, %s, %s]' % (self.delay, self.event_type, self.message, self.action, str(self.addon))
         return '[%d, %s, %s, %s]' % (self.delay, self.event_type, self.message, self.action)
+
+    def summarystr(self):
+        if self.event_type == 'EK':
+            return 'key {0} {1} after {1}ms'.format(self.action[1], self.message[4:], self.delay)
+        else:
+            return '{0} after {1}ms'.format(self.message, self.delay)
 
     # 执行操作
     def execute(self, thd=None):
@@ -967,8 +980,6 @@ class PlayPromptTone(threading.Thread):
             playsound(path)
         except PlaysoundException as e:
             logger.error(e)
-
- 
 
 
 class FileDialog():

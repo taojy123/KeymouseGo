@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>615</width>
-    <height>325</height>
+    <width>638</width>
+    <height>405</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,7 @@
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>330</x>
+      <x>360</x>
       <y>10</y>
       <width>271</width>
       <height>191</height>
@@ -108,7 +108,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>311</width>
+      <width>341</width>
       <height>191</height>
      </rect>
     </property>
@@ -120,11 +120,14 @@
       <rect>
        <x>10</x>
        <y>30</y>
-       <width>291</width>
-       <height>151</height>
+       <width>321</width>
+       <height>153</height>
       </rect>
      </property>
      <layout class="QFormLayout" name="formLayout_2">
+      <property name="fieldGrowthPolicy">
+       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      </property>
       <property name="horizontalSpacing">
        <number>20</number>
       </property>
@@ -136,7 +139,19 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <layout class="QGridLayout" name="gridLayout">
+       <layout class="QGridLayout" name="gridLayout" columnstretch="3,1">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetFixedSize</enum>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="verticalSpacing">
+         <number>7</number>
+        </property>
         <item row="0" column="0">
          <widget class="QComboBox" name="choice_script"/>
         </item>
@@ -243,23 +258,10 @@
      </layout>
     </widget>
    </widget>
-   <widget class="QLabel" name="tnumrd">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>250</y>
-      <width>571</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Ready...</string>
-    </property>
-   </widget>
    <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>130</x>
       <y>210</y>
       <width>361</width>
       <height>41</height>
@@ -295,13 +297,53 @@
      </item>
     </layout>
    </widget>
+   <widget class="QWidget" name="verticalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>260</y>
+      <width>621</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="tnumrd">
+       <property name="text">
+        <string>Ready...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="tevent1">
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="tevent2">
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="tevent3">
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>615</width>
+     <width>638</width>
      <height>26</height>
     </rect>
    </property>
