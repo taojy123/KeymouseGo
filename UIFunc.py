@@ -606,8 +606,10 @@ class RunScriptClass(threading.Thread):
 
     def __init__(self, frame: UIFunc, event: threading.Event):
         self.frame = frame
-        self.event = event
+        self.event = event  # UI pause event
         self.event.set()
+        self.exe_event = threading.Event()  # For sleep method during execution
+        self.exe_event.set()
         super(RunScriptClass, self).__init__()
 
     @logger.catch
@@ -862,14 +864,18 @@ class ScriptEvent:
         else:
             return '{0} after {1}ms'.format(self.message, self.delay)
 
-    # 执行操作
-    def execute(self, thd=None):
+    # 延时
+    def sleep(self, thd=None):
         if thd:
-            thd.event.clear()
-            thd.event.wait(timeout=self.delay / 1000.0)
-            thd.event.set()
+            thd.exe_event.clear()
+            thd.exe_event.wait(timeout=self.delay / 1000.0)
+            thd.exe_event.set()
         else:
             time.sleep(self.delay / 1000.0)
+
+    # 执行操作
+    def execute(self, thd=None):
+        self.sleep(thd)
 
         if self.event_type == 'EM':
             x, y = self.action
