@@ -158,7 +158,6 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
         self.onchangetheme()
 
-        # Opacity of labels below
         self.textlog.textChanged.connect(lambda: self.textlog.moveCursor(QTextCursor.End))
 
         # playsoundWin(get_assets_path('sounds', 'start.mp3'))
