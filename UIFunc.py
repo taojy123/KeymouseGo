@@ -161,12 +161,9 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.textlog.textChanged.connect(lambda: self.textlog.moveCursor(QTextCursor.End))
 
         # For tune playing
-        self.playerstart = QSoundEffect()
-        self.playerstart.setSource(QUrl.fromLocalFile(get_assets_path('sounds', 'start.wav')))
-        self.playerend = QSoundEffect()
-        self.playerend.setSource(QUrl.fromLocalFile(get_assets_path('sounds', 'end.wav')))
+        self.player = QSoundEffect()
         self.volumeSlider.setValue(100)
-        self.volumeSlider.valueChanged.connect(self.onchangevolume)
+        self.volumeSlider.valueChanged.connect(lambda: self.player.setVolume(self.volumeSlider.value()/100.0))
 
         self.running = False
         self.recording = False
@@ -482,13 +479,13 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             scripts_map['choice_language'] = 'English'
         self.retranslateUi(self)
 
-    def onchangevolume(self):
-        self.playerstart.setVolume(self.volumeSlider.value()/100.0)
-        self.playerend.setVolume(self.volumeSlider.value()/100.0)
-
     def onchangetheme(self):
         self.apply_stylesheet(self.app, theme=self.choice_theme.currentText())
         self.config.setValue("Config/Theme", self.choice_theme.currentText())
+
+    def playtune(self, filename: str):
+        self.player.setSource(QUrl.fromLocalFile(get_assets_path('sounds', filename)))
+        self.player.play()
 
     def closeEvent(self, event):
         self.config.sync()
@@ -666,7 +663,7 @@ class RunScriptClass(threading.Thread):
             nointerrupt = True
             logger.debug('Run script..')
             extension.onbeginp()
-            self.frame.playerstart.play()
+            self.frame.playtune('start.wav')
             while (self.j < extension.runtimes or extension.runtimes == 0) and nointerrupt:
                 logger.info('===========%d==============' % self.j)
                 current_status = self.frame.tnumrd.text()
@@ -690,7 +687,7 @@ class RunScriptClass(threading.Thread):
                     logger.debug('End')
                     break
             extension.onendp()
-            self.frame.playerend.play()
+            self.frame.playtune('end.wav')
             if nointerrupt:
                 self.frame.tnumrd.setText('finished')
                 logger.info('Script run finish')
