@@ -108,5 +108,10 @@
         <source>Theme</source>
         <translation>Theme</translation>
     </message>
+    <message>
+        <location filename="UIView.py" line="297"/>
+        <source>Volume</source>
+        <translation>Volume</translation>
+    </message>
 </context>
 </TS>
