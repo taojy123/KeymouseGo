@@ -479,10 +479,6 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             scripts_map['choice_language'] = 'English'
         self.retranslateUi(self)
 
-    def onchangevolume(self):
-        self.playerstart.setVolume(self.volumeSlider.value()/100.0)
-        self.playerend.setVolume(self.volumeSlider.value()/100.0)
-
     def onchangetheme(self):
         self.apply_stylesheet(self.app, theme=self.choice_theme.currentText())
         self.config.setValue("Config/Theme", self.choice_theme.currentText())
