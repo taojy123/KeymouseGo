@@ -21,6 +21,7 @@ import pyWinhook
 import pyperclip
 import win32api
 import win32con
+from PySide2.QtGui import QTextCursor
 from qt_material import list_themes, QtStyleTools
 from PySide2.QtCore import QSettings, Qt
 from PySide2.QtCore import QTranslator, QCoreApplication
@@ -158,12 +159,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.onchangetheme()
 
         # Opacity of labels below
-        self.tevent1opacity = QGraphicsOpacityEffect()
-        self.tevent1opacity.setOpacity(0.6)
-        self.tevent1.setGraphicsEffect(self.tevent1opacity)
-        self.tevent3opacity = QGraphicsOpacityEffect()
-        self.tevent3opacity.setOpacity(0.8)
-        self.tevent3.setGraphicsEffect(self.tevent3opacity)
+        self.textlog.textChanged.connect(lambda: self.textlog.moveCursor(QTextCursor.End))
 
         # playsoundWin(get_assets_path('sounds', 'start.mp3'))
 
@@ -365,6 +361,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
             if key_name == start_name and not self.running and not self.recording:
                 logger.info('Script start')
+                self.textlog.clear()
                 self.runthread = RunScriptClass(self, self.pause_event)
                 self.runthread.start()
                 self.isbrokenorfinish = False
@@ -597,6 +594,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
     def OnBtrunButton(self):
         logger.info('Script start')
         logger.debug('Script start by btn')
+        self.textlog.clear()
         self.runthread = RunScriptClass(self, self.pause_event)
         self.runthread.start()
         self.isbrokenorfinish = False
@@ -807,18 +805,8 @@ class RunScriptClass(threading.Thread):
                 thd.event.wait()
                 logger.trace(
                     '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, extension.runtimes, extension.speed))
-                if i > 0:
-                    thd.frame.tevent1.setText('Previous: {0} [{1}/{2}]'.format(
-                        events[i - 1].summarystr(), i, steps))
-                else:
-                    thd.frame.tevent1.setText('Previous: ...')
-                thd.frame.tevent2.setText('Current: {0} [{1}/{2}]'.format(
-                        events[i].summarystr(), i + 1, steps))
-                if i < steps - 1:
-                    thd.frame.tevent3.setText('Next: {0} [{1}/{2}]'.format(
-                        events[i + 1].summarystr(), i + 2, steps))
-                else:
-                    thd.frame.tevent3.setText('Next: ...')
+                thd.frame.textlog.append('{0} [{1}/{2}]'.format(
+                            events[i].summarystr(), i + 1, steps))
 
             event = events[i]
 

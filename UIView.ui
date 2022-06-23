@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>638</width>
-    <height>405</height>
+    <height>463</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -303,7 +303,7 @@
       <x>10</x>
       <y>260</y>
       <width>621</width>
-      <height>91</height>
+      <height>151</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -315,23 +315,12 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="tevent1">
-       <property name="text">
-        <string>...</string>
+      <widget class="QTextEdit" name="textlog">
+       <property name="enabled">
+        <bool>true</bool>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="tevent2">
-       <property name="text">
-        <string>...</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="tevent3">
-       <property name="text">
-        <string>...</string>
+       <property name="readOnly">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
