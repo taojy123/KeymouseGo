@@ -4,40 +4,41 @@
 
 用途：在进行某些操作简单、单调重复的工作时，使用本软件就可以很省力了。自己只要做一遍，然后接下来就让电脑来做。
 
-----------------------
-
-该软件通过 `Python` 语言编写，已编译为 `windows` 平台可执行文件，未安装 `Python` 的用户可直接下载 `release` 版本 https://github.com/taojy123/KeymouseGo/releases ，直接点击 `KeymouseGo.exe` 运行
-
 ![image](https://user-images.githubusercontent.com/3334897/167304140-0d8bcfa4-b921-4611-a5bd-c8b01bf0f1e3.png)
 
-----------------------
+# Readme.md
 
++ [简体中文](https://github.com/taojy123/KeymouseGo/README.md)
++ [English](https://github.com/taojy123/KeymouseGo/readme/README.English.md)
 
-# 关于作者：
+# 目录
 
-我是陶佳元，热爱代码，怀旧，在互联网上常用的 ID 有 taojy123 、tao.py。
++ [安装](https://github.com/taojy123/KeymouseGo/README#安装)
++ [使用方法](https://github.com/taojy123/KeymouseGo/README#使用方法)
+  + [基本操作](https://github.com/taojy123/KeymouseGo/README#基本操作)
+  + [提示](https://github.com/taojy123/KeymouseGo/README#提示)
+  + [脚本语法说明](https://github.com/taojy123/KeymouseGo/README#脚本语法说明)
+  + [自定义扩展](https://github.com/taojy123/KeymouseGo/README#自定义扩展)
++ [关于作者](https://github.com/taojy123/KeymouseGo/README#关于作者)
++ [开源贡献者](https://github.com/taojy123/KeymouseGo/README#开源贡献者)
++ [赞赏支持](https://github.com/taojy123/KeymouseGo/README#赞赏支持)
++ [更新说明](https://github.com/taojy123/KeymouseGo/README#更新说明)
 
-我的个人站点 [tslow.cn](https://tslow.cn) 整理并罗列了一些 `个人项目` 和 `小工具` 合集。
+# 安装
 
-你可以在 [简书](http://jianshu.tslow.cn) 浏览我最新发布的文章，还可以在 [B站](https://space.bilibili.com/145137942) 观看我的技术分享和生活纪实。
+该软件通过 `Python` 语言编写，已编译为 `windows` 平台可执行文件，未安装 `Python` 的用户可直接下载 [release](https://github.com/taojy123/KeymouseGo/releases) 版本 ，直接点击 `KeymouseGo.exe` 运行
 
-我的邮箱: taojy123@163.com
+### 源码编译，打包 exe 文件
+```
+1. 安装 Python3.10
+2. pip install -r requirements.txt
+3. pip install pyinstaller
+4. pyinstaller -F --add-data ./assets;assets KeymouseGo.py
+```
 
-----------------------
+# 基本操作
 
-# 开源贡献者:
-
-如果您是开发爱好者，并对本项目感兴趣，欢迎参与项目的共同建设，您可以向本项目提交 Pull request 来贡献代码。
-
-在此，特别感谢积极贡献者：
-
-<a href="https://github.com/Monomux"><img src="https://avatars.githubusercontent.com/u/70839036?s=80&v=4" height="80"></a>
-  
-Monomux
-
-----------------------
- 
-# 基本操作：
+### 桌面模式
 
 1、点击 `录制` 按钮，开始录制。
 
@@ -47,6 +48,30 @@ Monomux
 
 4、点击 `启动` 按钮，计算机会重复执行一遍第2步中所录制的动作。
 
+### 命令行模式
+
+直接运行指定脚本:
+```
+> KeymouseGo.exe scripts/0314_1452.txt
+```
+
+运行指定脚本3次:
+```
+> KeymouseGo.exe scripts/0314_1452.txt -rt 3
+> KeymouseGo.exe scripts/0314_1452.txt --runtimes 3
+```
+
+以200%的速度运行指定脚本:
+```
+> KeymouseGo.exe scripts/0314_1452.txt -sp 200
+> KeymouseGo.exe scripts/0314_1452.txt --speed 200
+```
+
+加载自定义扩展`MyExtension`运行指定脚本:
+```
+> KeymouseGo.exe scripts/0314_1452.txt -m MyExtension
+> KeymouseGo.exe scripts/0314_1452.txt --module MyExtension
+```
 
 # 提示：
 
@@ -66,9 +91,7 @@ Monomux
 
 8、由于程序速度受限，当输入的鼠标速度大于一定值时脚本将无法以预期的输入速度执行
 
-
 部分系统环境中，可能出现无法录制完整的鼠标事件的情况，请以管理员身份运行此工具即可正常使用。
-
 
 # 脚本语法说明：
 > 演示屏幕分辨率为`1920 * 1080`
@@ -307,38 +330,25 @@ class MyExtension2(Extension):
         # logger.info(self.swap)
 ```
 
-# 使用命令行运行：
+# 关于作者：
 
-直接运行指定脚本:
-```
-> KeymouseGo.exe scripts/0314_1452.txt
-```
+我是陶佳元，热爱代码，怀旧，在互联网上常用的 ID 有 taojy123 、tao.py。
 
-运行指定脚本3次:
-```
-> KeymouseGo.exe scripts/0314_1452.txt -rt 3
-> KeymouseGo.exe scripts/0314_1452.txt --runtimes 3
-```
+我的个人站点 [tslow.cn](https://tslow.cn) 整理并罗列了一些 `个人项目` 和 `小工具` 合集。
 
-以200%的速度运行指定脚本:
-```
-> KeymouseGo.exe scripts/0314_1452.txt -sp 200
-> KeymouseGo.exe scripts/0314_1452.txt --speed 200
-```
+你可以在 [简书](http://jianshu.tslow.cn) 浏览我最新发布的文章，还可以在 [B站](https://space.bilibili.com/145137942) 观看我的技术分享和生活纪实。
 
-加载自定义扩展`MyExtension`运行指定脚本:
-```
-> KeymouseGo.exe scripts/0314_1452.txt -m MyExtension
-> KeymouseGo.exe scripts/0314_1452.txt --module MyExtension
-```
+我的邮箱: taojy123@163.com
 
-# 源码编译, 打包 exe 文件：
-```
-1. 安装 Python3.10
-2. pip install -r requirements.txt
-3. pip install pyinstaller
-4. pyinstaller -F --add-data ./assets;assets KeymouseGo.py
-```
+----------------------
+
+# 开源贡献者:
+
+如果您是开发爱好者，并对本项目感兴趣，欢迎参与项目的共同建设，您可以向本项目提交 Pull request 来贡献代码。
+
+在此，特别感谢积极贡献者：
+
+<a href="https://github.com/Monomux"><img src="https://avatars.githubusercontent.com/u/70839036?s=80&v=4" height="80"></a>
 
 ----------------------
 
