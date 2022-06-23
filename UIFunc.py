@@ -26,7 +26,7 @@ from qt_material import list_themes, QtStyleTools
 from PySide2.QtCore import QSettings, Qt, QUrl
 from PySide2.QtCore import QTranslator, QCoreApplication
 from PySide2.QtWidgets import QMainWindow, QApplication, QGraphicsOpacityEffect
-from PySide2.QtMultimedia import QMediaPlayer
+from PySide2.QtMultimedia import QSoundEffect
 from loguru import logger
 from pyWinhook import cpyHook, HookConstants
 from win32gui import GetDC
@@ -161,10 +161,10 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.textlog.textChanged.connect(lambda: self.textlog.moveCursor(QTextCursor.End))
 
         # For tune playing
-        self.playerstart = QMediaPlayer()
-        self.playerstart.setMedia(QUrl.fromLocalFile(get_assets_path('sounds', 'start.mp3')))
-        self.playerend = QMediaPlayer()
-        self.playerend.setMedia(QUrl.fromLocalFile(get_assets_path('sounds', 'end.mp3')))
+        self.playerstart = QSoundEffect()
+        self.playerstart.setSource(QUrl.fromLocalFile(get_assets_path('sounds', 'start.wav')))
+        self.playerend = QSoundEffect()
+        self.playerend.setSource(QUrl.fromLocalFile(get_assets_path('sounds', 'end.wav')))
         self.volumeSlider.setValue(100)
         self.volumeSlider.valueChanged.connect(self.onchangevolume)
 
@@ -483,8 +483,8 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.retranslateUi(self)
 
     def onchangevolume(self):
-        self.playerstart.setVolume(self.volumeSlider.value())
-        self.playerend.setVolume(self.volumeSlider.value())
+        self.playerstart.setVolume(self.volumeSlider.value()/100.0)
+        self.playerend.setVolume(self.volumeSlider.value()/100.0)
 
     def onchangetheme(self):
         self.apply_stylesheet(self.app, theme=self.choice_theme.currentText())
