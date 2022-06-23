@@ -23,11 +23,11 @@ import win32api
 import win32con
 from PySide2.QtGui import QTextCursor
 from qt_material import list_themes, QtStyleTools
-from PySide2.QtCore import QSettings, Qt
+from PySide2.QtCore import QSettings, Qt, QUrl
 from PySide2.QtCore import QTranslator, QCoreApplication
 from PySide2.QtWidgets import QMainWindow, QApplication, QGraphicsOpacityEffect
+from PySide2.QtMultimedia import QMediaPlayer
 from loguru import logger
-from playsound import playsound, PlaysoundException
 from pyWinhook import cpyHook, HookConstants
 from win32gui import GetDC
 from win32print import GetDeviceCaps
@@ -160,7 +160,13 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
         self.textlog.textChanged.connect(lambda: self.textlog.moveCursor(QTextCursor.End))
 
-        # playsoundWin(get_assets_path('sounds', 'start.mp3'))
+        # For tune playing
+        self.playerstart = QMediaPlayer()
+        self.playerstart.setMedia(QUrl.fromLocalFile(get_assets_path('sounds', 'start.mp3')))
+        self.playerend = QMediaPlayer()
+        self.playerend.setMedia(QUrl.fromLocalFile(get_assets_path('sounds', 'end.mp3')))
+        self.volumeSlider.setValue(100)
+        self.volumeSlider.valueChanged.connect(self.onchangevolume)
 
         self.running = False
         self.recording = False
@@ -476,6 +482,10 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             scripts_map['choice_language'] = 'English'
         self.retranslateUi(self)
 
+    def onchangevolume(self):
+        self.playerstart.setVolume(self.volumeSlider.value())
+        self.playerend.setVolume(self.volumeSlider.value())
+
     def onchangetheme(self):
         self.apply_stylesheet(self.app, theme=self.choice_theme.currentText())
         self.config.setValue("Config/Theme", self.choice_theme.currentText())
@@ -656,6 +666,7 @@ class RunScriptClass(threading.Thread):
             nointerrupt = True
             logger.debug('Run script..')
             extension.onbeginp()
+            self.frame.playerstart.play()
             while (self.j < extension.runtimes or extension.runtimes == 0) and nointerrupt:
                 logger.info('===========%d==============' % self.j)
                 current_status = self.frame.tnumrd.text()
@@ -679,6 +690,7 @@ class RunScriptClass(threading.Thread):
                     logger.debug('End')
                     break
             extension.onendp()
+            self.frame.playerend.play()
             if nointerrupt:
                 self.frame.tnumrd.setText('finished')
                 logger.info('Script run finish')
@@ -954,35 +966,6 @@ class ScriptEvent:
                 win32api.keybd_event(162, 0, win32con.KEYEVENTF_KEYUP, 0)
             else:
                 logger.warning('Unknown extra event:%s' % self.message)
-
-
-class PlayPromptTone(threading.Thread):
-
-    def __init__(self, op, delay):
-        self._delay = delay
-        self._op = op
-        super().__init__()
-
-    def run(self):
-        if 1 == self._op:
-            if self._delay >= 1000:
-                time.sleep((self._delay - 500.0) / 1000.0)
-            self._play_start_sound()
-
-    def _play_start_sound(self):
-        try:
-            path = get_assets_path('sounds', 'start.mp3')
-            playsound(path)
-        except PlaysoundException as e:
-            logger.error(e)
-
-    @classmethod
-    def play_end_sound(cls):
-        try:
-            path = get_assets_path('sounds', 'end.mp3')
-            playsound(path)
-        except PlaysoundException as e:
-            logger.error(e)
 
 
 class FileDialog():
