@@ -131,7 +131,7 @@
 
 ## 自定义扩展功能：
 
-功能的使用详见[wiki]()
+功能的使用详见[wiki](https://github.com/taojy123/KeymouseGo/wiki/文档#扩展)
 
 
 # 关于作者：
@@ -153,6 +153,7 @@
 在此，特别感谢积极贡献者：
 
 <a href="https://github.com/Monomux"><img src="https://avatars.githubusercontent.com/u/70839036?s=80&v=4" height="80"></a>
+<a href="https://github.com/ZutJoe"><img src="https://avatars.githubusercontent.com/u/54732130?s=80&v=4" height="80"></a>
 
 ----------------------
 

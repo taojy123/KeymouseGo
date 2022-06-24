@@ -135,7 +135,7 @@ The script is saved in `json` format, in which each line represents a operation
 
 ## Extensions
 
-The usage of exetensions is illustrated in [wiki]()
+The usage of exetensions is illustrated in [wiki](https://github.com/taojy123/KeymouseGo/wiki/Document#extension)
 
 # About me
 
@@ -155,8 +155,8 @@ If you are a developer and interested in this project, you are welcomed to parti
 
 Thanks to contributor:
 
-<a href="https://github.com/Monomux"><img src="https://avatars.githubusercontent.com/u/70839036?s=80&v=4" height="80"></a>
-
+<a href="https://github.com/Monomux"><img src="https://avatars.githubusercontent.com/u/70839036?s=80&v=4" height="80"></a> 
+<a href="https://github.com/ZutJoe"><img src="https://avatars.githubusercontent.com/u/54732130?s=80&v=4" height="80"></a>
 
 ----------------------
 
