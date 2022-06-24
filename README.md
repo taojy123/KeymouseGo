@@ -36,7 +36,9 @@
 4. pyinstaller -F --add-data ./assets;assets KeymouseGo.py
 ```
 
-# 基本操作
+# 使用方法
+
+## 基本操作
 
 ### 桌面模式
 
@@ -73,7 +75,7 @@
 > KeymouseGo.exe scripts/0314_1452.txt --module MyExtension
 ```
 
-# 提示：
+## 提示：
 
 1、可设置脚本重复执行的次数，如果为 `0` 即为无限循环。
 
@@ -93,7 +95,7 @@
 
 部分系统环境中，可能出现无法录制完整的鼠标事件的情况，请以管理员身份运行此工具即可正常使用。
 
-# 脚本语法说明：
+## 脚本语法说明：
 > 演示屏幕分辨率为`1920 * 1080`
 
 ```
@@ -127,208 +129,10 @@
 + 修改时请严格遵守格式，否则可能导致脚本无法运行，建议修改前先备份一下。
 
 
-# 自定义扩展功能：
+## 自定义扩展功能：
 
-程序提供了插件扩展接口，默认扩展类位于`assets/plugins/Extension.py`，可以通过派生`Extension`类实现自定义功能。
+功能的使用详见[wiki]()
 
-`Extension`类初始化函数包含以下参数:
-  + `runtimes`脚本执行次数
-  + `speed`脚本执行速度(%)
-  + `thd`执行脚本的线程对象
-  + `swap`默认为`None`，捕捉到`PushProcess`异常时会将`swap`的内容传递给新扩展对象，在子流程结束后接收新扩展对象`swap`的内容
-
-在执行过程中，修改`runtimes`的值会影响脚本的实际执行次数。
-
-`Extension`类提供以下接口:
-  + `onbeginp()`，在脚本执行前，扩展模块实例化后执行，默认包含提示音播放
-  + `onbeforeeachloop(currentloop)`，在每次执行脚本前执行，返回False时跳过本次执行
-  + `onrunbefore(event, currentindex)`，在每行脚本执行前执行，返回False时跳过本行执行
-  + `onrunafter(event, currentindex)`，在每行脚本后执行，无论`onrunbefore`返回值如何，无返回值
-  + `onaftereachloop(currentloop)`，在每次执行完脚本后执行，无论`onbeforeeachloop`返回值如何，无返回值
-  + `onrecord(event, currentindex)`，在每次录制到一个操作后执行，返回True记录本次操作
-  + `onendp()`，在全部循环执行完成后执行，默认包含提示音播放
-
-`currentindex`和`currentloop`分别指代当前脚本的行索引与循环索引(从0开始)
-
-`event`为当前脚本执行的操作，其内容包含
-  + `delay`操作延时(ms)
-  + `event_type`事件类型
-  + `message`操作类型
-  + `action`操作参数
-  + `addon`用户自定义内容，可以是任意数据类型，在自定义扩展中可使用
-
-定义`Extension`子类`<name>`时，确保模块名`<name>.py`与子类名`<name>`相同。
-
-为脚本指定扩展，可以在GUI或是命令行下指定，也可以在脚本内指定(优先级最高)，在脚本内指定时，需要在脚本第一行加上扩展模块名。
-
-```
-[
-    "模块名",
-    // 以下为脚本内容
-]
-```
-
-程序启动时默认添加plugins文件夹到库搜索路径，如果需要添加其它库搜索路径，可以通过在扩展开头添加以下内容：
-
-示例：添加程序目录下的plugins文件夹到搜索路径
-```python
-import os
-from KeymouseGo import add_lib_path
-add_lib_path([
-    os.path.join(os.getcwd(), "plugins")
-])
-```
-
-在相应文件夹添加入搜索路径后，该文件夹下模块的引入可以直接通过`import`或`from ... import ...`实现：
-
-例如，假设`plugins`文件夹下存在`Util.py`，可直接通过以下指令引入模块
-```python
-import Util
-```
-
-__流程控制__
-
-程序对脚本执行流程提供了以下方法，均以异常形式定义，使用时通过`raise`异常实现流程控制:
-  + `JumpProcess(index)`跳转到索引为`index`的脚本行
-  + `BreakProcess`结束本次执行
-  + `EndProcess`结束全部执行
-
-各接口接受的流程控制异常:
-
-|   -   | onbeginp | onbeforeeachloop | onrunbefore | onrunafter | onafterloop | onendp | onrecord |
-|:-----:| :---: | :---: | :---: | :---: | :---: | :---: |:--------:|
-| Jump  | × | × | √ | √ | × | × |    ×     |
-| Break | × | √ | √ | √ | √ | × |    ×     |
-|  End  | × | √ | √ | √ | √ | × |    ×     |
-
-
-__日志调试__
-
-本程序使用`loguru`作为日志模块，在自定义扩展中可直接引入模块进行日志调试
-```python
-from loguru import logger
-```
-日志内容默认保存在主程序日志中，如果有其它的需求可以参阅loguru的[文档](https://loguru.readthedocs.io/en/stable/overview.html)进行改动
-
-__示例__:
-
-在`Script`目录下存在录制的脚本`1.txt`，`2.txt`，其内容均多于3行，程序先执行`1.txt`中内容。
-
-扩展操作：
-  1. 在第一次脚本执行中，执行完第一条(索引0)脚本内容后跳转到第3条脚本(索引2)
-  2. 在第一次脚本执行中，执行完第3条脚本后转而加载新的扩展，以相同的速度执行`2.txt`内容2次，新的扩展操作包括:
-      1. 在第一次执行中，执行完第1条脚本后跳过本次循环
-      2. 在第一次执行中，执行完第2条脚本后结束执行
-      3. 结束执行后，显示从原扩展中转递过来的数据
-  3. 在第二次脚本执行中，跳过第1条(索引0)脚本内容
-  4. 在第二次脚本执行中，执行完第2条脚本后重复执行一次第二条脚本
-  5. 限制脚本执行次数为3次
-
-在`plugins/`目录下新建`MyExtension.py`，其内容为:
-```python
-from assets.plugins.Extension import *
-from assets.plugins.ProcessException import *
-from UIFunc import RunScriptClass
-from loguru import logger
-
-logger.info('Import MyExtension')
-
-
-class MyExtension(Extension):
-    def __init__(self, runtimes, speed, thd=None, swap=None):
-        # 默认的构造函数将参数分别赋给self.runtimes,self.speed,self.swap
-        super().__init__(runtimes, speed, thd, swap)
-        # 保存当前执行次数
-        self.currentloop = 0
-        
-        # 传递给子扩展的数据，传递时采用=赋值而不是浅/深复制
-        # self.swap = 'Helloworld'
-        
-        """
-        完成功能5
-        GUI界面或命令行设置的执行次数通过runtimes参数传入，并保存到self.runtimes
-        修改此值可以改变实际执行次数
-        """ 
-        # self.runtimes = 3
-
-    def onbeforeeachloop(self, currentloop):
-        # 更新当前执行次数
-        self.currentloop = currentloop
-        return True
-
-    def onrunbefore(self, event, currentindex):
-        return True
-        # 完成功能3
-        # if self.currentloop == 1 and currentindex == 0:
-        #     return False
-        # else:
-        #     return True
-
-    def onrunafter(self, event, currentindex):
-        pass
-        # 完成功能1
-        # if self.currentloop == 0 and currentindex == 0:
-        #     raise JumpProcess(2)
-        # 完成功能2
-        # elif self.currentloop == 0 and currentindex == 2:
-        #     """
-        #     run_sub_script包含5个参数，
-        #     extension: 父流程的扩展对象，在这里输入self即可
-        #     scriptpath: 子流程执行的脚本路径，采用相对路径或是绝对路径均可
-        #     speed: 子流程执行的速度，默认为100(%)
-        #     runtimes: 子流程执行次数，默认为1
-        #     subextension_name: 子流程加载的扩展模块，默认为Extension
-        #     """
-        #     RunScriptClass.run_sub_script(self, 'scripts/0603_1013.txt', 
-        #                                    speed=self.speed, 
-        #                                    runtimes=2, 
-        #                                    subextension_name='MyExtension2',
-        #                                    thd=self.thd
-        #                                    )
-        # 完成功能4
-        # elif self.currentloop == 1 and currentindex == 1:
-        #     """
-        #     在程序中，每个操作被封装为一个ScriptEvent对象，其内容包含
-        #     event.delay: int类型，为操作延时(ms)
-        #     event.event_type: str类型，为事件类型
-        #     event.message: str类型，为操作类型
-        #     event.action: str类型，为操作参数
-        #     event.addon: 任意类型，添加的类型需要实现__str__方法以便保存
-        #     """
-        #     event.execute()
-```
-在`plugins/`目录下新建`MyExtension2.py`，其内容为:
-```python
-from assets.plugins.Extension import *
-from assets.plugins.ProcessException import *
-from loguru import logger
-
-logger.info('Import MyExtension2')
-
-
-class MyExtension2(Extension):
-    def __init__(self, runtimes, speed, thd=None, swap=None):
-        super().__init__(runtimes, speed, thd, swap)
-        self.currentloop = 0
-
-    def onbeforeeachloop(self, currentloop):
-        self.currentloop = currentloop
-        return True
-
-    def onrunafter(self, event, currentindex):
-        pass
-        # 完成功能2.i
-        # if self.currentloop == 0:
-        #     raise BreakProcess()
-        # 完成功能2.ii
-        # elif self.currentloop == 1 and currentindex == 1:
-        #     raise EndProcess()
-
-    def onendp(self):
-        pass
-        # 完成功能2.iii
-        # logger.info(self.swap)
-```
 
 # 关于作者：
 

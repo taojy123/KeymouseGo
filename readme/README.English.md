@@ -40,7 +40,9 @@ This program is written in `Python` and packed as executable file in `Windows` P
 4. pyinstaller -F --add-data ./assets;assets KeymouseGo.py
 ```
 
-# Basic operation
+# Usage
+
+## Basic operation
 
 ### Desktop mode
 
@@ -77,7 +79,7 @@ Run specific script with extension `MyExtension`
 > KeymouseGo.exe scripts/0314_1452.txt --module MyExtension
 ```
 
-# Tips
+## Tips
 
 1. The program will endlessly repeat running script if run times is set to `0`
 
@@ -97,7 +99,7 @@ Run specific script with extension `MyExtension`
 
 In some system environment, there may be circunstances that the mouse events cannot be fully recorded. To settle this, you can run this program as administrator.
 
-# Grammar of scripts
+## Grammar of scripts
 > Assume that the resolution of screen is `1920 * 1080`
 
 ```
@@ -131,7 +133,7 @@ The script is saved in `json` format, in which each line represents a operation
 + It is recommended to back up script before editing. And make sure to follow the format while editing, otherwise it may result in failure of execution.
 
 
-# Extensions
+## Extensions
 
 The usage of exetensions is illustrated in [wiki]()
 
@@ -147,15 +149,14 @@ My Email: taojy123@163.com
 
 ----------------------
 
-# Contributors:
+# Contributors
 
-If you are a developer and interested in this project, you are welcomed to participating. 
+If you are a developer and interested in this project, you are welcomed to participating by opening pull request. 
 
-Thanks to contributor：
+Thanks to contributor:
 
 <a href="https://github.com/Monomux"><img src="https://avatars.githubusercontent.com/u/70839036?s=80&v=4" height="80"></a>
 
-Monomux
 
 ----------------------
 
