@@ -13,16 +13,16 @@
 
 # 目录
 
-+ [安装](https://github.com/taojy123/KeymouseGo/README#安装)
-+ [使用方法](https://github.com/taojy123/KeymouseGo/README#使用方法)
-  + [基本操作](https://github.com/taojy123/KeymouseGo/README#基本操作)
-  + [提示](https://github.com/taojy123/KeymouseGo/README#提示)
-  + [脚本语法说明](https://github.com/taojy123/KeymouseGo/README#脚本语法说明)
-  + [自定义扩展](https://github.com/taojy123/KeymouseGo/README#自定义扩展)
-+ [关于作者](https://github.com/taojy123/KeymouseGo/README#关于作者)
-+ [开源贡献者](https://github.com/taojy123/KeymouseGo/README#开源贡献者)
-+ [赞赏支持](https://github.com/taojy123/KeymouseGo/README#赞赏支持)
-+ [更新说明](https://github.com/taojy123/KeymouseGo/README#更新说明)
++ [安装](#安装)
++ [使用方法](#使用方法)
+  + [基本操作](#基本操作)
+  + [提示](#提示)
+  + [脚本语法说明](#脚本语法说明)
+  + [自定义扩展](#自定义扩展)
++ [关于作者](#关于作者)
++ [开源贡献者](#开源贡献者)
++ [赞赏支持](#赞赏支持)
++ [更新说明](#更新说明)
 
 # 安装
 

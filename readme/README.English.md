@@ -18,15 +18,15 @@ Usage:
 
 # Table of content
 
-+ [Installation](https://github.com/taojy123/KeymouseGo/readme/README.English#Installation)
-+ [Usage](https://github.com/taojy123/KeymouseGo/readme/README.English#Usage)
-  + [Basic operation](https://github.com/taojy123/KeymouseGo/readme/README.English#Basic-operation)
-  + [Tips](https://github.com/taojy123/KeymouseGo/readme/README.English#Tips)
-  + [Grammar of scripts](https://github.com/taojy123/KeymouseGo/readme/README.English#Gramma-of-scripts)
-  + [Extensions](https://github.com/taojy123/KeymouseGo/readme/README.English#Extensions)
-+ [About me](https://github.com/taojy123/KeymouseGo/readme/README.English#About-me)
-+ [Contributors](https://github.com/taojy123/KeymouseGo/readme/README.English#Contributors)
-+ [Sponsoring](https://github.com/taojy123/KeymouseGo/readme/README.English#Sponsoring)
++ [Installation](#Installation)
++ [Usage](#Usage)
+  + [Basic operation](#Basic-operation)
+  + [Tips](#Tips)
+  + [Grammar of scripts](#Gramma-of-scripts)
+  + [Extensions](#Extensions)
++ [About me](#About-me)
++ [Contributors](#Contributors)
++ [Sponsoring](#Sponsoring)
 
 # Installation
 
