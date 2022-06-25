@@ -22,7 +22,7 @@ Usage:
 + [Usage](#Usage)
   + [Basic operation](#Basic-operation)
   + [Tips](#Tips)
-  + [Grammar of scripts](#Gramma-of-scripts)
+  + [Grammar of scripts](#Grammar-of-scripts)
   + [Extensions](#Extensions)
 + [About me](#About-me)
 + [Contributors](#Contributors)
