@@ -5,7 +5,6 @@ import os
 import sys
 import threading
 import math
-from tkinter import font
 
 import pyWinhook
 import pythoncom

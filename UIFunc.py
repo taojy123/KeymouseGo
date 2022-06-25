@@ -33,7 +33,6 @@ from win32print import GetDeviceCaps
  
 from UIView import Ui_UIView
 from assets.plugins.ProcessException import *
-# from preload import playsoundWin
 
 os.environ['QT_ENABLE_HIGHDPI_SCALING'] = "1"
 QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
