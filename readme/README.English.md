@@ -13,8 +13,8 @@ Usage:
 
 # Readme.md
 
-+ [简体中文](https://github.com/taojy123/KeymouseGo/README.md)
-+ [English](https://github.com/taojy123/KeymouseGo/readme/README.English.md)
++ [简体中文](https://github.com/taojy123/KeymouseGo/blob/master/README.md)
++ [English](https://github.com/taojy123/KeymouseGo/blob/master/readme/README.English.md)
 
 # Table of content
 
