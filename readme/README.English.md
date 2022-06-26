@@ -81,9 +81,9 @@ Run specific script with extension `MyExtension`
 
 ## Tips
 
-1. The program will endlessly repeat running script if run times is set to `0`
+1. The program will endlessly run the script if run times is set to `0`
 
-2. The default launch hotkey is `F6`, which functions the same as launch button. The default stop hotkey is `F9`, which will terminate the running script
+2. The default launch hotkey is `F6`, which functions the same as the launch button. The default stop hotkey is `F9`, which will terminate the running script
 
 3. Only mouse click operation and keyboard operation will be recorded. Mouse trail won't be recorded.
 
@@ -97,7 +97,7 @@ Run specific script with extension `MyExtension`
 
 8. Due to the limitation of execution speed, the running speed cannot be set too high.
 
-In some system environment, there may be circunstances that the mouse events cannot be fully recorded. To settle this, you can run this program as administrator.
+In some system environment, there may be circumstances that the mouse events cannot be fully recorded. To settle this, you can run this program as administrator.
 
 ## Grammar of scripts
 > Assume that the resolution of screen is `1920 * 1080`
