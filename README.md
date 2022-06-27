@@ -21,7 +21,6 @@
   + [自定义扩展](#自定义扩展)
 + [关于作者](#关于作者)
 + [开源贡献者](#开源贡献者)
-+ [赞赏支持](#赞赏支持)
 + [更新说明](#更新说明)
 
 # 安装
@@ -154,24 +153,6 @@
 
 <a href="https://github.com/Monomux"><img src="https://avatars.githubusercontent.com/u/70839036?s=80&v=4" height="80"></a>
 <a href="https://github.com/ZutJoe"><img src="https://avatars.githubusercontent.com/u/54732130?s=80&v=4" height="80"></a>
-
-----------------------
-
-# 赞赏支持
-
-如果您觉得这个项目对您有所帮助，并乐意支持开源工作，可通过 `支付宝` 或 `微信支付` 为我赞赏支持
-
-捐赠时可备注留下您的 `Github 主页地址`，我会将您加入 `感谢列表` 中（如果您愿意）
-
-您的热情，我的动力！开源是一种精神，也是一种生活态度
-
-<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/donate.png" width="600">
-
-感谢以下支持者:
-
-<a href="https://github.com/liran319"><img src="https://avatars1.githubusercontent.com/u/4019372?s=50&v=4" height="50"></a>
-<a href="https://github.com/WU731642061"><img src="https://avatars1.githubusercontent.com/u/30043630?s=50&v=4" height="50"></a>
-<a href="https://github.com/FranklinDX3906"><img src="https://avatars1.githubusercontent.com/u/36653561?s=50&v=4" height="50"></a>
 
 
 感谢 JetBrains 免费提供开发工具
