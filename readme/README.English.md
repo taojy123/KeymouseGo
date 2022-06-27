@@ -26,7 +26,6 @@ Usage:
   + [Extensions](#Extensions)
 + [About me](#About-me)
 + [Contributors](#Contributors)
-+ [Sponsoring](#Sponsoring)
 
 # Installation
 
@@ -157,24 +156,6 @@ Thanks to contributor:
 
 <a href="https://github.com/Monomux"><img src="https://avatars.githubusercontent.com/u/70839036?s=80&v=4" height="80"></a> 
 <a href="https://github.com/ZutJoe"><img src="https://avatars.githubusercontent.com/u/54732130?s=80&v=4" height="80"></a>
-
-----------------------
-
-# Sponsoring
-
-If you think this project is useful to you and willing to support opensource work, you can support me via `alipay` or `wechat pay`
-
-Before donation you can leave your `github home page address`, I will add you to `Thank list`(if you wish) 
-
-Your enthusiasm is my motivation!  Open source is not only a spirit, but also a life attitude
-
-<img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/donate.png" width="600">
-
-Thanks to sponsors
-
-<a href="https://github.com/liran319"><img src="https://avatars1.githubusercontent.com/u/4019372?s=50&v=4" height="50"></a>
-<a href="https://github.com/WU731642061"><img src="https://avatars1.githubusercontent.com/u/30043630?s=50&v=4" height="50"></a>
-<a href="https://github.com/FranklinDX3906"><img src="https://avatars1.githubusercontent.com/u/36653561?s=50&v=4" height="50"></a>
 
 
 Thanks to free develop tool provided by JetBrains
