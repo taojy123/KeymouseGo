@@ -644,7 +644,8 @@ class RunScriptClass(threading.Thread):
                 events, module_name = RunScriptClass.parsescript(script_path, speed=self.frame.execute_speed.value())
             except Exception as e:
                 logger.error(e)
-                self.frame.textlog.append('An error occurred while parsing script, see details in log')
+                self.frame.textlog.append('An error occurred while parsing script')
+                self.frame.textlog.append(str(e))
             extension = RunScriptClass.getextension(
                 module_name if module_name is not None else self.frame.choice_extension.currentText(),
                 runtimes=self.frame.stimes.value(),
@@ -689,7 +690,8 @@ class RunScriptClass(threading.Thread):
         except Exception as e:
             logger.error('Run error: {0}'.format(e))
             traceback.print_exc()
-            self.frame.textlog.append('An error occurred during runtime, see details in log')
+            self.frame.textlog.append('An error occurred during runtime')
+            self.frame.textlog.append(str(e))
             self.frame.tnumrd.setText('failed')
             self.frame.running = False
         finally:
