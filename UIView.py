@@ -172,7 +172,7 @@ class Ui_UIView(object):
 
         self.horizontalLayoutWidget = QWidget(self.centralwidget)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
-        self.horizontalLayoutWidget.setGeometry(QRect(130, 210, 361, 41))
+        self.horizontalLayoutWidget.setGeometry(QRect(20, 210, 361, 41))
         self.horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setSizeConstraint(QLayout.SetDefaultConstraint)
@@ -210,6 +210,23 @@ class Ui_UIView(object):
         self.textlog.setReadOnly(True)
 
         self.verticalLayout.addWidget(self.textlog)
+
+        self.formLayoutWidget_3 = QWidget(self.centralwidget)
+        self.formLayoutWidget_3.setObjectName(u"formLayoutWidget_3")
+        self.formLayoutWidget_3.setGeometry(QRect(400, 220, 221, 31))
+        self.formLayout_3 = QFormLayout(self.formLayoutWidget_3)
+        self.formLayout_3.setObjectName(u"formLayout_3")
+        self.formLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.label_volume = QLabel(self.formLayoutWidget_3)
+        self.label_volume.setObjectName(u"label_volume")
+
+        self.formLayout_3.setWidget(0, QFormLayout.LabelRole, self.label_volume)
+
+        self.volumeSlider = QSlider(self.formLayoutWidget_3)
+        self.volumeSlider.setObjectName(u"volumeSlider")
+        self.volumeSlider.setOrientation(Qt.Horizontal)
+
+        self.formLayout_3.setWidget(0, QFormLayout.FieldRole, self.volumeSlider)
 
         UIView.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(UIView)

@@ -4,40 +4,43 @@
 
 用途：在进行某些操作简单、单调重复的工作时，使用本软件就可以很省力了。自己只要做一遍，然后接下来就让电脑来做。
 
-----------------------
-
-该软件通过 `Python` 语言编写，已编译为 `windows` 平台可执行文件，未安装 `Python` 的用户可直接下载 `release` 版本 https://github.com/taojy123/KeymouseGo/releases ，直接点击 `KeymouseGo.exe` 运行
-
 ![image](https://user-images.githubusercontent.com/3334897/167304140-0d8bcfa4-b921-4611-a5bd-c8b01bf0f1e3.png)
 
-----------------------
+# Readme.md
 
++ [简体中文](https://github.com/taojy123/KeymouseGo/blob/master/README.md)
++ [English](https://github.com/taojy123/KeymouseGo/blob/master/readme/README.English.md)
 
-# 关于作者：
+# 目录
 
-我是陶佳元，热爱代码，怀旧，在互联网上常用的 ID 有 taojy123 、tao.py。
++ [安装](#安装)
++ [使用方法](#使用方法)
+  + [基本操作](#基本操作)
+  + [提示](#提示)
+  + [脚本语法说明](#脚本语法说明)
+  + [自定义扩展](#自定义扩展)
++ [关于作者](#关于作者)
++ [开源贡献者](#开源贡献者)
++ [赞赏支持](#赞赏支持)
++ [更新说明](#更新说明)
 
-我的个人站点 [tslow.cn](https://tslow.cn) 整理并罗列了一些 `个人项目` 和 `小工具` 合集。
+# 安装
 
-你可以在 [简书](http://jianshu.tslow.cn) 浏览我最新发布的文章，还可以在 [B站](https://space.bilibili.com/145137942) 观看我的技术分享和生活纪实。
+该软件通过 `Python` 语言编写，已编译为 `windows` 平台可执行文件，未安装 `Python` 的用户可直接下载 [release](https://github.com/taojy123/KeymouseGo/releases) 版本 ，直接点击 `KeymouseGo.exe` 运行
 
-我的邮箱: taojy123@163.com
+### 源码编译，打包 exe 文件
+```
+1. 安装 Python3.10
+2. pip install -r requirements.txt
+3. pip install pyinstaller
+4. pyinstaller -F --add-data ./assets;assets KeymouseGo.py
+```
 
-----------------------
+# 使用方法
 
-# 开源贡献者:
+## 基本操作
 
-如果您是开发爱好者，并对本项目感兴趣，欢迎参与项目的共同建设，您可以向本项目提交 Pull request 来贡献代码。
-
-在此，特别感谢积极贡献者：
-
-<a href="https://github.com/Monomux"><img src="https://avatars.githubusercontent.com/u/70839036?s=80&v=4" height="80"></a>
-  
-Monomux
-
-----------------------
- 
-# 基本操作：
+### 桌面模式
 
 1、点击 `录制` 按钮，开始录制。
 
@@ -47,267 +50,7 @@ Monomux
 
 4、点击 `启动` 按钮，计算机会重复执行一遍第2步中所录制的动作。
 
-
-# 提示：
-
-1、可设置脚本重复执行的次数，如果为 `0` 即为无限循环。
-
-2、默认启动热键为 `F6`，功能等同于 `启动` 按钮；默认终止热键为 `F9`，按下后将会停止正在运行的脚本。
-
-3、录制时只记录鼠标点击动作和键盘动作，不记录鼠标移动轨迹。
-
-4、每次录制结束后都会在 `scripts` 目前下生成一个新的脚本文件。
-
-5、运行前可以在列表中选择一个需要执行的脚本。
-
-6、`scripts` 下的脚本文件内容可以修改，修改时可参考如下所述 `脚本格式说明`。
-
-7、热键设置中的`Middle`指代鼠标中键，`XButton`指代鼠标侧键
-
-8、由于程序速度受限，当输入的鼠标速度大于一定值时脚本将无法以预期的输入速度执行
-
-
-部分系统环境中，可能出现无法录制完整的鼠标事件的情况，请以管理员身份运行此工具即可正常使用。
-
-
-# 脚本语法说明：
-> 演示屏幕分辨率为`1920 * 1080`
-
-```
-[
- [3000, "EM", "mouse right down", [0.05208%, 0.1852%]],    // 开始运行 `3000ms` 后，在屏幕相对坐标 `(0.05208, 0.1852)`即 `(100,200)` 处 `按下鼠标右键`；
- [50,   "EM", "mouse right up",   [0.05208%, 0.1852%]],    // 等待 `50ms` 后在相同位置 `抬起鼠标右键`；
- [1000, "EK", "key down",         (70, 'F', 0)],                                   // 等待 `1000ms` 后 `按下f键`；
- [50,   "EK", "key up",           (70, 'F', 0)],                                   // 等待 `50ms` 后 `抬起f键`；
- [100,  "EM", "mouse left down",  [0.2604%, 0.4630%]],      // 等待 `100ms` 后，在屏幕相对坐标 `(0.2604, 0.4630)`即 `(500, 500)` 处 `按下鼠标左键`；
- [100,  "EM", "mouse move",       [0.2604%, 0.5556%]],       // 等待 `100ms` 后，鼠标移动至相对坐标 `(0.2604, 0.5556)`即 `(500, 600)` 位置；
- [100,  "EM", "mouse left down",  [0.3125%, 0.5556%]],                   // 等待 `100ms` 后，在屏幕相对坐标 `(0.3125, 0.5556)`即 `(600, 600)` 处 `抬起鼠标左键`；
- [100,  "EX", "input",            "你好 world"],                                   // 等待 `100ms` 后，在当前位置输入 `你好 world` 文字。
-]
-```
-
-脚本为 `json` 格式，每一行代表一次动作：
-+ 每行的第 1 个元素表示时间间隔，指的是本次动作与上一次动作之间相隔的时间，单位为毫秒。
-+ 每行的第 2 个元素表示鼠标动作或是键盘动作：`EM` 为鼠标，`EK` 为键盘，`EX` 为其他拓展动作。
-+ 每行的第 3 个元素表示动作的类型：
-  + `mouse left down` 为鼠标左键按下，`mouse left up` 为鼠标左键抬起，
-  + `mouse right down` 为鼠标右键按下，`mouse right up` 为鼠标右键抬起，
-  + `mouse middle down` 为鼠标中键按下， `mouse middle up` 为鼠标中键抬起，
-  + `mouse wheel up` 为鼠标滚轮上滑， `mouse wheel down` 为鼠标滚轮下滑，
-  + `key down` 为键盘按键按下，`key up` 为键盘按键抬起，
-  + `mouse move` 为鼠标滑过，`input` 输入文字。
-+ 每行的第 4 个元素表示具体的动作参数
-  + 当为鼠标动作时，由两个子元素构成，分别为鼠标所在的屏幕位置的横纵坐标，
-  + 当为键盘动作时，由三个子元素构成，分别是（按键编号, 按键名, 拓展标记)，
-  + 当为输入文字动作时，为要输入的文字内容。
-+ 每行 `//` 后的部分为注释内容。
-+ 修改时请严格遵守格式，否则可能导致脚本无法运行，建议修改前先备份一下。
-
-
-# 自定义扩展功能：
-
-程序提供了插件扩展接口，默认扩展类位于`assets/plugins/Extension.py`，可以通过派生`Extension`类实现自定义功能。
-
-`Extension`类初始化函数包含以下参数:
-  + `runtimes`脚本执行次数
-  + `speed`脚本执行速度(%)
-  + `thd`执行脚本的线程对象
-  + `swap`默认为`None`，捕捉到`PushProcess`异常时会将`swap`的内容传递给新扩展对象，在子流程结束后接收新扩展对象`swap`的内容
-
-在执行过程中，修改`runtimes`的值会影响脚本的实际执行次数。
-
-`Extension`类提供以下接口:
-  + `onbeginp()`，在脚本执行前，扩展模块实例化后执行，默认包含提示音播放
-  + `onbeforeeachloop(currentloop)`，在每次执行脚本前执行，返回False时跳过本次执行
-  + `onrunbefore(event, currentindex)`，在每行脚本执行前执行，返回False时跳过本行执行
-  + `onrunafter(event, currentindex)`，在每行脚本后执行，无论`onrunbefore`返回值如何，无返回值
-  + `onaftereachloop(currentloop)`，在每次执行完脚本后执行，无论`onbeforeeachloop`返回值如何，无返回值
-  + `onrecord(event, currentindex)`，在每次录制到一个操作后执行，返回True记录本次操作
-  + `onendp()`，在全部循环执行完成后执行，默认包含提示音播放
-
-`currentindex`和`currentloop`分别指代当前脚本的行索引与循环索引(从0开始)
-
-`event`为当前脚本执行的操作，其内容包含
-  + `delay`操作延时(ms)
-  + `event_type`事件类型
-  + `message`操作类型
-  + `action`操作参数
-  + `addon`用户自定义内容，可以是任意数据类型，在自定义扩展中可使用
-
-定义`Extension`子类`<name>`时，确保模块名`<name>.py`与子类名`<name>`相同。
-
-为脚本指定扩展，可以在GUI或是命令行下指定，也可以在脚本内指定(优先级最高)，在脚本内指定时，需要在脚本第一行加上扩展模块名。
-
-```
-[
-    "模块名",
-    // 以下为脚本内容
-]
-```
-
-程序启动时默认添加plugins文件夹到库搜索路径，如果需要添加其它库搜索路径，可以通过在扩展开头添加以下内容：
-
-示例：添加程序目录下的plugins文件夹到搜索路径
-```python
-import os
-from KeymouseGo import add_lib_path
-add_lib_path([
-    os.path.join(os.getcwd(), "plugins")
-])
-```
-
-在相应文件夹添加入搜索路径后，该文件夹下模块的引入可以直接通过`import`或`from ... import ...`实现：
-
-例如，假设`plugins`文件夹下存在`Util.py`，可直接通过以下指令引入模块
-```python
-import Util
-```
-
-__流程控制__
-
-程序对脚本执行流程提供了以下方法，均以异常形式定义，使用时通过`raise`异常实现流程控制:
-  + `JumpProcess(index)`跳转到索引为`index`的脚本行
-  + `BreakProcess`结束本次执行
-  + `EndProcess`结束全部执行
-
-各接口接受的流程控制异常:
-
-|   -   | onbeginp | onbeforeeachloop | onrunbefore | onrunafter | onafterloop | onendp | onrecord |
-|:-----:| :---: | :---: | :---: | :---: | :---: | :---: |:--------:|
-| Jump  | × | × | √ | √ | × | × |    ×     |
-| Break | × | √ | √ | √ | √ | × |    ×     |
-|  End  | × | √ | √ | √ | √ | × |    ×     |
-
-
-__日志调试__
-
-本程序使用`loguru`作为日志模块，在自定义扩展中可直接引入模块进行日志调试
-```python
-from loguru import logger
-```
-日志内容默认保存在主程序日志中，如果有其它的需求可以参阅loguru的[文档](https://loguru.readthedocs.io/en/stable/overview.html)进行改动
-
-__示例__:
-
-在`Script`目录下存在录制的脚本`1.txt`，`2.txt`，其内容均多于3行，程序先执行`1.txt`中内容。
-
-扩展操作：
-  1. 在第一次脚本执行中，执行完第一条(索引0)脚本内容后跳转到第3条脚本(索引2)
-  2. 在第一次脚本执行中，执行完第3条脚本后转而加载新的扩展，以相同的速度执行`2.txt`内容2次，新的扩展操作包括:
-      1. 在第一次执行中，执行完第1条脚本后跳过本次循环
-      2. 在第一次执行中，执行完第2条脚本后结束执行
-      3. 结束执行后，显示从原扩展中转递过来的数据
-  3. 在第二次脚本执行中，跳过第1条(索引0)脚本内容
-  4. 在第二次脚本执行中，执行完第2条脚本后重复执行一次第二条脚本
-  5. 限制脚本执行次数为3次
-
-在`plugins/`目录下新建`MyExtension.py`，其内容为:
-```python
-from assets.plugins.Extension import *
-from assets.plugins.ProcessException import *
-from UIFunc import RunScriptClass
-from loguru import logger
-
-logger.info('Import MyExtension')
-
-
-class MyExtension(Extension):
-    def __init__(self, runtimes, speed, thd=None, swap=None):
-        # 默认的构造函数将参数分别赋给self.runtimes,self.speed,self.swap
-        super().__init__(runtimes, speed, thd, swap)
-        # 保存当前执行次数
-        self.currentloop = 0
-        
-        # 传递给子扩展的数据，传递时采用=赋值而不是浅/深复制
-        # self.swap = 'Helloworld'
-        
-        """
-        完成功能5
-        GUI界面或命令行设置的执行次数通过runtimes参数传入，并保存到self.runtimes
-        修改此值可以改变实际执行次数
-        """ 
-        # self.runtimes = 3
-
-    def onbeforeeachloop(self, currentloop):
-        # 更新当前执行次数
-        self.currentloop = currentloop
-        return True
-
-    def onrunbefore(self, event, currentindex):
-        return True
-        # 完成功能3
-        # if self.currentloop == 1 and currentindex == 0:
-        #     return False
-        # else:
-        #     return True
-
-    def onrunafter(self, event, currentindex):
-        pass
-        # 完成功能1
-        # if self.currentloop == 0 and currentindex == 0:
-        #     raise JumpProcess(2)
-        # 完成功能2
-        # elif self.currentloop == 0 and currentindex == 2:
-        #     """
-        #     run_sub_script包含5个参数，
-        #     extension: 父流程的扩展对象，在这里输入self即可
-        #     scriptpath: 子流程执行的脚本路径，采用相对路径或是绝对路径均可
-        #     speed: 子流程执行的速度，默认为100(%)
-        #     runtimes: 子流程执行次数，默认为1
-        #     subextension_name: 子流程加载的扩展模块，默认为Extension
-        #     """
-        #     RunScriptClass.run_sub_script(self, 'scripts/0603_1013.txt', 
-        #                                    speed=self.speed, 
-        #                                    runtimes=2, 
-        #                                    subextension_name='MyExtension2',
-        #                                    thd=self.thd
-        #                                    )
-        # 完成功能4
-        # elif self.currentloop == 1 and currentindex == 1:
-        #     """
-        #     在程序中，每个操作被封装为一个ScriptEvent对象，其内容包含
-        #     event.delay: int类型，为操作延时(ms)
-        #     event.event_type: str类型，为事件类型
-        #     event.message: str类型，为操作类型
-        #     event.action: str类型，为操作参数
-        #     event.addon: 任意类型，添加的类型需要实现__str__方法以便保存
-        #     """
-        #     event.execute()
-```
-在`plugins/`目录下新建`MyExtension2.py`，其内容为:
-```python
-from assets.plugins.Extension import *
-from assets.plugins.ProcessException import *
-from loguru import logger
-
-logger.info('Import MyExtension2')
-
-
-class MyExtension2(Extension):
-    def __init__(self, runtimes, speed, thd=None, swap=None):
-        super().__init__(runtimes, speed, thd, swap)
-        self.currentloop = 0
-
-    def onbeforeeachloop(self, currentloop):
-        self.currentloop = currentloop
-        return True
-
-    def onrunafter(self, event, currentindex):
-        pass
-        # 完成功能2.i
-        # if self.currentloop == 0:
-        #     raise BreakProcess()
-        # 完成功能2.ii
-        # elif self.currentloop == 1 and currentindex == 1:
-        #     raise EndProcess()
-
-    def onendp(self):
-        pass
-        # 完成功能2.iii
-        # logger.info(self.swap)
-```
-
-# 使用命令行运行：
+### 命令行模式
 
 直接运行指定脚本:
 ```
@@ -332,13 +75,85 @@ class MyExtension2(Extension):
 > KeymouseGo.exe scripts/0314_1452.txt --module MyExtension
 ```
 
-# 源码编译, 打包 exe 文件：
+## 提示
+
+1、可设置脚本重复执行的次数，如果为 `0` 即为无限循环。
+
+2、默认启动热键为 `F6`，功能等同于 `启动` 按钮；默认终止热键为 `F9`，按下后将会停止正在运行的脚本。
+
+3、录制时只记录鼠标点击动作和键盘动作，不记录鼠标移动轨迹。
+
+4、每次录制结束后都会在 `scripts` 目前下生成一个新的脚本文件。
+
+5、运行前可以在列表中选择一个需要执行的脚本。
+
+6、`scripts` 下的脚本文件内容可以修改，修改时可参考如下所述 `脚本格式说明`。
+
+7、热键设置中的`Middle`指代鼠标中键，`XButton`指代鼠标侧键
+
+8、由于程序速度受限，当输入的鼠标速度大于一定值时脚本将无法以预期的输入速度执行
+
+部分系统环境中，可能出现无法录制完整的鼠标事件的情况，请以管理员身份运行此工具即可正常使用。
+
+## 脚本语法说明
+> 演示屏幕分辨率为`1920 * 1080`
+
 ```
-1. 安装 Python3.10
-2. pip install -r requirements.txt
-3. pip install pyinstaller
-4. pyinstaller -F --add-data ./assets;assets KeymouseGo.py
+[
+ [3000, "EM", "mouse right down", [0.05208%, 0.1852%]],    // 开始运行 `3000ms` 后，在屏幕相对坐标 `(0.05208, 0.1852)`即 `(100,200)` 处 `按下鼠标右键`；
+ [50,   "EM", "mouse right up",   [0.05208%, 0.1852%]],    // 等待 `50ms` 后在相同位置 `抬起鼠标右键`；
+ [1000, "EK", "key down",         (70, 'F', 0)],                                   // 等待 `1000ms` 后 `按下f键`；
+ [50,   "EK", "key up",           (70, 'F', 0)],                                   // 等待 `50ms` 后 `抬起f键`；
+ [100,  "EM", "mouse left down",  [0.2604%, 0.4630%]],      // 等待 `100ms` 后，在屏幕相对坐标 `(0.2604, 0.4630)`即 `(500, 500)` 处 `按下鼠标左键`；
+ [100,  "EM", "mouse move",       [0.2604%, 0.5556%]],       // 等待 `100ms` 后，鼠标移动至相对坐标 `(0.2604, 0.5556)`即 `(500, 600)` 位置；
+ [100,  "EM", "mouse left up",  [0.3125%, 0.5556%]],                   // 等待 `100ms` 后，在屏幕相对坐标 `(0.3125, 0.5556)`即 `(600, 600)` 处 `抬起鼠标左键`；
+ [100,  "EX", "input",            "你好 world"],                                   // 等待 `100ms` 后，在当前位置输入 `你好 world` 文字。
+]
 ```
+
+脚本为 `json` 格式，每一行代表一次动作：
++ 每行的第 1 个元素表示时间间隔，指的是本次动作与上一次动作之间相隔的时间，单位为毫秒。
++ 每行的第 2 个元素表示鼠标动作或是键盘动作：`EM` 为鼠标，`EK` 为键盘，`EX` 为其他拓展动作。
++ 每行的第 3 个元素表示动作的类型：
+  + `mouse left down` 为鼠标左键按下，`mouse left up` 为鼠标左键抬起，
+  + `mouse right down` 为鼠标右键按下，`mouse right up` 为鼠标右键抬起，
+  + `mouse middle down` 为鼠标中键按下， `mouse middle up` 为鼠标中键抬起，
+  + `mouse wheel up` 为鼠标滚轮上滑， `mouse wheel down` 为鼠标滚轮下滑，
+  + `key down` 为键盘按键按下，`key up` 为键盘按键抬起，
+  + `mouse move` 为鼠标滑过，`input` 输入文字。
++ 每行的第 4 个元素表示具体的动作参数
+  + 当为鼠标动作时，由两个子元素构成，分别为鼠标所在的屏幕位置的横纵坐标，
+  + 当为键盘动作时，由三个子元素构成，分别是（按键编号, 按键名, 拓展标记)，
+  + 当为输入文字动作时，为要输入的文字内容。
++ 每行 `//` 后的部分为注释内容。
++ 修改时请严格遵守格式，否则可能导致脚本无法运行，建议修改前先备份一下。
+
+
+## 自定义扩展
+
+功能的使用详见[wiki](https://github.com/taojy123/KeymouseGo/wiki/文档#扩展)
+
+
+# 关于作者
+
+我是陶佳元，热爱代码，怀旧，在互联网上常用的 ID 有 taojy123 、tao.py。
+
+我的个人站点 [tslow.cn](https://tslow.cn) 整理并罗列了一些 `个人项目` 和 `小工具` 合集。
+
+你可以在 [简书](http://jianshu.tslow.cn) 浏览我最新发布的文章，还可以在 [B站](https://space.bilibili.com/145137942) 观看我的技术分享和生活纪实。
+
+我的邮箱: taojy123@163.com
+
+----------------------
+
+# 开源贡献者
+
+如果您是开发爱好者，并对本项目感兴趣，欢迎参与项目的共同建设，您可以向本项目提交 Pull request 来贡献代码。
+
+在此，特别感谢积极贡献者：
+
+<a href="https://github.com/Monomux"><img src="https://avatars.githubusercontent.com/u/70839036?s=80&v=4" height="80"></a>
+<a href="https://github.com/ZutJoe"><img src="https://avatars.githubusercontent.com/u/54732130?s=80&v=4" height="80"></a>
 
 ----------------------
 
