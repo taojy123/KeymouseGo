@@ -267,6 +267,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 self.actioncount = self.actioncount + 1
                 text = '%d actions recorded' % self.actioncount
                 logger.debug('Recorded %s' % sevent)
+                self.textlog.append(sevent.summarystr())
                 self.tnumrd.setText(text)
 
             return True
@@ -338,6 +339,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 self.actioncount = self.actioncount + 1
                 text = '%d actions recorded' % self.actioncount
                 self.tnumrd.setText(text)
+                self.textlog.append(sevent.summarystr())
 
             return True
 
@@ -575,6 +577,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                                                          runtimes=self.stimes.value(),
                                                          speed=self.execute_speed.value())
             logger.info('Record start')
+            self.textlog.clear()
             self.recording = True
             self.ttt = current_ts()
             status = self.tnumrd.text()
@@ -637,7 +640,11 @@ class RunScriptClass(threading.Thread):
 
             # 解析脚本，返回事件集合与扩展类对象
             logger.debug('Parse script..')
-            events, module_name = RunScriptClass.parsescript(script_path, speed=self.frame.execute_speed.value())
+            try:
+                events, module_name = RunScriptClass.parsescript(script_path, speed=self.frame.execute_speed.value())
+            except Exception as e:
+                logger.error(e)
+                self.frame.textlog.append('An error occurred while parsing script, see details in log')
             extension = RunScriptClass.getextension(
                 module_name if module_name is not None else self.frame.choice_extension.currentText(),
                 runtimes=self.frame.stimes.value(),
@@ -682,6 +689,7 @@ class RunScriptClass(threading.Thread):
         except Exception as e:
             logger.error('Run error: {0}'.format(e))
             traceback.print_exc()
+            self.frame.textlog.append('An error occurred during runtime, see details in log')
             self.frame.tnumrd.setText('failed')
             self.frame.running = False
         finally:
