@@ -5,6 +5,13 @@ from Event import ScreenWidth as SW, ScreenHeight as SH
 from loguru import logger
 import Recorder.globals as globalv
 import collections
+from winreg import QueryValueEx, OpenKey, HKEY_CURRENT_USER, KEY_READ
+# 是否切换主要/次要功能键
+swapmousebuttons = True if QueryValueEx(OpenKey(HKEY_CURRENT_USER,
+                                                r'Control Panel\Mouse',
+                                                0,
+                                                KEY_READ),
+                                        'SwapMouseButtons')[0] == '1' else False
 
 msgdic = {0x0201: 'mouse left down', 0x0202: 'mouse left up',
           0x0204: 'mouse right down', 0x0205: 'mouse right up',
@@ -31,7 +38,7 @@ def on_mouse_event(event):
     message = event.MessageName
     if message == 'mouse wheel':
         message += ' up' if event.Wheel == 1 else ' down'
-    elif message in globalv.swapmousemap and globalv.swapmousebuttons:
+    elif message in globalv.swapmousemap and swapmousebuttons:
         message = globalv.swapmousemap[message]
     all_messages = ('mouse left down', 'mouse left up', 'mouse right down', 'mouse right up', 'mouse move',
                     'mouse middle down', 'mouse middle up', 'mouse wheel up', 'mouse wheel down',
