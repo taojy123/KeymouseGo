@@ -301,6 +301,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                     text = '%d actions recorded' % self.actioncount
                     logger.debug('Recorded %s' % event)
                     self.tnumrd.setText(text)
+        Recorder.setuphook()
         Recorder.set_callback(on_record_event)
         Recorder.set_interval(self.mouse_move_interval_ms.value())
 

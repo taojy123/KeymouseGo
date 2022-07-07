@@ -3,15 +3,13 @@
 # Boa:App:BoaApp
 import os
 import sys
-import threading
 
-import pyWinhook
-import pythoncom
 from PySide2.QtWidgets import QApplication
+from PySide2.QtCore import Slot
 
 import UIFunc
 import argparse
-
+from Event import ScriptEvent
 from loguru import logger
 
 from assets.plugins.ProcessException import BreakProcess, EndProcess
@@ -35,8 +33,17 @@ def main():
 
 @logger.catch
 def single_run(script_path, run_times=1, speed=100, module_name='Extension'):
-    t = HookThread()
-    t.start()
+    @Slot(ScriptEvent)
+    def on_keyboard_event(event):
+        key_name = event.action[1].lower()
+        stop_name = 'f9'
+        if key_name == stop_name:
+            logger.debug('break exit!')
+            os._exit(0)
+        return True
+
+    UIFunc.Recorder.setuphook(commandline=True)
+    UIFunc.Recorder.set_callback(on_keyboard_event)
 
     try:
         for path in script_path:
@@ -69,23 +76,6 @@ def single_run(script_path, run_times=1, speed=100, module_name='Extension'):
         raise e
     finally:
         os._exit(0)
-
-
-class HookThread(threading.Thread):
-
-    def run(self):
-        def on_keyboard_event(event):
-            key_name = event.Key.lower()
-            stop_name = 'f9'
-            if key_name == stop_name:
-                logger.debug('break exit!')
-                os._exit(0)
-            return True
-
-        hm = pyWinhook.HookManager()
-        hm.KeyAll = on_keyboard_event
-        hm.HookKeyboard()
-        pythoncom.PumpMessages()
 
 
 if __name__ == '__main__':
