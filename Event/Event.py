@@ -1,12 +1,5 @@
+import time
 from abc import ABCMeta, abstractmethod
-
-import win32con
-from win32gui import GetDC
-from win32print import GetDeviceCaps
-
-hDC = GetDC(0)
-SW = GetDeviceCaps(hDC, win32con.DESKTOPHORZRES)
-SH = GetDeviceCaps(hDC, win32con.DESKTOPVERTRES)
 
 
 class Event(metaclass=ABCMeta):
@@ -23,21 +16,14 @@ class Event(metaclass=ABCMeta):
             return '[%d, %s, %s, %s, %s]' % (self.delay, self.event_type, self.message, self.action, str(self.addon))
         return '[%d, %s, %s, %s]' % (self.delay, self.event_type, self.message, self.action)
 
-    # 改变坐标
-    # pos 为包含横纵坐标的元组
-    # 值为int型:绝对坐标
-    # 值为float型:相对坐标
-    def changepos(self, pos: tuple):
-        if self.event_type == 'EM':
-            x, y = pos
-            if isinstance(x, int):
-                self.action[0] = int(x * 65535 / SW)
-            else:
-                self.action[0] = int(x * 65535)
-            if isinstance(y, int):
-                self.action[1] = int(y * 65535 / SH)
-            else:
-                self.action[1] = int(y * 65535)
+    # 延时
+    def sleep(self, thd=None):
+        if thd:
+            thd.exe_event.clear()
+            thd.exe_event.wait(timeout=self.delay / 1000.0)
+            thd.exe_event.set()
+        else:
+            time.sleep(self.delay / 1000.0)
 
     @abstractmethod
     def execute(self, thd=None):
