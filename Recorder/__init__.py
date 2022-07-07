@@ -3,19 +3,18 @@ from PySide2.QtCore import Slot
 import Recorder.globals
 
 if system() == 'Windows':
-    import Recorder.WindowsRecorder as _Recoder
+    import Recorder.WindowsRecorder as _Recorder
 elif system() in ['Linux', 'Darwin']:
     pass
 else:
     raise OSError("Unsupported platform '{}'".format(system()))
 
-_Recoder.setuphook()
-Recorder = _Recoder
+setuphook = _Recorder.setuphook
 
 
 # 捕获到事件后调用函数
 def set_callback(callback):
-    _Recoder.record_signals.event_signal.connect(callback)
+    _Recorder.record_signals.event_signal.connect(callback)
 
 
 # 槽函数:改变鼠标精度

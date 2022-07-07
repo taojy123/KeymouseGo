@@ -89,10 +89,6 @@ def on_keyboard_event(event):
     message = event.MessageName
     message = message.replace(' sys ', ' ')
 
-    if message == 'key up':
-        # listen for start/stop script
-        key_name = event.Key.lower()
-
     all_messages = ('key down', 'key up')
     if message not in all_messages:
         return True
@@ -129,9 +125,10 @@ def mouse_handler(msg, x, y, data, flags, time, hwnd, window_name):
         return True
 
 
-def setuphook():
+def setuphook(commandline=False):
     hm = pyWinhook.HookManager()
-    # 使用一般的HookMouse无法捕获鼠标侧键操作，因此采用cpyHook捕获鼠标操作
-    cpyHook.cSetHook(HookConstants.WH_MOUSE_LL, mouse_handler)
+    if not commandline:
+        # 使用一般的HookMouse无法捕获鼠标侧键操作，因此采用cpyHook捕获鼠标操作
+        cpyHook.cSetHook(HookConstants.WH_MOUSE_LL, mouse_handler)
     hm.KeyAll = on_keyboard_event
     hm.HookKeyboard()

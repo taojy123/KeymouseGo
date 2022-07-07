@@ -3,21 +3,16 @@
 # Boa:App:BoaApp
 import os
 import sys
-import threading
 import math
-
-import pyWinhook
-import pythoncom
-import win32con
+from PySide2.QtWidgets import QApplication
+from PySide2.QtCore import Slot
 from PySide2.QtWidgets import *
 from PySide2.QtCore import QRect
 from PySide2 import QtCore, QtWidgets
-from win32gui import GetDC
-from win32print import GetDeviceCaps
 
 import UIFunc
 import argparse
-
+from Event import ScriptEvent, ScreenWidth as SW, ScreenHeight as SH
 from loguru import logger
 
 from assets.plugins.ProcessException import BreakProcess, EndProcess
@@ -36,13 +31,13 @@ def resize_layout(ui, ratio_w, ratio_h):
     ui.resize(ui.width() * ratio_w, ui.height() * ratio_h)
 
     for q_widget in ui.findChildren(QWidget):
-        q_widget.setGeometry(QRect(q_widget.x() * ratio_w, 
+        q_widget.setGeometry(QRect(q_widget.x() * ratio_w,
                                     q_widget.y() * ratio_h,
-                                    q_widget.width() * ratio_w, 
+                                    q_widget.width() * ratio_w,
                                     q_widget.height() * ratio_h))
         q_widget.setStyleSheet('font-size: ' + str(math.ceil(9 * min(ratio_h, ratio_w))) + 'px')
         if isinstance(q_widget, QSpinBox):
-            q_widget.setStyleSheet('padding-left: 7px')      
+            q_widget.setStyleSheet('padding-left: 7px')
 
 
 def main():
@@ -56,9 +51,6 @@ def main():
     app = QApplication(sys.argv)
     ui = UIFunc.UIFunc(app)
     # 不同分辨率下调节字体大小和窗口大小
-    hDC = GetDC(0)
-    SW = GetDeviceCaps(hDC, win32con.DESKTOPHORZRES)
-    SH = GetDeviceCaps(hDC, win32con.DESKTOPVERTRES)
     ratio_w = SW / 1920
     ratio_h = SH / 1080
     if ratio_w > 1 and ratio_h > 1:
@@ -70,8 +62,17 @@ def main():
 
 @logger.catch
 def single_run(script_path, run_times=1, speed=100, module_name='Extension'):
-    t = HookThread()
-    t.start()
+    @Slot(ScriptEvent)
+    def on_keyboard_event(event):
+        key_name = event.action[1].lower()
+        stop_name = 'f9'
+        if key_name == stop_name:
+            logger.debug('break exit!')
+            os._exit(0)
+        return True
+
+    UIFunc.Recorder.setuphook(commandline=True)
+    UIFunc.Recorder.set_callback(on_keyboard_event)
 
     try:
         for path in script_path:
@@ -104,23 +105,6 @@ def single_run(script_path, run_times=1, speed=100, module_name='Extension'):
         raise e
     finally:
         os._exit(0)
-
-
-class HookThread(threading.Thread):
-
-    def run(self):
-        def on_keyboard_event(event):
-            key_name = event.Key.lower()
-            stop_name = 'f9'
-            if key_name == stop_name:
-                logger.debug('break exit!')
-                os._exit(0)
-            return True
-
-        hm = pyWinhook.HookManager()
-        hm.KeyAll = on_keyboard_event
-        hm.HookKeyboard()
-        pythoncom.PumpMessages()
 
 
 if __name__ == '__main__':
