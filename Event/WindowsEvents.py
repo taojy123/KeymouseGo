@@ -3,10 +3,17 @@ import time
 
 import pyperclip
 import win32api
-import win32con
 
-from Event.Event import Event, SW, SH
+from Event.Event import Event
 from loguru import logger
+
+import win32con
+from win32gui import GetDC
+from win32print import GetDeviceCaps
+
+hDC = GetDC(0)
+SW = GetDeviceCaps(hDC, win32con.DESKTOPHORZRES)
+SH = GetDeviceCaps(hDC, win32con.DESKTOPVERTRES)
 
 
 class WindowsEvent(Event):
@@ -16,14 +23,21 @@ class WindowsEvent(Event):
         else:
             return '{0} after {1}ms'.format(self.message, self.delay)
 
-    # 延时
-    def sleep(self, thd=None):
-        if thd:
-            thd.exe_event.clear()
-            thd.exe_event.wait(timeout=self.delay / 1000.0)
-            thd.exe_event.set()
-        else:
-            time.sleep(self.delay / 1000.0)
+    # 改变坐标
+    # pos 为包含横纵坐标的元组
+    # 值为int型:绝对坐标
+    # 值为float型:相对坐标
+    def changepos(self, pos: tuple):
+        if self.event_type == 'EM':
+            x, y = pos
+            if isinstance(x, int):
+                self.action[0] = int(x * 65535 / SW)
+            else:
+                self.action[0] = int(x * 65535)
+            if isinstance(y, int):
+                self.action[1] = int(y * 65535 / SH)
+            else:
+                self.action[1] = int(y * 65535)
 
     # 执行操作
     def execute(self, thd=None):
