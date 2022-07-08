@@ -1,5 +1,11 @@
 import time
 from abc import ABCMeta, abstractmethod
+import tkinter as tk
+
+root = tk.Tk()
+SW = root.winfo_screenwidth()
+SH = root.winfo_screenheight()
+root.destroy()
 
 
 class Event(metaclass=ABCMeta):
@@ -15,6 +21,12 @@ class Event(metaclass=ABCMeta):
         if self.addon:
             return '[%d, %s, %s, %s, %s]' % (self.delay, self.event_type, self.message, self.action, str(self.addon))
         return '[%d, %s, %s, %s]' % (self.delay, self.event_type, self.message, self.action)
+
+    def summarystr(self):
+        if self.event_type == 'EK':
+            return 'key {0} {1} after {1}ms'.format(self.action[1], self.message[4:], self.delay)
+        else:
+            return '{0} after {1}ms'.format(self.message, self.delay)
 
     # 延时
     def sleep(self, thd=None):

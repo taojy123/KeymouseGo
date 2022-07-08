@@ -42,7 +42,7 @@ def on_mouse_event(event):
         message = globalv.swapmousemap[message]
     all_messages = ('mouse left down', 'mouse left up', 'mouse right down', 'mouse right up', 'mouse move',
                     'mouse middle down', 'mouse middle up', 'mouse wheel up', 'mouse wheel down',
-                    # 'mouse x1 down', 'mouse x1 up', 'mouse x2 down', 'mouse x2 up'
+                    'mouse x1 down', 'mouse x1 up', 'mouse x2 down', 'mouse x2 up'
                     )
     if message not in all_messages:
         return True
