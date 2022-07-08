@@ -5,7 +5,7 @@ import Recorder.globals
 if system() == 'Windows':
     import Recorder.WindowsRecorder as _Recorder
 elif system() in ['Linux', 'Darwin']:
-    pass
+    import Recorder.UniversalRecorder as _Recorder
 else:
     raise OSError("Unsupported platform '{}'".format(system()))
 

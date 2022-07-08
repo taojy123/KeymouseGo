@@ -7,7 +7,6 @@ import re
 import sys
 import threading
 import traceback
-import winreg
 import platform
 import subprocess
 import locale
@@ -34,15 +33,6 @@ QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
 HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
             'XButton1', 'XButton2', 'Middle']
-
-# 是否切换主要/次要功能键
-swapmousebuttons = True if winreg.QueryValueEx(winreg.OpenKey(winreg.HKEY_CURRENT_USER,
-                                                              r'Control Panel\Mouse',
-                                                              0,
-                                                              winreg.KEY_READ),
-                                               'SwapMouseButtons')[0] == '1' else False
-swapmousemap = {'mouse left down': 'mouse right down', 'mouse left up': 'mouse right up',
-                'mouse right down': 'mouse left down', 'mouse right up': 'mouse left up'}
 
 logger.remove()
 logger.add(sys.stdout, backtrace=True, diagnose=True,
@@ -188,8 +178,6 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
         self.extension = None
 
-        self.midashotkey = False
-
         # 热键响应逻辑
         def hotkeymethod(key_name):
             start_index = self.choice_start.currentIndex()
@@ -255,15 +243,12 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             # 判断热键
             if event.event_type == 'EM':
                 name = event.message
-                if 'mouse x1 down' == name:
-                    hotkeymethod('xbutton1')
-                elif 'mouse x2 down' == name:
-                    hotkeymethod('xbutton2')
-                elif 'mouse middle' in name:
-                    if 'down' in name:
-                        self.midashotkey = hotkeymethod('middle')
-                    if self.midashotkey:
-                        return
+                if 'mouse x1 down' == name and hotkeymethod('xbutton1'):
+                    return
+                elif 'mouse x2 down' == name and hotkeymethod('xbutton2'):
+                    return
+                elif 'mouse middle down' and hotkeymethod('middle'):
+                    return
             else:
                 key_name = event.action[1]
                 if event.message == 'key down':

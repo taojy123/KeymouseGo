@@ -4,25 +4,13 @@ import time
 import pyperclip
 import win32api
 
-from Event.Event import Event
+from Event.Event import Event, SW, SH
 from loguru import logger
 
 import win32con
-from win32gui import GetDC
-from win32print import GetDeviceCaps
-
-hDC = GetDC(0)
-SW = GetDeviceCaps(hDC, win32con.DESKTOPHORZRES)
-SH = GetDeviceCaps(hDC, win32con.DESKTOPVERTRES)
 
 
 class WindowsEvent(Event):
-    def summarystr(self):
-        if self.event_type == 'EK':
-            return 'key {0} {1} after {1}ms'.format(self.action[1], self.message[4:], self.delay)
-        else:
-            return '{0} after {1}ms'.format(self.message, self.delay)
-
     # 改变坐标
     # pos 为包含横纵坐标的元组
     # 值为int型:绝对坐标

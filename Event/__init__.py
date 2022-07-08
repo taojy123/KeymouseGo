@@ -5,7 +5,8 @@ if system() == 'Windows':
     import Event.WindowsEvents as _Event
     event_cls = _Event.WindowsEvent
 elif system() in ['Linux', 'Darwin']:
-    pass
+    import Event.UniversalEvents as _Event
+    event_cls = _Event.UniversalEvent
 else:
     raise OSError("Unsupported platform '{}'".format(system()))
 
