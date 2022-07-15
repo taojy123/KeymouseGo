@@ -9,7 +9,8 @@ import math
 import pyWinhook
 import pythoncom
 import win32con
-from PySide2.QtWidgets import QApplication, QWidget, QSpinBox, QLayout, QSizePolicy
+from PySide2.QtWidgets import *
+# from PySide2.QtWidgets import QApplication, QWidget, QGroupBox, QSpinBox, QPushButton, QSizePolicy
 from PySide2.QtCore import QRect
 from PySide2 import QtCore, QtWidgets
 from win32gui import GetDC
@@ -32,6 +33,36 @@ def add_lib_path(libpaths):
 add_lib_path([os.path.join(os.getcwd(), 'plugins')])
 
 
+def resize_layout(ui, ratio_w, ratio_h):
+    ui.resize(ui.width() * ratio_w, ui.height() * ratio_h)
+
+    groupboxs = []
+    for q_widget in ui.findChildren(QWidget):
+        if isinstance(q_widget, QPushButton):
+            q_widget.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+            q_widget.setMaximumSize(250, 50)
+        if not isinstance(q_widget, QGroupBox):
+            q_widget.setGeometry(QRect(q_widget.x() * ratio_w, 
+                                        q_widget.y() * ratio_h,
+                                        q_widget.width() * ratio_w, 
+                                        q_widget.height() * ratio_h))
+        q_widget.setStyleSheet('font-size: ' + str(math.ceil(9 * min(ratio_h, ratio_w))) + 'px')
+        if isinstance(q_widget, QSpinBox):
+            q_widget.setStyleSheet('padding-left: 7px')
+        if isinstance(q_widget, QGroupBox):
+            groupboxs.append(q_widget)
+
+    for groupbox in groupboxs:
+        print(groupbox)
+        print(f'x =======> {groupbox.x()}')
+        print(f'y =======> {groupbox.y()}')
+        groupbox.setGeometry(QRect(groupbox.x() * ratio_w, 
+                                    groupbox.y() * ratio_h,
+                                    groupbox.width() * ratio_w, 
+                                    groupbox.height() * ratio_h))
+        
+
+
 def main():
 
     # 适应高DPI
@@ -42,6 +73,7 @@ def main():
 
     app = QApplication(sys.argv)
     ui = UIFunc.UIFunc(app)
+    ui.findChild()
     # 不同分辨率下调节字体大小和窗口大小
     hDC = GetDC(0)
     SW = GetDeviceCaps(hDC, win32con.DESKTOPHORZRES)
@@ -52,47 +84,9 @@ def main():
     ratio_h = SH / 1080
     # ratio_w = SW / 600
     # ratio_h = SH / 300
-    if ratio_w < 1:
-        ratio_w = 1
-    if ratio_h < 1:
-        ratio_h = 1
+    if ratio_w > 1 and ratio_h > 1:
+        resize_layout(ui, ratio_w, ratio_h)
 
-    if ratio_w != 1 and ratio_h != 1:
-        ui.resize(ui.width() * ratio_w, ui.height() * ratio_h)
-
-        # for q_layout in ui.findChildren(QLayout):
-        #     q_layout.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-            # print(q_layout)
-            # print(str(q_layout.geometry().width()) + " " + str(q_layout.geometry().height()))
-            # print(str(q_layout.width()) + " " + str(q_layout.height()))
-            # q_layout.resize(q_layout.width() * ratio_w, q_layout.height() * ratio_h)
-
-        for q_widget in ui.findChildren(QWidget):
-            # print('==================================')
-            # print(q_widget)
-            # print('q_widget.width() ========> ' + str(q_widget.width()))
-            # print('q_widget.height() ========> ' + str(q_widget.height()))
-            # print(str(ratio_h) + ' + ' + str(ratio_w))
-            q_widget.setGeometry(QRect(q_widget.x() * ratio_w, 
-                                       q_widget.y() * ratio_h,
-                                       q_widget.width() * ratio_w, 
-                                       q_widget.height() * ratio_h))
-            q_widget.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-            q_widget.setStyleSheet('font-size: ' + str(math.ceil(13 * min(ratio_h, ratio_w))) + 'px')
-            # TODO: 下拉框样式会随着这个边, 很丑 QComboBox
-            # 样式失真的主要原因是组件的垂直高度不会变, 以及QComBobox和QSpinBox两个组件之间的margin不一样, 放大之后会有位移区别
-            # QSpinbox在设置margin之后, 不是向组件两边挤而是向内部挤, 很奇怪
-            q_widget.setStyleSheet('margin-top: 15px; margin-bottom: 15px')
-            if isinstance(q_widget, QSpinBox):
-                q_widget.setStyleSheet('padding-left: 7px')
-            # print('q_widget.width() ========> ' + str(q_widget.width()))
-            # print('q_widget.height() ========> ' + str(q_widget.height()))
-
-        # for q_layout in ui.findChildren(QLayout):
-            # print(q_layout)
-            # print(str(q_layout.geometry().width()) + " " + str(q_layout.geometry().height()))
-            # print(str(q_layout.width()) + " " + str(q_layout.height()))
-            # q_layout.resize(q_layout.width() * ratio_w, q_layout.height() * ratio_h)
     ui.show()
     sys.exit(app.exec_())
 
