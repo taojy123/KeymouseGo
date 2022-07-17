@@ -25,7 +25,7 @@ from PySide2.QtGui import QTextCursor
 from qt_material import list_themes, QtStyleTools
 from PySide2.QtCore import QSettings, Qt, QUrl
 from PySide2.QtCore import QTranslator, QCoreApplication
-from PySide2.QtWidgets import QMainWindow, QApplication, QGraphicsOpacityEffect
+from PySide2.QtWidgets import QMainWindow, QApplication
 from PySide2.QtMultimedia import QSoundEffect
 from loguru import logger
 from pyWinhook import cpyHook, HookConstants
@@ -650,8 +650,9 @@ class RunScriptClass(threading.Thread):
                 events, module_name = RunScriptClass.parsescript(script_path, speed=self.frame.execute_speed.value())
             except Exception as e:
                 logger.error(e)
-                self.frame.textlog.append('An error occurred while parsing script')
+                self.frame.textlog.append('==============\nAn error occurred while parsing script')
                 self.frame.textlog.append(str(e))
+                self.frame.textlog.append('==============')
             extension = RunScriptClass.getextension(
                 module_name if module_name is not None else self.frame.choice_extension.currentText(),
                 runtimes=self.frame.stimes.value(),
@@ -698,8 +699,9 @@ class RunScriptClass(threading.Thread):
         except Exception as e:
             logger.error('Run error: {0}'.format(e))
             traceback.print_exc()
-            self.frame.textlog.append('An error occurred during runtime')
+            self.frame.textlog.append('==============\nAn error occurred during runtime')
             self.frame.textlog.append(str(e))
+            self.frame.textlog.append('==============')
             self.frame.tnumrd.setText('failed')
             self.frame.running = False
         finally:
