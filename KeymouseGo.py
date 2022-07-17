@@ -10,7 +10,6 @@ import pyWinhook
 import pythoncom
 import win32con
 from PySide2.QtWidgets import *
-# from PySide2.QtWidgets import QApplication, QWidget, QGroupBox, QSpinBox, QPushButton, QSizePolicy
 from PySide2.QtCore import QRect
 from PySide2 import QtCore, QtWidgets
 from win32gui import GetDC
@@ -38,9 +37,6 @@ def resize_layout(ui, ratio_w, ratio_h):
 
     groupboxs = []
     for q_widget in ui.findChildren(QWidget):
-        # if isinstance(q_widget, QPushButton):
-        #     q_widget.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        #     q_widget.setMaximumSize(250, 50)
         if not isinstance(q_widget, QGroupBox):
             q_widget.setGeometry(QRect(q_widget.x() * ratio_w, 
                                         q_widget.y() * ratio_h,
@@ -53,9 +49,6 @@ def resize_layout(ui, ratio_w, ratio_h):
             groupboxs.append(q_widget)
 
     for groupbox in groupboxs:
-        print(groupbox)
-        print(f'x =======> {groupbox.x()}')
-        print(f'y =======> {groupbox.y()}')
         groupbox.setGeometry(QRect(groupbox.x() * ratio_w, 
                                     groupbox.y() * ratio_h,
                                     groupbox.width() * ratio_w, 
@@ -73,18 +66,12 @@ def main():
 
     app = QApplication(sys.argv)
     ui = UIFunc.UIFunc(app)
-    # ui.findChild()
     # 不同分辨率下调节字体大小和窗口大小
     hDC = GetDC(0)
     SW = GetDeviceCaps(hDC, win32con.DESKTOPHORZRES)
     SH = GetDeviceCaps(hDC, win32con.DESKTOPVERTRES)
-    # SW = 3840
-    # SH = 2400
     ratio_w = SW / 1920
     ratio_h = SH / 1080
-    print((ratio_w, ratio_h))
-    # ratio_w = SW / 600
-    # ratio_h = SH / 300
     if ratio_w > 1 and ratio_h > 1:
         resize_layout(ui, ratio_w, ratio_h)
 
