@@ -244,7 +244,6 @@ class Ui_UIView(object):
         self.volumeSlider.setOrientation(Qt.Horizontal)
 
         self.formLayout_3.setWidget(0, QFormLayout.FieldRole, self.volumeSlider)
-
         UIView.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(UIView)
         self.menubar.setObjectName(u"menubar")
