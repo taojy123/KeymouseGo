@@ -38,9 +38,9 @@ def resize_layout(ui, ratio_w, ratio_h):
 
     groupboxs = []
     for q_widget in ui.findChildren(QWidget):
-        if isinstance(q_widget, QPushButton):
-            q_widget.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-            q_widget.setMaximumSize(250, 50)
+        # if isinstance(q_widget, QPushButton):
+        #     q_widget.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        #     q_widget.setMaximumSize(250, 50)
         if not isinstance(q_widget, QGroupBox):
             q_widget.setGeometry(QRect(q_widget.x() * ratio_w, 
                                         q_widget.y() * ratio_h,
@@ -73,15 +73,16 @@ def main():
 
     app = QApplication(sys.argv)
     ui = UIFunc.UIFunc(app)
-    ui.findChild()
+    # ui.findChild()
     # 不同分辨率下调节字体大小和窗口大小
     hDC = GetDC(0)
     SW = GetDeviceCaps(hDC, win32con.DESKTOPHORZRES)
     SH = GetDeviceCaps(hDC, win32con.DESKTOPVERTRES)
-    SW = 3840
-    SH = 2400
+    # SW = 3840
+    # SH = 2400
     ratio_w = SW / 1920
     ratio_h = SH / 1080
+    print((ratio_w, ratio_h))
     # ratio_w = SW / 600
     # ratio_h = SH / 300
     if ratio_w > 1 and ratio_h > 1:
