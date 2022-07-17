@@ -4,8 +4,14 @@ import pyperclip
 from pynput import mouse, keyboard
 from pynput.keyboard import KeyCode
 from pynput.mouse import Button
-from Event.Event import Event, SW, SH
+from Event.Event import Event
 from loguru import logger
+import tkinter as tk
+
+root = tk.Tk()
+SW = root.winfo_screenwidth()
+SH = root.winfo_screenheight()
+root.destroy()
 
 
 class UniversalEvent(Event):
