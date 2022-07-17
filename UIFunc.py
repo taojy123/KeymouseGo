@@ -21,10 +21,11 @@ import pyWinhook
 import pyperclip
 import win32api
 import win32con
+from PySide2.QtGui import QTextCursor
 from qt_material import list_themes, QtStyleTools
 from PySide2.QtCore import QSettings, Qt, QUrl
 from PySide2.QtCore import QTranslator, QCoreApplication
-from PySide2.QtWidgets import QMainWindow, QApplication, QGraphicsOpacityEffect
+from PySide2.QtWidgets import QMainWindow, QApplication
 from PySide2.QtMultimedia import QSoundEffect
 from loguru import logger
 from pyWinhook import cpyHook, HookConstants
@@ -158,12 +159,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.onchangetheme()
 
         # Opacity of labels below
-        self.tevent1opacity = QGraphicsOpacityEffect()
-        self.tevent1opacity.setOpacity(0.6)
-        self.tevent1.setGraphicsEffect(self.tevent1opacity)
-        self.tevent3opacity = QGraphicsOpacityEffect()
-        self.tevent3opacity.setOpacity(0.8)
-        self.tevent3.setGraphicsEffect(self.tevent3opacity)
+        self.textlog.textChanged.connect(lambda: self.textlog.moveCursor(QTextCursor.End))
 
         # For tune playing
         self.player = QSoundEffect()
@@ -274,6 +270,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 self.actioncount = self.actioncount + 1
                 text = '%d actions recorded' % self.actioncount
                 logger.debug('Recorded %s' % sevent)
+                self.textlog.append(sevent.summarystr())
                 self.tnumrd.setText(text)
 
             return True
@@ -345,6 +342,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 self.actioncount = self.actioncount + 1
                 text = '%d actions recorded' % self.actioncount
                 self.tnumrd.setText(text)
+                self.textlog.append(sevent.summarystr())
 
             return True
 
@@ -368,6 +366,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
             if key_name == start_name and not self.running and not self.recording:
                 logger.info('Script start')
+                self.textlog.clear()
                 self.runthread = RunScriptClass(self, self.pause_event)
                 self.runthread.start()
                 self.isbrokenorfinish = False
@@ -585,6 +584,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                                                          runtimes=self.stimes.value(),
                                                          speed=self.execute_speed.value())
             logger.info('Record start')
+            self.textlog.clear()
             self.recording = True
             self.ttt = current_ts()
             status = self.tnumrd.text()
@@ -604,6 +604,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
     def OnBtrunButton(self):
         logger.info('Script start')
         logger.debug('Script start by btn')
+        self.textlog.clear()
         self.runthread = RunScriptClass(self, self.pause_event)
         self.runthread.start()
         self.isbrokenorfinish = False
@@ -646,7 +647,13 @@ class RunScriptClass(threading.Thread):
 
             # 解析脚本，返回事件集合与扩展类对象
             logger.debug('Parse script..')
-            events, module_name = RunScriptClass.parsescript(script_path, speed=self.frame.execute_speed.value())
+            try:
+                events, module_name = RunScriptClass.parsescript(script_path, speed=self.frame.execute_speed.value())
+            except Exception as e:
+                logger.error(e)
+                self.frame.textlog.append('==============\nAn error occurred while parsing script')
+                self.frame.textlog.append(str(e))
+                self.frame.textlog.append('==============')
             extension = RunScriptClass.getextension(
                 module_name if module_name is not None else self.frame.choice_extension.currentText(),
                 runtimes=self.frame.stimes.value(),
@@ -693,6 +700,9 @@ class RunScriptClass(threading.Thread):
         except Exception as e:
             logger.error('Run error: {0}'.format(e))
             traceback.print_exc()
+            self.frame.textlog.append('==============\nAn error occurred during runtime')
+            self.frame.textlog.append(str(e))
+            self.frame.textlog.append('==============')
             self.frame.tnumrd.setText('failed')
             self.frame.running = False
         finally:
@@ -816,18 +826,8 @@ class RunScriptClass(threading.Thread):
                 thd.event.wait()
                 logger.trace(
                     '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, extension.runtimes, extension.speed))
-                if i > 0:
-                    thd.frame.tevent1.setText('Previous: {0} [{1}/{2}]'.format(
-                        events[i - 1].summarystr(), i, steps))
-                else:
-                    thd.frame.tevent1.setText('Previous: ...')
-                thd.frame.tevent2.setText('Current: {0} [{1}/{2}]'.format(
-                        events[i].summarystr(), i + 1, steps))
-                if i < steps - 1:
-                    thd.frame.tevent3.setText('Next: {0} [{1}/{2}]'.format(
-                        events[i + 1].summarystr(), i + 2, steps))
-                else:
-                    thd.frame.tevent3.setText('Next: ...')
+                thd.frame.textlog.append('{0} [{1}/{2}]'.format(
+                            events[i].summarystr(), i + 1, steps))
 
             event = events[i]
 

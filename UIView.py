@@ -18,7 +18,7 @@ class Ui_UIView(object):
     def setupUi(self, UIView):
         if not UIView.objectName():
             UIView.setObjectName(u"UIView")
-        UIView.resize(638, 405)
+        UIView.resize(638, 463)
         icon = QIcon()
         icon.addFile(u":/pic/Mondrian.png", QSize(), QIcon.Normal, QIcon.Off)
         UIView.setWindowIcon(icon)
@@ -195,7 +195,7 @@ class Ui_UIView(object):
 
         self.verticalLayoutWidget = QWidget(self.centralwidget)
         self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
-        self.verticalLayoutWidget.setGeometry(QRect(10, 260, 621, 91))
+        self.verticalLayoutWidget.setGeometry(QRect(10, 260, 621, 151))
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -204,20 +204,12 @@ class Ui_UIView(object):
 
         self.verticalLayout.addWidget(self.tnumrd)
 
-        self.tevent1 = QLabel(self.verticalLayoutWidget)
-        self.tevent1.setObjectName(u"tevent1")
+        self.textlog = QTextEdit(self.verticalLayoutWidget)
+        self.textlog.setObjectName(u"textlog")
+        self.textlog.setEnabled(True)
+        self.textlog.setReadOnly(True)
 
-        self.verticalLayout.addWidget(self.tevent1)
-
-        self.tevent2 = QLabel(self.verticalLayoutWidget)
-        self.tevent2.setObjectName(u"tevent2")
-
-        self.verticalLayout.addWidget(self.tevent2)
-
-        self.tevent3 = QLabel(self.verticalLayoutWidget)
-        self.tevent3.setObjectName(u"tevent3")
-
-        self.verticalLayout.addWidget(self.tevent3)
+        self.verticalLayout.addWidget(self.textlog)
 
         self.formLayoutWidget_3 = QWidget(self.centralwidget)
         self.formLayoutWidget_3.setObjectName(u"formLayoutWidget_3")
@@ -291,9 +283,5 @@ class Ui_UIView(object):
         self.btrun.setText(QCoreApplication.translate("UIView", u"Launch", None))
         self.btpauserecord.setText(QCoreApplication.translate("UIView", u"Pause Record", None))
         self.tnumrd.setText(QCoreApplication.translate("UIView", u"Ready...", None))
-        self.tevent1.setText(QCoreApplication.translate("UIView", u"...", None))
-        self.tevent2.setText(QCoreApplication.translate("UIView", u"...", None))
-        self.tevent3.setText(QCoreApplication.translate("UIView", u"...", None))
-        self.label_volume.setText(QCoreApplication.translate("UIView", u"Volume", None))
     # retranslateUi
 
