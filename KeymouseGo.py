@@ -38,9 +38,9 @@ def resize_layout(ui, ratio_w, ratio_h):
 
     groupboxs = []
     for q_widget in ui.findChildren(QWidget):
-        if isinstance(q_widget, QPushButton):
-            q_widget.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-            q_widget.setMaximumSize(250, 50)
+        # if isinstance(q_widget, QPushButton):
+        #     q_widget.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
+        #     q_widget.setMaximumSize(250, 50)
         if not isinstance(q_widget, QGroupBox):
             q_widget.setGeometry(QRect(q_widget.x() * ratio_w, 
                                         q_widget.y() * ratio_h,
