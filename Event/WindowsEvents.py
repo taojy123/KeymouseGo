@@ -1,13 +1,17 @@
 import re
-import time
-
 import pyperclip
 import win32api
 
-from Event.Event import Event, SW, SH
+from Event.Event import Event
 from loguru import logger
 
 import win32con
+from win32gui import GetDC
+from win32print import GetDeviceCaps
+
+hDC = GetDC(0)
+SW = GetDeviceCaps(hDC, win32con.DESKTOPHORZRES)
+SH = GetDeviceCaps(hDC, win32con.DESKTOPVERTRES)
 
 
 class WindowsEvent(Event):

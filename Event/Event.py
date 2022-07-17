@@ -1,11 +1,5 @@
 import time
 from abc import ABCMeta, abstractmethod
-import tkinter as tk
-
-root = tk.Tk()
-SW = root.winfo_screenwidth()
-SH = root.winfo_screenheight()
-root.destroy()
 
 
 class Event(metaclass=ABCMeta):
