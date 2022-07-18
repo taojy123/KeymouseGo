@@ -1,17 +1,11 @@
 import re
 
-import pyperclip
-from pynput import mouse, keyboard
-from pynput.keyboard import KeyCode
-from pynput.mouse import Button
+# import pyperclip
+import pyautogui
 from Event.Event import Event
 from loguru import logger
-import tkinter as tk
 
-root = tk.Tk()
-SW = root.winfo_screenwidth()
-SH = root.winfo_screenheight()
-root.destroy()
+SW, SH = pyautogui.size()
 
 
 class UniversalEvent(Event):
@@ -34,9 +28,6 @@ class UniversalEvent(Event):
     def execute(self, thd=None):
         self.sleep(thd)
 
-        mousectl = mouse.Controller()
-        keyboardctl = keyboard.Controller()
-
         if self.event_type == 'EM':
             x, y = self.action
             # 兼容旧版的绝对坐标
@@ -52,24 +43,24 @@ class UniversalEvent(Event):
                     x = int(x * SW)
                 if not isinstance(y, int):
                     y = int(y * SH)
-                mousectl.potision = (x, y)
+                pyautogui.moveTo(x, y)
 
             if self.message == 'mouse left down':
-                mousectl.press(Button.left)
+                pyautogui.mouseDown(button='left')
             elif self.message == 'mouse left up':
-                mousectl.release(Button.left)
+                pyautogui.mouseUp(button='left')
             elif self.message == 'mouse right down':
-                mousectl.press(Button.right)
+                pyautogui.mouseDown(button='right')
             elif self.message == 'mouse right up':
-                mousectl.release(Button.right)
+                pyautogui.mouseUp(button='right')
             elif self.message == 'mouse middle down':
-                mousectl.press(Button.middle)
+                pyautogui.mouseDown(button='middle')
             elif self.message == 'mouse middle up':
-                mousectl.release(Button.middle)
+                pyautogui.mouseUp(button='middle')
             elif self.message == 'mouse wheel up':
-                mousectl.scroll(0, 1)
+                pyautogui.scroll(1)
             elif self.message == 'mouse wheel down':
-                mousectl.scroll(0, -1)
+                pyautogui.scroll(-1)
             elif self.message == 'mouse move':
                 pass
             else:
@@ -79,25 +70,23 @@ class UniversalEvent(Event):
             key_code, key_name, extended = self.action
 
             if self.message == 'key down':
-                keyboardctl.press(KeyCode.from_vk(key_code))
-                # keyboardctl.press(key_name)
+                pyautogui.keyDown(key_name)
             elif self.message == 'key up':
-                keyboardctl.release(KeyCode.from_vk(key_code))
-                # keyboardctl.release(key_name)
+                pyautogui.keyUp(key_name)
             else:
                 logger.warning('Unknown keyboard event:', self.message)
 
         elif self.event_type == 'EX':
             if self.message == 'input':
                 text = self.action
-                pyperclip.copy(text)
+                # pyperclip.copy(text)
 
-                # keyboard.write(text)
+                pyautogui.write(text)
                 # Ctrl+V
-                keyboardctl.press('ctrl')
-                keyboardctl.press('v')
-                keyboardctl.release('v')
-                keyboardctl.release('ctrl')
+                # keyboardctl.press('ctrl')
+                # keyboardctl.press('v')
+                # keyboardctl.release('v')
+                # keyboardctl.release('ctrl')
             else:
                 logger.warning('Unknown extra event:%s' % self.message)
 

@@ -1,3 +1,5 @@
+import re
+
 from pynput import mouse, keyboard
 from Event import ScreenWidth as SW, ScreenHeight as SH
 import Recorder.globals as globalv
@@ -8,6 +10,11 @@ buttondic = {mouse.Button.left: 'left',
              mouse.Button.right: 'right',
              mouse.Button.middle: 'middle'
              }
+
+# some keyname recorded by pynput is not supported in pyautogui
+renamedic = {'cmd': 'win', 'shift_r': 'shiftright', 'alt_r': 'altright', 'ctrl_r': 'ctrlright',
+             'caps_lock': 'capslock', 'num_lock': 'numlock',
+             'page_up': 'pageup', 'page_down': 'pagedown', 'print_screen': 'printscreen'}
 
 
 def get_delay(message):
@@ -69,21 +76,22 @@ def get_keyboard_event(key, message):
         return None
     else:
         try:
-            event = globalv.ScriptEvent({
-                'delay': delay,
-                'event_type': 'EK',
-                'message': message,
-                'action': (key.vk, key.char, 0),
-                'addon': None
-            })
+            keycode = key.value.vk
+            keyname = renamedic.get(key.name, key.name)
         except AttributeError:
-            event = globalv.ScriptEvent({
-                'delay': delay,
-                'event_type': 'EK',
-                'message': message,
-                'action': (key.value.vk, key.name, 0),
-                'addon': None
-            })
+            keycode = key.vk
+            keyname = key.char
+        if keyname is None:
+            return None
+        if re.match('^([0-9])$', keyname) and keycode is None:
+            keyname = 'num{}'.format(keyname)
+        event = globalv.ScriptEvent({
+            'delay': delay,
+            'event_type': 'EK',
+            'message': message,
+            'action': (keycode, keyname, 0),
+            'addon': None
+        })
         return event
 
 
