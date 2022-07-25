@@ -23,7 +23,7 @@ class FileDialog(Ui_Dialog):
         self.path = os.path.join(os.getcwd(), "scripts")
         i18n_language = {
             '简体中文': ['文件管理', '当前文件', '选择文件', '编辑脚本', '重命名', '文件没有被找到', '请输入新文件名: ', '更新成功', '文件名不能为空或空格'], 
-            'English': ['File', 'Current file', 'Choice', 'Edit', 'Rename', 'File not found', 'Please input new name', 'Success', 'File name cannot be empty or space']
+            'English': ['File Manage', 'Current file', 'Choice', 'Edit', 'Rename', 'File not found', 'Please input new name', 'Success', 'File name cannot be empty or space']
             }
         self.language = i18n_language[scripts_map['choice_language']]
         
