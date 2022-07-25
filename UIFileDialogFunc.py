@@ -5,7 +5,7 @@ import subprocess
 from PySide2.QtWidgets import QDialog, QFileDialog, QInputDialog
 from PySide2.QtWidgets import QMainWindow, QMessageBox
 
-from FileManageDialog import Ui_Dialog
+from UIFileManageDialogView import Ui_Dialog
 from UIFunc import scripts, scripts_map
 
 
@@ -22,10 +22,16 @@ class FileDialog(Ui_Dialog):
         self.lineEdit.setText(self.filename)
         self.path = os.path.join(os.getcwd(), "scripts")
         i18n_language = {
-            '简体中文': ['文件管理', '当前文件', '选择文件', '编辑脚本', '重命名文件', '文件没有被找到', '请输入新文件名: ', '更新成功', '文件名不能为空或空格'], 
+            '简体中文': ['文件管理', '当前文件', '选择文件', '编辑脚本', '重命名', '文件没有被找到', '请输入新文件名: ', '更新成功', '文件名不能为空或空格'], 
             'English': ['File', 'Current file', 'Choice', 'Edit', 'Rename', 'File not found', 'Please input new name', 'Success', 'File name cannot be empty or space']
             }
         self.language = i18n_language[scripts_map['choice_language']]
+        
+        self.dialog.setWindowTitle(self.language[0])
+        self.file_name.setText(self.language[1])
+        self.choice.setText(self.language[2])
+        self.edit.setText(self.language[3])
+        self.rename.setText(self.language[4])
     
 
     def choice_file(self):

@@ -27,7 +27,7 @@ from win32gui import GetDC
 from win32print import GetDeviceCaps
  
 from UIView import Ui_UIView
-from FileManageDialog import Ui_Dialog
+from UIFileManageDialogView import Ui_Dialog
 from assets.plugins.ProcessException import *
 
 os.environ['QT_ENABLE_HIGHDPI_SCALING'] = "1"
