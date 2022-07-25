@@ -537,10 +537,16 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         global scripts_map
 
         index = scripts_map['current_index'] = self.choice_script.currentIndex()
-        dialog = FileDialog()
+        dialog = QDialog()
         self.bt_open_script_files.setDisabled(True)
-        dialog.main()
+        self.btrecord.setDisabled(True)
+        self.btrun.setDisabled(True)
+        Ui_Dialog().setupUi(dialog)
+        dialog.show()
+        dialog.exec_()
         self.bt_open_script_files.setDisabled(False)
+        self.btrecord.setDisabled(False)
+        self.btrun.setDisabled(False)
         # 重新设置的为点击按钮时, 所处的位置
         self.choice_script.clear()
         self.choice_script.addItems(scripts)
@@ -555,8 +561,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             # print(scripts_map)
             # print(scripts_map['current_index'])
             # print(scripts[scripts_map['current_index']])
-            # self.root = tk.Tk()
-            # self.filename = tk.StringVar(value=scripts[scripts_map['current_index']])
+
             self.dialog = QDialog()
             Ui_Dialog().setupUi(self.dialog)
             self.filename = scripts[scripts_map['current_index']]
