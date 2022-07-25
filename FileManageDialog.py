@@ -17,17 +17,21 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
-        Dialog.resize(262, 111)
+        Dialog.resize(313, 111)
+        Dialog.setWindowTitle('File Manage')
+        icon = QIcon()
+        icon.addFile(u":/pic/Mondrian.png", QSize(), QIcon.Normal, QIcon.Off)
+        Dialog.setWindowIcon(icon)
         self.formLayoutWidget = QWidget(Dialog)
         self.formLayoutWidget.setObjectName(u"formLayoutWidget")
-        self.formLayoutWidget.setGeometry(QRect(10, 10, 241, 31))
+        self.formLayoutWidget.setGeometry(QRect(10, 10, 291, 41))
         self.formLayout = QFormLayout(self.formLayoutWidget)
         self.formLayout.setObjectName(u"formLayout")
         self.formLayout.setContentsMargins(0, 0, 0, 0)
-        self.label = QLabel(self.formLayoutWidget)
-        self.label.setObjectName(u"label")
+        self.file_name = QLabel(self.formLayoutWidget)
+        self.file_name.setObjectName(u"file_name")
 
-        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.label)
+        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.file_name)
 
         self.lineEdit = QLineEdit(self.formLayoutWidget)
         self.lineEdit.setObjectName(u"lineEdit")
@@ -36,24 +40,24 @@ class Ui_Dialog(object):
 
         self.horizontalLayoutWidget = QWidget(Dialog)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
-        self.horizontalLayoutWidget.setGeometry(QRect(10, 60, 241, 31))
+        self.horizontalLayoutWidget.setGeometry(QRect(10, 60, 291, 31))
         self.horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
-        self.pushButton_2 = QPushButton(self.horizontalLayoutWidget)
-        self.pushButton_2.setObjectName(u"pushButton_2")
+        self.choice = QPushButton(self.horizontalLayoutWidget)
+        self.choice.setObjectName(u"choice")
 
-        self.horizontalLayout.addWidget(self.pushButton_2)
+        self.horizontalLayout.addWidget(self.choice)
 
-        self.pushButton = QPushButton(self.horizontalLayoutWidget)
-        self.pushButton.setObjectName(u"pushButton")
+        self.edit = QPushButton(self.horizontalLayoutWidget)
+        self.edit.setObjectName(u"edit")
 
-        self.horizontalLayout.addWidget(self.pushButton)
+        self.horizontalLayout.addWidget(self.edit)
 
-        self.pushButton_3 = QPushButton(self.horizontalLayoutWidget)
-        self.pushButton_3.setObjectName(u"pushButton_3")
+        self.rename = QPushButton(self.horizontalLayoutWidget)
+        self.rename.setObjectName(u"rename")
 
-        self.horizontalLayout.addWidget(self.pushButton_3)
+        self.horizontalLayout.addWidget(self.rename)
 
 
         self.retranslateUi(Dialog)
@@ -63,10 +67,10 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Dialog", None))
-        self.label.setText(QCoreApplication.translate("Dialog", u"file name", None))
+        self.file_name.setText(QCoreApplication.translate("Dialog", u"file name", None))
         self.lineEdit.setText("")
-        self.pushButton_2.setText(QCoreApplication.translate("Dialog", u"choice", None))
-        self.pushButton.setText(QCoreApplication.translate("Dialog", u"edit", None))
-        self.pushButton_3.setText(QCoreApplication.translate("Dialog", u"rename", None))
+        self.choice.setText(QCoreApplication.translate("Dialog", u"choice", None))
+        self.edit.setText(QCoreApplication.translate("Dialog", u"edit", None))
+        self.rename.setText(QCoreApplication.translate("Dialog", u"rename", None))
     # retranslateUi
 
