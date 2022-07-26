@@ -33,6 +33,8 @@
 2. pip install -r requirements.txt
 3. pip install pyinstaller
 4. pyinstaller -F --add-data ./assets;assets KeymouseGo.py
+win:
+4. pyinstaller -F --add-data './assets;assets' KeymouseGo.py
 ```
 
 # 使用方法

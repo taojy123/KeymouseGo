@@ -35,25 +35,14 @@ add_lib_path([os.path.join(os.getcwd(), 'plugins')])
 def resize_layout(ui, ratio_w, ratio_h):
     ui.resize(ui.width() * ratio_w, ui.height() * ratio_h)
 
-    groupboxs = []
     for q_widget in ui.findChildren(QWidget):
-        if not isinstance(q_widget, QGroupBox):
-            q_widget.setGeometry(QRect(q_widget.x() * ratio_w, 
-                                        q_widget.y() * ratio_h,
-                                        q_widget.width() * ratio_w, 
-                                        q_widget.height() * ratio_h))
+        q_widget.setGeometry(QRect(q_widget.x() * ratio_w, 
+                                    q_widget.y() * ratio_h,
+                                    q_widget.width() * ratio_w, 
+                                    q_widget.height() * ratio_h))
         q_widget.setStyleSheet('font-size: ' + str(math.ceil(9 * min(ratio_h, ratio_w))) + 'px')
         if isinstance(q_widget, QSpinBox):
-            q_widget.setStyleSheet('padding-left: 7px')
-        if isinstance(q_widget, QGroupBox):
-            groupboxs.append(q_widget)
-
-    for groupbox in groupboxs:
-        groupbox.setGeometry(QRect(groupbox.x() * ratio_w, 
-                                    groupbox.y() * ratio_h,
-                                    groupbox.width() * ratio_w, 
-                                    groupbox.height() * ratio_h))
-        
+            q_widget.setStyleSheet('padding-left: 7px')      
 
 
 def main():
