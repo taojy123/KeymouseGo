@@ -16,12 +16,13 @@ import pyWinhook
 import pyperclip
 import win32api
 import win32con
+from PySide2.QtGui import QTextCursor
 from qt_material import list_themes, QtStyleTools
-from PySide2.QtCore import QSettings, Qt
+from PySide2.QtCore import QSettings, Qt, QUrl
 from PySide2.QtCore import QTranslator, QCoreApplication
 from PySide2.QtWidgets import QMainWindow, QApplication
+from PySide2.QtMultimedia import QSoundEffect
 from loguru import logger
-from playsound import playsound, PlaysoundException
 from pyWinhook import cpyHook, HookConstants
 from win32gui import GetDC
 from win32print import GetDeviceCaps
@@ -152,7 +153,12 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
         self.onchangetheme()
 
-        # playsoundWin(get_assets_path('sounds', 'start.mp3'))
+        self.textlog.textChanged.connect(lambda: self.textlog.moveCursor(QTextCursor.End))
+
+        # For tune playing
+        self.player = QSoundEffect()
+        self.volumeSlider.setValue(100)
+        self.volumeSlider.valueChanged.connect(lambda: self.player.setVolume(self.volumeSlider.value()/100.0))
 
         self.running = False
         self.recording = False
@@ -258,6 +264,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 self.actioncount = self.actioncount + 1
                 text = '%d actions recorded' % self.actioncount
                 logger.debug('Recorded %s' % sevent)
+                self.textlog.append(sevent.summarystr())
                 self.tnumrd.setText(text)
 
             return True
@@ -329,6 +336,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 self.actioncount = self.actioncount + 1
                 text = '%d actions recorded' % self.actioncount
                 self.tnumrd.setText(text)
+                self.textlog.append(sevent.summarystr())
 
             return True
 
@@ -352,6 +360,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
             if key_name == start_name and not self.running and not self.recording:
                 logger.info('Script start')
+                self.textlog.clear()
                 self.runthread = RunScriptClass(self, self.pause_event)
                 self.runthread.start()
                 self.isbrokenorfinish = False
@@ -469,6 +478,10 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.apply_stylesheet(self.app, theme=self.choice_theme.currentText())
         self.config.setValue("Config/Theme", self.choice_theme.currentText())
 
+    def playtune(self, filename: str):
+        self.player.setSource(QUrl.fromLocalFile(get_assets_path('sounds', filename)))
+        self.player.play()
+
     def closeEvent(self, event):
         self.config.sync()
         if self.running:
@@ -572,6 +585,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                                                          runtimes=self.stimes.value(),
                                                          speed=self.execute_speed.value())
             logger.info('Record start')
+            self.textlog.clear()
             self.recording = True
             self.ttt = current_ts()
             status = self.tnumrd.text()
@@ -591,6 +605,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
     def OnBtrunButton(self):
         logger.info('Script start')
         logger.debug('Script start by btn')
+        self.textlog.clear()
         self.runthread = RunScriptClass(self, self.pause_event)
         self.runthread.start()
         self.isbrokenorfinish = False
@@ -600,8 +615,10 @@ class RunScriptClass(threading.Thread):
 
     def __init__(self, frame: UIFunc, event: threading.Event):
         self.frame = frame
-        self.event = event
+        self.event = event  # UI pause event
         self.event.set()
+        self.exe_event = threading.Event()  # For sleep method during execution
+        self.exe_event.set()
         super(RunScriptClass, self).__init__()
 
     @logger.catch
@@ -631,7 +648,13 @@ class RunScriptClass(threading.Thread):
 
             # 解析脚本，返回事件集合与扩展类对象
             logger.debug('Parse script..')
-            events, module_name = RunScriptClass.parsescript(script_path, speed=self.frame.execute_speed.value())
+            try:
+                events, module_name = RunScriptClass.parsescript(script_path, speed=self.frame.execute_speed.value())
+            except Exception as e:
+                logger.error(e)
+                self.frame.textlog.append('==============\nAn error occurred while parsing script')
+                self.frame.textlog.append(str(e))
+                self.frame.textlog.append('==============')
             extension = RunScriptClass.getextension(
                 module_name if module_name is not None else self.frame.choice_extension.currentText(),
                 runtimes=self.frame.stimes.value(),
@@ -643,12 +666,15 @@ class RunScriptClass(threading.Thread):
             nointerrupt = True
             logger.debug('Run script..')
             extension.onbeginp()
+            self.frame.playtune('start.wav')
             while (self.j < extension.runtimes or extension.runtimes == 0) and nointerrupt:
                 logger.info('===========%d==============' % self.j)
                 current_status = self.frame.tnumrd.text()
                 if current_status in ['broken', 'finished']:
                     self.frame.running = False
                     break
+                self.frame.tnumrd.setText('{0}... Looptimes [{1}/{2}]'.format(
+                    self.running_text, self.j + 1, extension.runtimes))
                 try:
                     if extension.onbeforeeachloop(self.j):
                         nointerrupt = nointerrupt and RunScriptClass.run_script_once(events, extension, thd=self)
@@ -664,6 +690,7 @@ class RunScriptClass(threading.Thread):
                     logger.debug('End')
                     break
             extension.onendp()
+            self.frame.playtune('end.wav')
             if nointerrupt:
                 self.frame.tnumrd.setText('finished')
                 logger.info('Script run finish')
@@ -674,6 +701,9 @@ class RunScriptClass(threading.Thread):
         except Exception as e:
             logger.error('Run error: {0}'.format(e))
             traceback.print_exc()
+            self.frame.textlog.append('==============\nAn error occurred during runtime')
+            self.frame.textlog.append(str(e))
+            self.frame.textlog.append('==============')
             self.frame.tnumrd.setText('failed')
             self.frame.running = False
         finally:
@@ -792,14 +822,13 @@ class RunScriptClass(threading.Thread):
         while i < steps:
             if thd:
                 if thd.frame.isbrokenorfinish:
-                    logger.info('Broken at %d/%d' % (i, steps))
-                    thd.frame.tnumrd.setText('broken at %d/%d' % (i, steps))
+                    logger.info('Broken at [%d/%d]' % (i, steps))
                     return False
                 thd.event.wait()
-                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, extension.runtimes, extension.speed)
                 logger.trace(
                     '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, extension.runtimes, extension.speed))
-                thd.frame.tnumrd.setText(text)
+                thd.frame.textlog.append('{0} [{1}/{2}]'.format(
+                            events[i].summarystr(), i + 1, steps))
 
             event = events[i]
 
@@ -822,18 +851,6 @@ class RunScriptClass(threading.Thread):
                     i = jp.index
                     logger.debug('Jump at %d' % i)
                     continue
-
-            if thd:
-                if thd.frame.isbrokenorfinish:
-                    thd.frame.tnumrd.setText('broken at %d/%d' % (i, steps))
-                    logger.info('Broken at %d/%d' % (i, steps))
-                    return False
-                thd.event.wait()
-                text = '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i, steps, thd.j + 1, extension.runtimes, extension.speed)
-                logger.trace(
-                    '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i, steps, thd.j + 1, extension.runtimes, extension.speed))
-                thd.frame.tnumrd.setText(text)
-
         return True
 
 
@@ -851,14 +868,24 @@ class ScriptEvent:
             return '[%d, %s, %s, %s, %s]' % (self.delay, self.event_type, self.message, self.action, str(self.addon))
         return '[%d, %s, %s, %s]' % (self.delay, self.event_type, self.message, self.action)
 
-    # 执行操作
-    def execute(self, thd=None):
+    def summarystr(self):
+        if self.event_type == 'EK':
+            return 'key {0} {1} after {1}ms'.format(self.action[1], self.message[4:], self.delay)
+        else:
+            return '{0} after {1}ms'.format(self.message, self.delay)
+
+    # 延时
+    def sleep(self, thd=None):
         if thd:
-            thd.event.clear()
-            thd.event.wait(timeout=self.delay / 1000.0)
-            thd.event.set()
+            thd.exe_event.clear()
+            thd.exe_event.wait(timeout=self.delay / 1000.0)
+            thd.exe_event.set()
         else:
             time.sleep(self.delay / 1000.0)
+
+    # 执行操作
+    def execute(self, thd=None):
+        self.sleep(thd)
 
         if self.event_type == 'EM':
             x, y = self.action
@@ -942,30 +969,91 @@ class ScriptEvent:
                 logger.warning('Unknown extra event:%s' % self.message)
 
 
-class PlayPromptTone(threading.Thread):
+class FileDialog():
+    def __init__(self):
+        global scripts
+        global scripts_map
 
-    def __init__(self, op, delay):
-        self._delay = delay
-        self._op = op
-        super().__init__()
+        # print(scripts)
+        # print(scripts_map)
+        # print(scripts_map['current_index'])
+        # print(scripts[scripts_map['current_index']])
+        self.root = tk.Tk()
+        self.filename = tk.StringVar(value=scripts[scripts_map['current_index']])
+        self.path = os.path.join(os.getcwd(), "scripts")
+        i18n_language = {
+            '简体中文': ['文件管理', '当前文件', '选择文件', '编辑脚本', '重命名文件', '文件没有被找到', '请输入新文件名: ', '更新成功', '文件名不能为空或空格'], 
+            'English': ['File', 'Current file', 'Choice', 'Edit', 'Rename', 'File not found', 'Please input new name', 'Success', 'File name cannot be empty or space']
+            }
+        self.language = i18n_language[scripts_map['choice_language']]
 
-    def run(self):
-        if 1 == self._op:
-            if self._delay >= 1000:
-                time.sleep((self._delay - 500.0) / 1000.0)
-            self._play_start_sound()
 
-    def _play_start_sound(self):
+    def init(self):
+        import base64
+        from assets_rc import icon
+
+        tmp = open("tmp.png","wb+")
+        tmp.write(base64.b64decode(icon))
+        tmp.close()
+        self.root.iconphoto(True, tk.PhotoImage(file="tmp.png"))
+        os.remove("tmp.png")
+
+        self.root.geometry('300x100+' + str(int(SW/2) - 150) + '+' + str(int(SH/2) - 50))
+        self.root.title(self.language[0])
+        tk.Label(self.root, text=self.language[1]).grid(row=1, column=0, padx=5, pady=5)
+        tk.Entry(self.root, textvariable=self.filename).grid(row=1, column=1, padx=5, pady=5, columnspan=2)
+        tk.Button(self.root, text=self.language[2], command=self.choice_file, width=8).grid(row=2, column=0, padx=5, pady=5)
+        tk.Button(self.root, text=self.language[3], command=self.edit, width=8).grid(row=2, column=1, padx=5, pady=5)
+        tk.Button(self.root, text=self.language[4], command=self.rename, width=8).grid(row=2, column=2, padx=5, pady=5)
+
+
+    def choice_file(self):
+        file = askopenfilename(initialdir=self.path, filetypes=(("Text Files", "*.txt"),))
+        file_name = re.split(r'\\|\/', file)[-1]
+        if file_name != '':
+            self.filename.set(file_name)
+
+
+    def edit(self):
+        # Mac打开文件防止以后需要
+        # if userPlatform == 'Darwin':
+        #     subprocess.call(['open', filename.get()])
+        user_paltform = platform.system()
         try:
-            path = get_assets_path('sounds', 'start.mp3')
-            playsound(path)
-        except PlaysoundException as e:
-            logger.error(e)
+            if user_paltform == 'Linux':
+                subprocess.call(['xdg-open', os.path.join(self.path, self.filename.get())])
+            else:
+                os.startfile(os.path.join(self.path, self.filename.get()))
+        except FileNotFoundError:
+            messagebox.showwarning(message=self.language[5])
+            self.filename.set('')
 
-    @classmethod
-    def play_end_sound(cls):
-        try:
-            path = get_assets_path('sounds', 'end.mp3')
-            playsound(path)
-        except PlaysoundException as e:
-            logger.error(e)
+
+    def rename(self):
+        global scripts
+        global scripts_map
+
+        new_file_name = simpledialog.askstring(title=self.language[4], prompt=self.language[6])
+        if new_file_name != None and new_file_name.strip() != '':
+            if not new_file_name.endswith('.txt'):
+                new_file_name = new_file_name + '.txt'
+
+            try:
+                os.rename(os.path.join(self.path, self.filename.get()), os.path.join(self.path, new_file_name))
+                messagebox.showinfo(message=self.language[7])
+                # 更新
+                filename = self.filename.get()
+                index = scripts_map.get(filename)
+                scripts_map.pop(filename)
+                scripts_map[new_file_name] = index
+                scripts[index] = new_file_name
+                self.filename.set(new_file_name)
+            except FileNotFoundError:
+                messagebox.showwarning(message=self.language[5])
+        else:
+            messagebox.showwarning(message=self.language[8])
+
+
+    def main(self):
+        self.init()
+        self.root.mainloop()
