@@ -36,7 +36,7 @@ This program is written in `Python` and packed as executable file in `Windows` P
 1. Install Python 3.10
 2. pip install -r requirements.txt
 3. pip install pyinstaller
-4. pyinstaller -F --add-data ./assets;assets KeymouseGo.py
+4. pyinstaller -F --add-data './assets;assets' KeymouseGo.py
 ```
 
 # Usage

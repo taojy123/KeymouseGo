@@ -32,7 +32,7 @@
 1. 安装 Python3.10
 2. pip install -r requirements.txt
 3. pip install pyinstaller
-4. pyinstaller -F --add-data ./assets;assets KeymouseGo.py
+4. pyinstaller -F --add-data './assets;assets' KeymouseGo.py
 ```
 
 # 使用方法

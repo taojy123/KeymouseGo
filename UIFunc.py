@@ -9,12 +9,7 @@ import threading
 import time
 import traceback
 import winreg
-import platform
-import subprocess
 import locale
-import tkinter as tk
-from tkinter import messagebox, simpledialog
-from tkinter.filedialog import *
 from importlib.machinery import SourceFileLoader
 
 import pyWinhook
@@ -33,8 +28,8 @@ from win32gui import GetDC
 from win32print import GetDeviceCaps
  
 from UIView import Ui_UIView
+from UIFileManageDialogView import Ui_Dialog
 from assets.plugins.ProcessException import *
-# from preload import playsoundWin
 
 os.environ['QT_ENABLE_HIGHDPI_SCALING'] = "1"
 QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -548,16 +543,23 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
     def OnBtOpenScriptFilesButton(self):
         global scripts_map
+        
+        import UIFileDialogFunc
 
         index = scripts_map['current_index'] = self.choice_script.currentIndex()
-        dialog = FileDialog()
+        file_dialog = UIFileDialogFunc.FileDialog()
         self.bt_open_script_files.setDisabled(True)
-        dialog.main()
+        self.btrecord.setDisabled(True)
+        self.btrun.setDisabled(True)
+        file_dialog.show()
         self.bt_open_script_files.setDisabled(False)
+        self.btrecord.setDisabled(False)
+        self.btrun.setDisabled(False)
         # 重新设置的为点击按钮时, 所处的位置
         self.choice_script.clear()
         self.choice_script.addItems(scripts)
         self.choice_script.setCurrentIndex(index)
+
 
     def recordMethod(self):
         if self.recording:

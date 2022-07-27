@@ -38,52 +38,65 @@ class Ui_UIView(object):
         self.label_start_key = QLabel(self.formLayoutWidget)
         self.label_start_key.setObjectName(u"label_start_key")
 
-        self.formLayout.setWidget(0, QFormLayout.LabelRole, self.label_start_key)
+        self.gridLayout_3.addWidget(self.label_start_key, 0, 0, 1, 1)
 
-        self.choice_start = QComboBox(self.formLayoutWidget)
+        self.choice_start = QComboBox(self.groupBox)
         self.choice_start.setObjectName(u"choice_start")
+        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.choice_start.sizePolicy().hasHeightForWidth())
+        self.choice_start.setSizePolicy(sizePolicy)
 
-        self.formLayout.setWidget(0, QFormLayout.FieldRole, self.choice_start)
+        self.gridLayout_3.addWidget(self.choice_start, 0, 1, 1, 1)
 
-        self.label_record = QLabel(self.formLayoutWidget)
+        self.label_record = QLabel(self.groupBox)
         self.label_record.setObjectName(u"label_record")
 
-        self.formLayout.setWidget(1, QFormLayout.LabelRole, self.label_record)
+        self.gridLayout_3.addWidget(self.label_record, 1, 0, 1, 1)
 
-        self.choice_record = QComboBox(self.formLayoutWidget)
+        self.choice_record = QComboBox(self.groupBox)
         self.choice_record.setObjectName(u"choice_record")
+        sizePolicy.setHeightForWidth(self.choice_record.sizePolicy().hasHeightForWidth())
+        self.choice_record.setSizePolicy(sizePolicy)
 
-        self.formLayout.setWidget(1, QFormLayout.FieldRole, self.choice_record)
+        self.gridLayout_3.addWidget(self.choice_record, 1, 1, 1, 1)
 
-        self.label_stop = QLabel(self.formLayoutWidget)
+        self.label_stop = QLabel(self.groupBox)
         self.label_stop.setObjectName(u"label_stop")
 
-        self.formLayout.setWidget(2, QFormLayout.LabelRole, self.label_stop)
+        self.gridLayout_3.addWidget(self.label_stop, 2, 0, 1, 1)
 
-        self.choice_stop = QComboBox(self.formLayoutWidget)
+        self.choice_stop = QComboBox(self.groupBox)
         self.choice_stop.setObjectName(u"choice_stop")
+        sizePolicy.setHeightForWidth(self.choice_stop.sizePolicy().hasHeightForWidth())
+        self.choice_stop.setSizePolicy(sizePolicy)
 
-        self.formLayout.setWidget(2, QFormLayout.FieldRole, self.choice_stop)
+        self.gridLayout_3.addWidget(self.choice_stop, 2, 1, 1, 1)
 
-        self.label_language = QLabel(self.formLayoutWidget)
+        self.label_language = QLabel(self.groupBox)
         self.label_language.setObjectName(u"label_language")
 
-        self.formLayout.setWidget(3, QFormLayout.LabelRole, self.label_language)
+        self.gridLayout_3.addWidget(self.label_language, 3, 0, 1, 1)
 
-        self.choice_language = QComboBox(self.formLayoutWidget)
+        self.choice_language = QComboBox(self.groupBox)
         self.choice_language.setObjectName(u"choice_language")
+        sizePolicy.setHeightForWidth(self.choice_language.sizePolicy().hasHeightForWidth())
+        self.choice_language.setSizePolicy(sizePolicy)
 
-        self.formLayout.setWidget(3, QFormLayout.FieldRole, self.choice_language)
+        self.gridLayout_3.addWidget(self.choice_language, 3, 1, 1, 1)
 
-        self.label_extension = QLabel(self.formLayoutWidget)
+        self.label_extension = QLabel(self.groupBox)
         self.label_extension.setObjectName(u"label_extension")
 
-        self.formLayout.setWidget(4, QFormLayout.LabelRole, self.label_extension)
+        self.gridLayout_3.addWidget(self.label_extension, 4, 0, 1, 1)
 
-        self.choice_extension = QComboBox(self.formLayoutWidget)
+        self.choice_extension = QComboBox(self.groupBox)
         self.choice_extension.setObjectName(u"choice_extension")
+        sizePolicy.setHeightForWidth(self.choice_extension.sizePolicy().hasHeightForWidth())
+        self.choice_extension.setSizePolicy(sizePolicy)
 
-        self.formLayout.setWidget(4, QFormLayout.FieldRole, self.choice_extension)
+        self.gridLayout_3.addWidget(self.choice_extension, 4, 1, 1, 1)
 
         self.groupBox_2 = QGroupBox(self.centralwidget)
         self.groupBox_2.setObjectName(u"groupBox_2")
@@ -99,7 +112,7 @@ class Ui_UIView(object):
         self.label_script = QLabel(self.formLayoutWidget_2)
         self.label_script.setObjectName(u"label_script")
 
-        self.formLayout_2.setWidget(0, QFormLayout.LabelRole, self.label_script)
+        self.gridLayout_2.addWidget(self.label_script, 0, 0, 1, 1)
 
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
@@ -108,68 +121,86 @@ class Ui_UIView(object):
         self.gridLayout.setContentsMargins(0, 0, -1, -1)
         self.choice_script = QComboBox(self.formLayoutWidget_2)
         self.choice_script.setObjectName(u"choice_script")
+        sizePolicy.setHeightForWidth(self.choice_script.sizePolicy().hasHeightForWidth())
+        self.choice_script.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.choice_script, 0, 0, 1, 1)
 
-        self.bt_open_script_files = QPushButton(self.formLayoutWidget_2)
+        self.bt_open_script_files = QPushButton(self.groupBox_2)
         self.bt_open_script_files.setObjectName(u"bt_open_script_files")
+        sizePolicy.setHeightForWidth(self.bt_open_script_files.sizePolicy().hasHeightForWidth())
+        self.bt_open_script_files.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.bt_open_script_files, 0, 1, 1, 1)
 
         self.gridLayout.setColumnStretch(0, 3)
         self.gridLayout.setColumnStretch(1, 1)
 
-        self.formLayout_2.setLayout(0, QFormLayout.FieldRole, self.gridLayout)
+        self.gridLayout_2.addLayout(self.gridLayout, 0, 1, 1, 1)
 
-        self.label_run_times = QLabel(self.formLayoutWidget_2)
+        self.label_run_times = QLabel(self.groupBox_2)
         self.label_run_times.setObjectName(u"label_run_times")
 
-        self.formLayout_2.setWidget(1, QFormLayout.LabelRole, self.label_run_times)
+        self.gridLayout_2.addWidget(self.label_run_times, 1, 0, 1, 1)
 
-        self.stimes = QSpinBox(self.formLayoutWidget_2)
+        self.stimes = QSpinBox(self.groupBox_2)
         self.stimes.setObjectName(u"stimes")
+        sizePolicy.setHeightForWidth(self.stimes.sizePolicy().hasHeightForWidth())
+        self.stimes.setSizePolicy(sizePolicy)
         self.stimes.setMinimum(0)
         self.stimes.setMaximum(999999999)
         self.stimes.setValue(1)
 
-        self.formLayout_2.setWidget(1, QFormLayout.FieldRole, self.stimes)
+        self.gridLayout_2.addWidget(self.stimes, 1, 1, 1, 1)
 
-        self.label_mouse_interval = QLabel(self.formLayoutWidget_2)
+        self.label_mouse_interval = QLabel(self.groupBox_2)
         self.label_mouse_interval.setObjectName(u"label_mouse_interval")
 
-        self.formLayout_2.setWidget(2, QFormLayout.LabelRole, self.label_mouse_interval)
+        self.gridLayout_2.addWidget(self.label_mouse_interval, 2, 0, 1, 1)
 
-        self.mouse_move_interval_ms = QSpinBox(self.formLayoutWidget_2)
+        self.mouse_move_interval_ms = QSpinBox(self.groupBox_2)
         self.mouse_move_interval_ms.setObjectName(u"mouse_move_interval_ms")
+        sizePolicy.setHeightForWidth(self.mouse_move_interval_ms.sizePolicy().hasHeightForWidth())
+        self.mouse_move_interval_ms.setSizePolicy(sizePolicy)
         self.mouse_move_interval_ms.setMinimum(1)
         self.mouse_move_interval_ms.setMaximum(1000)
         self.mouse_move_interval_ms.setValue(100)
 
-        self.formLayout_2.setWidget(2, QFormLayout.FieldRole, self.mouse_move_interval_ms)
+        self.gridLayout_2.addWidget(self.mouse_move_interval_ms, 2, 1, 1, 1)
 
-        self.label_execute_speed = QLabel(self.formLayoutWidget_2)
+        self.label_execute_speed = QLabel(self.groupBox_2)
         self.label_execute_speed.setObjectName(u"label_execute_speed")
 
-        self.formLayout_2.setWidget(3, QFormLayout.LabelRole, self.label_execute_speed)
+        self.gridLayout_2.addWidget(self.label_execute_speed, 3, 0, 1, 1)
 
-        self.execute_speed = QSpinBox(self.formLayoutWidget_2)
+        self.execute_speed = QSpinBox(self.groupBox_2)
         self.execute_speed.setObjectName(u"execute_speed")
+        sizePolicy.setHeightForWidth(self.execute_speed.sizePolicy().hasHeightForWidth())
+        self.execute_speed.setSizePolicy(sizePolicy)
         self.execute_speed.setMinimum(20)
         self.execute_speed.setMaximum(500)
         self.execute_speed.setValue(100)
 
-        self.formLayout_2.setWidget(3, QFormLayout.FieldRole, self.execute_speed)
+        self.gridLayout_2.addWidget(self.execute_speed, 3, 1, 1, 1)
 
-        self.label_theme = QLabel(self.formLayoutWidget_2)
+        self.label_theme = QLabel(self.groupBox_2)
         self.label_theme.setObjectName(u"label_theme")
 
-        self.formLayout_2.setWidget(4, QFormLayout.LabelRole, self.label_theme)
+        self.gridLayout_2.addWidget(self.label_theme, 4, 0, 1, 1)
 
-        self.choice_theme = QComboBox(self.formLayoutWidget_2)
+        self.choice_theme = QComboBox(self.groupBox_2)
         self.choice_theme.setObjectName(u"choice_theme")
+        sizePolicy.setHeightForWidth(self.choice_theme.sizePolicy().hasHeightForWidth())
+        self.choice_theme.setSizePolicy(sizePolicy)
 
-        self.formLayout_2.setWidget(4, QFormLayout.FieldRole, self.choice_theme)
+        self.gridLayout_2.addWidget(self.choice_theme, 4, 1, 1, 1)
 
+        self.tnumrd = QLabel(self.centralwidget)
+        self.tnumrd.setObjectName(u"tnumrd")
+        self.tnumrd.setGeometry(QRect(10, 250, 571, 20))
+        sizePolicy.setHeightForWidth(self.tnumrd.sizePolicy().hasHeightForWidth())
+        self.tnumrd.setSizePolicy(sizePolicy)
+        
         self.horizontalLayoutWidget = QWidget(self.centralwidget)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
         self.horizontalLayoutWidget.setGeometry(QRect(20, 210, 361, 41))
@@ -179,17 +210,23 @@ class Ui_UIView(object):
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
         self.btrecord = QPushButton(self.horizontalLayoutWidget)
         self.btrecord.setObjectName(u"btrecord")
+        sizePolicy.setHeightForWidth(self.btrecord.sizePolicy().hasHeightForWidth())
+        self.btrecord.setSizePolicy(sizePolicy)
 
         self.horizontalLayout.addWidget(self.btrecord)
 
         self.btrun = QPushButton(self.horizontalLayoutWidget)
         self.btrun.setObjectName(u"btrun")
+        sizePolicy.setHeightForWidth(self.btrun.sizePolicy().hasHeightForWidth())
+        self.btrun.setSizePolicy(sizePolicy)
 
         self.horizontalLayout.addWidget(self.btrun)
 
         self.btpauserecord = QPushButton(self.horizontalLayoutWidget)
         self.btpauserecord.setObjectName(u"btpauserecord")
         self.btpauserecord.setEnabled(False)
+        sizePolicy.setHeightForWidth(self.btpauserecord.sizePolicy().hasHeightForWidth())
+        self.btpauserecord.setSizePolicy(sizePolicy)
 
         self.horizontalLayout.addWidget(self.btpauserecord)
 

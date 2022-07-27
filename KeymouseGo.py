@@ -4,10 +4,16 @@
 import os
 import sys
 import threading
+import math
 
 import pyWinhook
 import pythoncom
-from PySide2.QtWidgets import QApplication
+import win32con
+from PySide2.QtWidgets import *
+from PySide2.QtCore import QRect
+from PySide2 import QtCore, QtWidgets
+from win32gui import GetDC
+from win32print import GetDeviceCaps
 
 import UIFunc
 import argparse
@@ -26,9 +32,38 @@ def add_lib_path(libpaths):
 add_lib_path([os.path.join(os.getcwd(), 'plugins')])
 
 
+def resize_layout(ui, ratio_w, ratio_h):
+    ui.resize(ui.width() * ratio_w, ui.height() * ratio_h)
+
+    for q_widget in ui.findChildren(QWidget):
+        q_widget.setGeometry(QRect(q_widget.x() * ratio_w, 
+                                    q_widget.y() * ratio_h,
+                                    q_widget.width() * ratio_w, 
+                                    q_widget.height() * ratio_h))
+        q_widget.setStyleSheet('font-size: ' + str(math.ceil(9 * min(ratio_h, ratio_w))) + 'px')
+        if isinstance(q_widget, QSpinBox):
+            q_widget.setStyleSheet('padding-left: 7px')      
+
+
 def main():
+
+    # 适应高DPI
+    if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
+        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+    if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
+        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+
     app = QApplication(sys.argv)
     ui = UIFunc.UIFunc(app)
+    # 不同分辨率下调节字体大小和窗口大小
+    hDC = GetDC(0)
+    SW = GetDeviceCaps(hDC, win32con.DESKTOPHORZRES)
+    SH = GetDeviceCaps(hDC, win32con.DESKTOPVERTRES)
+    ratio_w = SW / 1920
+    ratio_h = SH / 1080
+    if ratio_w > 1 and ratio_h > 1:
+        resize_layout(ui, ratio_w, ratio_h)
+
     ui.show()
     sys.exit(app.exec_())
 
