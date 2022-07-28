@@ -251,7 +251,7 @@ class Ui_UIView(object):
     # setupUi
 
     def retranslateUi(self, UIView):
-        UIView.setWindowTitle(QCoreApplication.translate("UIView", u"KeymomuseGo v4.1", None))
+        UIView.setWindowTitle(QCoreApplication.translate("UIView", u"KeymomuseGo v5.0", None))
         self.groupBox.setTitle(QCoreApplication.translate("UIView", u"Hotkeys", None))
         self.label_start_key.setText(QCoreApplication.translate("UIView", u"Launch/Pause", None))
         self.choice_start.setCurrentText("")
