@@ -27,15 +27,10 @@ class Ui_UIView(object):
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
         self.groupBox.setGeometry(QRect(360, 10, 271, 191))
-        self.formLayoutWidget = QWidget(self.groupBox)
-        self.formLayoutWidget.setObjectName(u"formLayoutWidget")
-        self.formLayoutWidget.setGeometry(QRect(10, 30, 251, 151))
-        self.formLayout = QFormLayout(self.formLayoutWidget)
-        self.formLayout.setObjectName(u"formLayout")
-        self.formLayout.setHorizontalSpacing(30)
-        self.formLayout.setVerticalSpacing(10)
-        self.formLayout.setContentsMargins(0, 0, 0, 0)
-        self.label_start_key = QLabel(self.formLayoutWidget)
+        self.gridLayout_3 = QGridLayout(self.groupBox)
+        self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
+        self.label_start_key = QLabel(self.groupBox)
         self.label_start_key.setObjectName(u"label_start_key")
 
         self.gridLayout_3.addWidget(self.label_start_key, 0, 0, 1, 1)
@@ -100,16 +95,10 @@ class Ui_UIView(object):
 
         self.groupBox_2 = QGroupBox(self.centralwidget)
         self.groupBox_2.setObjectName(u"groupBox_2")
-        self.groupBox_2.setGeometry(QRect(10, 10, 341, 191))
-        self.formLayoutWidget_2 = QWidget(self.groupBox_2)
-        self.formLayoutWidget_2.setObjectName(u"formLayoutWidget_2")
-        self.formLayoutWidget_2.setGeometry(QRect(10, 30, 321, 153))
-        self.formLayout_2 = QFormLayout(self.formLayoutWidget_2)
-        self.formLayout_2.setObjectName(u"formLayout_2")
-        self.formLayout_2.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow)
-        self.formLayout_2.setHorizontalSpacing(20)
-        self.formLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.label_script = QLabel(self.formLayoutWidget_2)
+        self.groupBox_2.setGeometry(QRect(10, 10, 348, 190))
+        self.gridLayout_2 = QGridLayout(self.groupBox_2)
+        self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.label_script = QLabel(self.groupBox_2)
         self.label_script.setObjectName(u"label_script")
 
         self.gridLayout_2.addWidget(self.label_script, 0, 0, 1, 1)
@@ -119,17 +108,13 @@ class Ui_UIView(object):
         self.gridLayout.setSizeConstraint(QLayout.SetFixedSize)
         self.gridLayout.setVerticalSpacing(7)
         self.gridLayout.setContentsMargins(0, 0, -1, -1)
-        self.choice_script = QComboBox(self.formLayoutWidget_2)
+        self.choice_script = QComboBox(self.groupBox_2)
         self.choice_script.setObjectName(u"choice_script")
-        sizePolicy.setHeightForWidth(self.choice_script.sizePolicy().hasHeightForWidth())
-        self.choice_script.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.choice_script, 0, 0, 1, 1)
 
         self.bt_open_script_files = QPushButton(self.groupBox_2)
         self.bt_open_script_files.setObjectName(u"bt_open_script_files")
-        sizePolicy.setHeightForWidth(self.bt_open_script_files.sizePolicy().hasHeightForWidth())
-        self.bt_open_script_files.setSizePolicy(sizePolicy)
 
         self.gridLayout.addWidget(self.bt_open_script_files, 0, 1, 1, 1)
 
@@ -145,8 +130,6 @@ class Ui_UIView(object):
 
         self.stimes = QSpinBox(self.groupBox_2)
         self.stimes.setObjectName(u"stimes")
-        sizePolicy.setHeightForWidth(self.stimes.sizePolicy().hasHeightForWidth())
-        self.stimes.setSizePolicy(sizePolicy)
         self.stimes.setMinimum(0)
         self.stimes.setMaximum(999999999)
         self.stimes.setValue(1)
@@ -160,8 +143,6 @@ class Ui_UIView(object):
 
         self.mouse_move_interval_ms = QSpinBox(self.groupBox_2)
         self.mouse_move_interval_ms.setObjectName(u"mouse_move_interval_ms")
-        sizePolicy.setHeightForWidth(self.mouse_move_interval_ms.sizePolicy().hasHeightForWidth())
-        self.mouse_move_interval_ms.setSizePolicy(sizePolicy)
         self.mouse_move_interval_ms.setMinimum(1)
         self.mouse_move_interval_ms.setMaximum(1000)
         self.mouse_move_interval_ms.setValue(100)
@@ -175,8 +156,6 @@ class Ui_UIView(object):
 
         self.execute_speed = QSpinBox(self.groupBox_2)
         self.execute_speed.setObjectName(u"execute_speed")
-        sizePolicy.setHeightForWidth(self.execute_speed.sizePolicy().hasHeightForWidth())
-        self.execute_speed.setSizePolicy(sizePolicy)
         self.execute_speed.setMinimum(20)
         self.execute_speed.setMaximum(500)
         self.execute_speed.setValue(100)
@@ -190,17 +169,9 @@ class Ui_UIView(object):
 
         self.choice_theme = QComboBox(self.groupBox_2)
         self.choice_theme.setObjectName(u"choice_theme")
-        sizePolicy.setHeightForWidth(self.choice_theme.sizePolicy().hasHeightForWidth())
-        self.choice_theme.setSizePolicy(sizePolicy)
 
         self.gridLayout_2.addWidget(self.choice_theme, 4, 1, 1, 1)
 
-        self.tnumrd = QLabel(self.centralwidget)
-        self.tnumrd.setObjectName(u"tnumrd")
-        self.tnumrd.setGeometry(QRect(10, 250, 571, 20))
-        sizePolicy.setHeightForWidth(self.tnumrd.sizePolicy().hasHeightForWidth())
-        self.tnumrd.setSizePolicy(sizePolicy)
-        
         self.horizontalLayoutWidget = QWidget(self.centralwidget)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
         self.horizontalLayoutWidget.setGeometry(QRect(20, 210, 361, 41))
@@ -265,22 +236,6 @@ class Ui_UIView(object):
 
         self.formLayout_3.setWidget(0, QFormLayout.FieldRole, self.volumeSlider)
 
-        self.formLayoutWidget_3 = QWidget(self.centralwidget)
-        self.formLayoutWidget_3.setObjectName(u"formLayoutWidget_3")
-        self.formLayoutWidget_3.setGeometry(QRect(400, 220, 221, 31))
-        self.formLayout_3 = QFormLayout(self.formLayoutWidget_3)
-        self.formLayout_3.setObjectName(u"formLayout_3")
-        self.formLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.label_volume = QLabel(self.formLayoutWidget_3)
-        self.label_volume.setObjectName(u"label_volume")
-
-        self.formLayout_3.setWidget(0, QFormLayout.LabelRole, self.label_volume)
-
-        self.volumeSlider = QSlider(self.formLayoutWidget_3)
-        self.volumeSlider.setObjectName(u"volumeSlider")
-        self.volumeSlider.setOrientation(Qt.Horizontal)
-
-        self.formLayout_3.setWidget(0, QFormLayout.FieldRole, self.volumeSlider)
         UIView.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(UIView)
         self.menubar.setObjectName(u"menubar")
@@ -336,5 +291,6 @@ class Ui_UIView(object):
         self.btrun.setText(QCoreApplication.translate("UIView", u"Launch", None))
         self.btpauserecord.setText(QCoreApplication.translate("UIView", u"Pause Record", None))
         self.tnumrd.setText(QCoreApplication.translate("UIView", u"Ready...", None))
+        self.label_volume.setText(QCoreApplication.translate("UIView", u"Volume", None))
     # retranslateUi
 
