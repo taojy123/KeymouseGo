@@ -168,6 +168,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         # for pause-resume feature
         self.paused = False
         self.pause_event = threading.Event()
+        self.exe_event = threading.Event()
 
         # Pause-Resume Record
         self.pauserecord = False
@@ -361,7 +362,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             if key_name == start_name and not self.running and not self.recording:
                 logger.info('Script start')
                 self.textlog.clear()
-                self.runthread = RunScriptClass(self, self.pause_event)
+                self.runthread = RunScriptClass(self, self.pause_event, self.exe_event)
                 self.runthread.start()
                 self.isbrokenorfinish = False
                 logger.debug('{0} host start'.format(key_name))
@@ -383,6 +384,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 if self.paused:
                     self.paused = False
                 self.pause_event.set()
+                self.exe_event.set()
                 logger.debug('{0} host stop'.format(key_name))
             elif key_name == stop_name and self.recording:
                 self.recordMethod()
@@ -606,18 +608,18 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         logger.info('Script start')
         logger.debug('Script start by btn')
         self.textlog.clear()
-        self.runthread = RunScriptClass(self, self.pause_event)
+        self.runthread = RunScriptClass(self, self.pause_event, self.exe_event)
         self.runthread.start()
         self.isbrokenorfinish = False
 
 
 class RunScriptClass(threading.Thread):
 
-    def __init__(self, frame: UIFunc, event: threading.Event):
+    def __init__(self, frame: UIFunc, event: threading.Event, exe_event: threading.Event):
         self.frame = frame
         self.event = event  # UI pause event
         self.event.set()
-        self.exe_event = threading.Event()  # For sleep method during execution
+        self.exe_event = exe_event  # For sleep method during execution
         self.exe_event.set()
         super(RunScriptClass, self).__init__()
 
