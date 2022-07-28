@@ -1,4 +1,4 @@
-# KeymouseGo v4.1
+# KeymouseGo v5.0
 
 Features:
   + Record mouse/keyboard operations
@@ -9,7 +9,7 @@ Usage:
   + Free users away from works that are simple and repetitive
   + You can record the necessary operations once and left the rest of works to computer
 
-![image](https://user-images.githubusercontent.com/3334897/167304140-0d8bcfa4-b921-4611-a5bd-c8b01bf0f1e3.png)
+![image](../Preview.png)
 
 # Readme.md
 
