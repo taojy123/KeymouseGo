@@ -5,7 +5,7 @@ import subprocess
 from PySide2.QtWidgets import QDialog, QFileDialog, QInputDialog
 from PySide2.QtWidgets import QMainWindow, QMessageBox
 
-from UIFileManageDialogView import Ui_Dialog
+from UIFileDialogView import Ui_Dialog
 from UIFunc import scripts, scripts_map
 
 
