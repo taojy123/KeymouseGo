@@ -1,5 +1,4 @@
 # -*- encoding:utf-8 -*-
-import collections
 import datetime
 import json
 import os
