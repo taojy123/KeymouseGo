@@ -4,11 +4,9 @@
 import os
 import sys
 import math
-from PySide2.QtWidgets import QApplication
-from PySide2.QtCore import Slot
-from PySide2.QtWidgets import *
-from PySide2.QtCore import QRect
-from PySide2 import QtCore, QtWidgets
+from PySide2.QtWidgets import QApplication, QWidget, QSpinBox
+from PySide2.QtCore import Slot, QRect
+from PySide2 import QtCore
 
 import UIFunc
 import argparse
@@ -44,9 +42,9 @@ def main():
 
     # 适应高DPI
     if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
-        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+        QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
     if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
-        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+        QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
     app = QApplication(sys.argv)
     ui = UIFunc.UIFunc(app)

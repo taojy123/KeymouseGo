@@ -7,12 +7,8 @@ import sys
 import threading
 import traceback
 import platform
-import subprocess
 import locale
 import Recorder
-import tkinter as tk
-from tkinter import messagebox, simpledialog
-from tkinter.filedialog import *
 from importlib.machinery import SourceFileLoader
 
 from PySide2.QtGui import QTextCursor
@@ -23,7 +19,7 @@ from PySide2.QtWidgets import QMainWindow, QApplication
 from PySide2.QtMultimedia import QSoundEffect
 from loguru import logger
 
-from Event import ScriptEvent, ScreenHeight as SH, ScreenWidth as SW
+from Event import ScriptEvent
 from UIView import Ui_UIView
 from assets.plugins.ProcessException import *
 
@@ -700,93 +696,3 @@ class RunScriptClass(threading.Thread):
                     logger.debug('Jump at %d' % i)
                     continue
         return True
-
-
-class FileDialog():
-    def __init__(self):
-        global scripts
-        global scripts_map
-
-        # print(scripts)
-        # print(scripts_map)
-        # print(scripts_map['current_index'])
-        # print(scripts[scripts_map['current_index']])
-        self.root = tk.Tk()
-        self.filename = tk.StringVar(value=scripts[scripts_map['current_index']])
-        self.path = os.path.join(os.getcwd(), "scripts")
-        i18n_language = {
-            '简体中文': ['文件管理', '当前文件', '选择文件', '编辑脚本', '重命名文件', '文件没有被找到', '请输入新文件名: ', '更新成功', '文件名不能为空或空格'], 
-            'English': ['File', 'Current file', 'Choice', 'Edit', 'Rename', 'File not found', 'Please input new name', 'Success', 'File name cannot be empty or space']
-            }
-        self.language = i18n_language[scripts_map['choice_language']]
-
-
-    def init(self):
-        import base64
-        from assets_rc import icon
-
-        tmp = open("tmp.png","wb+")
-        tmp.write(base64.b64decode(icon))
-        tmp.close()
-        self.root.iconphoto(True, tk.PhotoImage(file="tmp.png"))
-        os.remove("tmp.png")
-
-        self.root.geometry('300x100+' + str(int(SW/2) - 150) + '+' + str(int(SH/2) - 50))
-        self.root.title(self.language[0])
-        tk.Label(self.root, text=self.language[1]).grid(row=1, column=0, padx=5, pady=5)
-        tk.Entry(self.root, textvariable=self.filename).grid(row=1, column=1, padx=5, pady=5, columnspan=2)
-        tk.Button(self.root, text=self.language[2], command=self.choice_file, width=8).grid(row=2, column=0, padx=5, pady=5)
-        tk.Button(self.root, text=self.language[3], command=self.edit, width=8).grid(row=2, column=1, padx=5, pady=5)
-        tk.Button(self.root, text=self.language[4], command=self.rename, width=8).grid(row=2, column=2, padx=5, pady=5)
-
-
-    def choice_file(self):
-        file = askopenfilename(initialdir=self.path, filetypes=(("Text Files", "*.txt"),))
-        file_name = re.split(r'\\|\/', file)[-1]
-        if file_name != '':
-            self.filename.set(file_name)
-
-
-    def edit(self):
-        # Mac打开文件防止以后需要
-        # if userPlatform == 'Darwin':
-        #     subprocess.call(['open', filename.get()])
-        user_paltform = platform.system()
-        try:
-            if user_paltform == 'Linux':
-                subprocess.call(['xdg-open', os.path.join(self.path, self.filename.get())])
-            else:
-                os.startfile(os.path.join(self.path, self.filename.get()))
-        except FileNotFoundError:
-            messagebox.showwarning(message=self.language[5])
-            self.filename.set('')
-
-
-    def rename(self):
-        global scripts
-        global scripts_map
-
-        new_file_name = simpledialog.askstring(title=self.language[4], prompt=self.language[6])
-        if new_file_name != None and new_file_name.strip() != '':
-            if not new_file_name.endswith('.txt'):
-                new_file_name = new_file_name + '.txt'
-
-            try:
-                os.rename(os.path.join(self.path, self.filename.get()), os.path.join(self.path, new_file_name))
-                messagebox.showinfo(message=self.language[7])
-                # 更新
-                filename = self.filename.get()
-                index = scripts_map.get(filename)
-                scripts_map.pop(filename)
-                scripts_map[new_file_name] = index
-                scripts[index] = new_file_name
-                self.filename.set(new_file_name)
-            except FileNotFoundError:
-                messagebox.showwarning(message=self.language[5])
-        else:
-            messagebox.showwarning(message=self.language[8])
-
-
-    def main(self):
-        self.init()
-        self.root.mainloop()
