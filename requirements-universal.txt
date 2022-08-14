@@ -1,7 +1,5 @@
 # Python3.10
 
-pywin32==302
-pyWinhook==1.6.2
 pynput==1.7.6
 pyperclip==1.8.0
 pyautogui==0.9.53
