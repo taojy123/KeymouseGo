@@ -37,7 +37,7 @@ logger.remove()
 logger.add(sys.stdout, backtrace=True, diagnose=True,
            level='DEBUG')
 logger.add('logs/{time}.log', rotation='20MB', backtrace=True, diagnose=True,
-           level='INFO')
+           level='DEBUG')
 
 
 def get_assets_path(*paths):
@@ -493,7 +493,7 @@ class RunScriptClass(threading.Thread):
             # 解析脚本，返回事件集合与扩展类对象
             logger.debug('Parse script..')
             try:
-                events, module_name = RunScriptClass.parsescript(script_path, speed=self.frame.execute_speed.value())
+                events, module_name, labeldict = RunScriptClass.parsescript(script_path, speed=self.frame.execute_speed.value())
             except Exception as e:
                 logger.error(e)
                 self.frame.textlog.append('==============\nAn error occurred while parsing script')
@@ -521,7 +521,7 @@ class RunScriptClass(threading.Thread):
                     self.running_text, self.j + 1, extension.runtimes))
                 try:
                     if extension.onbeforeeachloop(self.j):
-                        nointerrupt = nointerrupt and RunScriptClass.run_script_once(events, extension, thd=self)
+                        nointerrupt = nointerrupt and RunScriptClass.run_script_once(events, extension, thd=self, labeldict=labeldict)
                     else:
                         nointerrupt = True
                     extension.onaftereachloop(self.j)
@@ -606,26 +606,33 @@ class RunScriptClass(threading.Thread):
         if steps >= 1 and re.match('\[.+\]', str(s[0])) is None:
             module_name = s[0]
             startindex = 1
+        numoflabels = 0
+        labeldict = {'Start': 0}
+        # 识别标签或脚本语句
         for i in range(startindex, steps):
-            delay = s[i][0] / (speed / 100)
-            event_type = s[i][1].upper()
-            message = s[i][2].lower()
-            action = s[i][3]
-            addon = None
-            if len(s[i]) > 4:
-                addon = s[i][4]
-            events.append(ScriptEvent({
-                'delay': delay,
-                'event_type': event_type,
-                'message': message,
-                'action': action,
-                'addon': addon
-            }))
-        return events, module_name
+            if type(s[i]) == str:
+                labeldict[s[i]] = i - numoflabels
+                numoflabels = numoflabels + 1
+            else:
+                delay = s[i][0] / (speed / 100)
+                event_type = s[i][1].upper()
+                message = s[i][2].lower()
+                action = s[i][3]
+                addon = None
+                if len(s[i]) > 4:
+                    addon = s[i][4]
+                events.append(ScriptEvent({
+                    'delay': delay,
+                    'event_type': event_type,
+                    'message': message,
+                    'action': action,
+                    'addon': addon
+                }))
+        return events, module_name, labeldict
 
     @classmethod
     def run_sub_script(cls, extension, scriptpath: str, subextension_name: str = 'Extension',
-                        runtimes: int = 1, speed: int = 100, thd=None):
+                        runtimes: int = 1, speed: int = 100, thd=None, labeldict=None):
         newevents, module_name = RunScriptClass.parsescript(scriptpath, speed=speed)
         newextension = RunScriptClass.getextension(
             module_name if module_name is not None else subextension_name,
@@ -641,7 +648,7 @@ class RunScriptClass(threading.Thread):
             logger.info('========%d========' % k)
             try:
                 if newextension.onbeforeeachloop(k):
-                    nointerrupt = nointerrupt and RunScriptClass.run_script_once(newevents, newextension, thd)
+                    nointerrupt = nointerrupt and RunScriptClass.run_script_once(newevents, newextension, thd=thd, labeldict=labeldict)
                 newextension.onaftereachloop(k)
                 k += 1
             except BreakProcess:
@@ -660,7 +667,7 @@ class RunScriptClass(threading.Thread):
 
     # 执行集合中的ScriptEvent
     @classmethod
-    def run_script_once(cls, events, extension, thd=None):
+    def run_script_once(cls, events, extension, thd=None, labeldict=None):
         steps = len(events)
         i = 0
         while i < steps:
@@ -686,6 +693,14 @@ class RunScriptClass(threading.Thread):
                 extension.onrunafter(event, i)
                 i = i + 1
             except JumpProcess as jp:
+                if labeldict is not None:
+                    index = labeldict.get(jp.index, None)
+                    if index is not None:
+                        logger.debug('Jump at label %s, i.e. line %i' % (jp.index, index))
+                        jp.index = index
+                    else:
+                        logger.error('Invalid Jump Label')
+                        raise Exception('Invalid Jump Label')
                 if jp.index < 0:
                     logger.error('Jump index out of range: %d' % jp.index)
                 elif jp.index >= steps:
@@ -693,6 +708,7 @@ class RunScriptClass(threading.Thread):
                     break
                 else:
                     i = jp.index
-                    logger.debug('Jump at %d' % i)
+                    if labeldict is None:
+                        logger.debug('Jump at %d' % i)
                     continue
         return True
