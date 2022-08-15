@@ -553,7 +553,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.bt_open_script_files.setDisabled(True)
         self.btrecord.setDisabled(True)
         self.btrun.setDisabled(True)
-        file_dialog.show()
+        index = file_dialog.show()
         self.bt_open_script_files.setDisabled(False)
         self.btrecord.setDisabled(False)
         self.btrun.setDisabled(False)

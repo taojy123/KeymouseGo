@@ -18,7 +18,8 @@ class FileDialog(Ui_Dialog):
         self.rename.clicked.connect(self.rename_file)
 
         self.main_window = QMainWindow()
-        self.filename = scripts[scripts_map['current_index']]
+        self.current_choice_file_index = scripts_map['current_index']
+        self.filename = scripts[self.current_choice_file_index]
         self.lineEdit.setText(self.filename)
         self.path = os.path.join(os.getcwd(), "scripts")
         i18n_language = {
@@ -37,6 +38,7 @@ class FileDialog(Ui_Dialog):
     def choice_file(self):
         file = QFileDialog.getOpenFileName(self.main_window, "选择文件", dir='scripts', filter='*.txt')[0]
         file_name = re.split(r'\\|\/', file)[-1]
+        self.current_choice_file_index = scripts_map[file_name]
         if file_name.strip() != '' and file_name is not None:
             self.lineEdit.setText(file_name)
 
@@ -82,4 +84,5 @@ class FileDialog(Ui_Dialog):
     def show(self):
         self.dialog.show()
         self.dialog.exec_()
+        return self.current_choice_file_index
         
