@@ -548,19 +548,19 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         
         import UIFileDialogFunc
 
-        index = scripts_map['current_index'] = self.choice_script.currentIndex()
+        scripts_map['current_index'] = self.choice_script.currentIndex()
         file_dialog = UIFileDialogFunc.FileDialog()
         self.bt_open_script_files.setDisabled(True)
         self.btrecord.setDisabled(True)
         self.btrun.setDisabled(True)
-        index = file_dialog.show()
+        file_dialog.show()
         self.bt_open_script_files.setDisabled(False)
         self.btrecord.setDisabled(False)
         self.btrun.setDisabled(False)
         # 重新设置的为点击按钮时, 所处的位置
         self.choice_script.clear()
         self.choice_script.addItems(scripts)
-        self.choice_script.setCurrentIndex(index)
+        self.choice_script.setCurrentIndex(scripts_map['current_index'])
 
 
     def recordMethod(self):
