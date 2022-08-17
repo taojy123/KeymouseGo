@@ -5,7 +5,7 @@ class ProcessException(Exception):
 
 # 跳转到索引为index的脚本行
 class JumpProcess(ProcessException):
-    def __init__(self, index: int):
+    def __init__(self, index):
         self.index = index
 
 

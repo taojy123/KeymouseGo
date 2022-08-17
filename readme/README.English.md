@@ -32,11 +32,21 @@ Usage:
 This program is written in `Python` and packed as executable file in `Windows` Platform. You can download [release version](https://github.com/taojy123/KeymouseGo/releases) directly without installation of Python.
 
 ### Bundle with source code
+
++ Windows
 ```
-1. Install Python 3.10
-2. pip install -r requirements.txt
+1. Install Python 3
+2. pip install -r requirements-windows.txt
 3. pip install pyinstaller
-4. pyinstaller -F --add-data './assets;assets' KeymouseGo.py
+4. pyinstaller -F -w --add-data './assets;assets' KeymouseGo.py
+```
+
++ Linux or Mac
+```
+1. Install Python 3
+2. pip3 install -r requirements-universal.txt
+3. pip3 install pyinstaller
+4. pyinstaller -F -w --add-data './assets:assets' KeymouseGo.py
 ```
 
 # Usage
@@ -96,7 +106,7 @@ Run specific script with extension `MyExtension`
 
 8. Due to the limitation of execution speed, the running speed cannot be set too high.
 
-In some system environment, there may be circumstances that the mouse events cannot be fully recorded. To settle this, you can run this program as administrator.
+In some system environment, there may be circumstances that the mouse events cannot be fully recorded. To settle this, you can run this program as administrator/root.
 
 ## Grammar of scripts
 > Assume that the resolution of screen is `1920 * 1080`
