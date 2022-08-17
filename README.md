@@ -28,11 +28,24 @@
 该软件通过 `Python` 语言编写，已编译为 `windows` 平台可执行文件，未安装 `Python` 的用户可直接下载 [release](https://github.com/taojy123/KeymouseGo/releases) 版本 ，直接点击 `KeymouseGo.exe` 运行
 
 ### 源码编译，打包 exe 文件
+
++ Windows
 ```
-1. 安装 Python3.10
-2. pip install -r requirements.txt
+1. 安装 Python3
+2. pip install -r requirements-windows.txt
 3. pip install pyinstaller
 4. pyinstaller -F -w --add-data './assets;assets' KeymouseGo.py
+<<<<<<< HEAD
+=======
+```
+
++ Linux或Mac
+```
+1. 安装 Python3
+2. pip3 install -r requirements-universal.txt
+3. pip3 install pyinstaller
+4. pyinstaller -F -w --add-data './assets:assets' KeymouseGo.py
+>>>>>>> cd1231edd7a9c324713bc46966910f45622b7a89
 ```
 
 # 使用方法
@@ -92,7 +105,7 @@
 
 8、由于程序速度受限，当输入的鼠标速度大于一定值时脚本将无法以预期的输入速度执行
 
-部分系统环境中，可能出现无法录制完整的鼠标事件的情况，请以管理员身份运行此工具即可正常使用。
+部分系统环境中，可能出现无法录制完整的鼠标事件的情况，请以管理员身份/root身份运行此工具即可正常使用。
 
 ## 脚本语法说明
 > 演示屏幕分辨率为`1920 * 1080`
