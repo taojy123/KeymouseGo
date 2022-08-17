@@ -35,8 +35,6 @@
 2. pip install -r requirements-windows.txt
 3. pip install pyinstaller
 4. pyinstaller -F -w --add-data './assets;assets' KeymouseGo.py
-<<<<<<< HEAD
-=======
 ```
 
 + Linux或Mac
@@ -45,7 +43,6 @@
 2. pip3 install -r requirements-universal.txt
 3. pip3 install pyinstaller
 4. pyinstaller -F -w --add-data './assets:assets' KeymouseGo.py
->>>>>>> cd1231edd7a9c324713bc46966910f45622b7a89
 ```
 
 # 使用方法
