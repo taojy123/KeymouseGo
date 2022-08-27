@@ -37,7 +37,7 @@ logger.remove()
 logger.add(sys.stdout, backtrace=True, diagnose=True,
            level='DEBUG')
 logger.add('logs/{time}.log', rotation='20MB', backtrace=True, diagnose=True,
-           level='DEBUG')
+           level='INFO')
 
 
 def get_assets_path(*paths):
@@ -504,7 +504,7 @@ class RunScriptClass(threading.Thread):
             extension.onbeginp()
             self.frame.playtune('start.wav')
             while (self.j < extension.runtimes or extension.runtimes == 0) and nointerrupt:
-                logger.info('===========%d==============' % self.j)
+                logger.debug('===========%d==============' % self.j)
                 current_status = self.frame.tnumrd.text()
                 if current_status in ['broken', 'finished']:
                     self.frame.running = False
@@ -637,7 +637,7 @@ class RunScriptClass(threading.Thread):
         k = 0
         nointerrupt = True
         while (k < newextension.runtimes or newextension.runtimes == 0) and nointerrupt:
-            logger.info('========%d========' % k)
+            logger.debug('========%d========' % k)
             try:
                 if newextension.onbeforeeachloop(k):
                     nointerrupt = nointerrupt and RunScriptClass.run_script_once(newevents, newextension, thd=thd, labeldict=labeldict)
