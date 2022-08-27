@@ -1,4 +1,4 @@
-# KeymouseGo v5.0
+# KeymouseGo v5.1
 
 Features:
   + Record mouse/keyboard operations
@@ -29,7 +29,7 @@ Usage:
 
 # Installation
 
-This program is written in `Python` and packed as executable file in `Windows` Platform. You can download [release version](https://github.com/taojy123/KeymouseGo/releases) directly without installation of Python.
+This program is written in `Python` and packed as executable file. You can download [release version](https://github.com/taojy123/KeymouseGo/releases) directly without installation of Python.
 
 ### Bundle with source code
 
@@ -67,25 +67,25 @@ This program is written in `Python` and packed as executable file in `Windows` P
 
 Run specific script
 ```
-> KeymouseGo.exe scripts/0314_1452.txt
+> ./KeymouseGo scripts/0314_1452.txt
 ```
 
 Run specific script for 3 times
 ```
-> KeymouseGo.exe scripts/0314_1452.txt -rt 3
-> KeymouseGo.exe scripts/0314_1452.txt --runtimes 3
+> ./KeymouseGo scripts/0314_1452.txt -rt 3
+> ./KeymouseGo scripts/0314_1452.txt --runtimes 3
 ```
 
 Run specific script at the speed of 200%
 ```
-> KeymouseGo.exe scripts/0314_1452.txt -sp 200
-> KeymouseGo.exe scripts/0314_1452.txt --speed 200
+> ./KeymouseGo scripts/0314_1452.txt -sp 200
+> ./KeymouseGo scripts/0314_1452.txt --speed 200
 ```
 
 Run specific script with extension `MyExtension`
 ```
-> KeymouseGo.exe scripts/0314_1452.txt -m MyExtension
-> KeymouseGo.exe scripts/0314_1452.txt --module MyExtension
+> ./KeymouseGo scripts/0314_1452.txt -m MyExtension
+> ./KeymouseGo scripts/0314_1452.txt --module MyExtension
 ```
 
 ## Tips
@@ -113,13 +113,13 @@ In some system environment, there may be circumstances that the mouse events can
 
 ```
 [
- [3000, "EM", "mouse right down", [0.05208%, 0.1852%]],    // Press mouse right button at the relative coordinates `(0.05208, 0.1852)`(i.e. absolute coordinates `(100,200)`) after 3000ms
- [50,   "EM", "mouse right up",   [0.05208%, 0.1852%]],    // Release mouse right button at the coordinates after 50ms
+ [3000, "EM", "mouse right down", ["0.05208%", "0.1852%"]],    // Press mouse right button at the relative coordinates `(0.05208, 0.1852)`(i.e. absolute coordinates `(100,200)`) after 3000ms
+ [50,   "EM", "mouse right up",   ["0.05208%", "0.1852%"]],    // Release mouse right button at the coordinates after 50ms
  [1000, "EK", "key down",         (70, 'F', 0)],                                   // Press key 'f' after 1000ms
  [50,   "EK", "key up",           (70, 'F', 0)],                                   // Release key 'f' after 50ms
- [100,  "EM", "mouse left down",  [0.2604%, 0.4630%]],      // Press mouse left button at the relative coordinates `(0.2604, 0.4630)`(i.e. absolute coordinates `(500,500)`) after 100ms
- [100,  "EM", "mouse move",       [0.2604%, 0.5556%]],       // Move mouse to the relative coordinates `(0.2604, 0.4630)`(i.e. absolute coordinates `(500,500)`) after 100ms
- [100,  "EM", "mouse left up",  [0.3125%, 0.5556%]],                   // Release mouse left button at the relative coordinates `(0.3125, 0.5556)`(i.e. absolute coordinates `(600,600)`) after 100ms
+ [100,  "EM", "mouse left down",  ["0.2604%", "0.4630%"]],      // Press mouse left button at the relative coordinates `(0.2604, 0.4630)`(i.e. absolute coordinates `(500,500)`) after 100ms
+ [100,  "EM", "mouse move",       ["0.2604%", "0.5556%"]],       // Move mouse to the relative coordinates `(0.2604, 0.4630)`(i.e. absolute coordinates `(500,500)`) after 100ms
+ [100,  "EM", "mouse left up",  ["0.3125%", "0.5556%"]],                   // Release mouse left button at the relative coordinates `(0.3125, 0.5556)`(i.e. absolute coordinates `(600,600)`) after 100ms
  [100,  "EX", "input",            "Hello world"],                                   // Input 'Hello world' at current coordinate after 100ms
 ]
 ```
@@ -140,7 +140,7 @@ The script is saved in `json` format, in which each line represents a operation
   + If detailed operation type is `Input`, it is the text to input
 + In each line, comment can be added after `//`
 + It is recommended to back up script before editing. And make sure to follow the format while editing, otherwise it may result in failure of execution.
-
++ The mouse event will execute on the position that the cursor is currently in when the coordinate is set to [-1, -1]
 
 ## Extensions
 
