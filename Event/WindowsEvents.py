@@ -5,13 +5,13 @@ import win32api
 from Event.Event import Event
 from loguru import logger
 
+import ctypes
 import win32con
-from win32gui import GetDC
-from win32print import GetDeviceCaps
-
-hDC = GetDC(0)
-SW = GetDeviceCaps(hDC, win32con.DESKTOPHORZRES)
-SH = GetDeviceCaps(hDC, win32con.DESKTOPVERTRES)
+user32 = ctypes.windll.user32
+user32.SetProcessDPIAware()
+numofmonitors = user32.GetSystemMetrics(win32con.SM_CMONITORS)
+# 主屏分辨率
+SW, SH = user32.GetSystemMetrics(0), user32.GetSystemMetrics(1)
 
 
 class WindowsEvent(Event):
@@ -53,12 +53,16 @@ class WindowsEvent(Event):
 
                 # 更好的兼容 win10 屏幕缩放问题
                 if isinstance(x, int) and isinstance(y, int):
-                    nx = int(x * 65535 / SW)
-                    ny = int(y * 65535 / SH)
+                    if numofmonitors > 1:
+                        win32api.SetCursorPos([x, y])
+                    else:
+                        nx = int(x * 65535 / SW)
+                        ny = int(y * 65535 / SH)
+                        win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE | win32con.MOUSEEVENTF_MOVE, nx, ny, 0, 0)
                 else:
                     nx = int(x * 65535)
                     ny = int(y * 65535)
-                win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE | win32con.MOUSEEVENTF_MOVE, nx, ny, 0, 0)
+                    win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE | win32con.MOUSEEVENTF_MOVE, nx, ny, 0, 0)
 
             if self.message == 'mouse left down':
                 win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)

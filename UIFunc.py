@@ -19,7 +19,7 @@ from PySide2.QtWidgets import QMainWindow, QApplication
 from PySide2.QtMultimedia import QSoundEffect
 from loguru import logger
 
-from Event import ScriptEvent
+from Event import ScriptEvent, flag_multiplemonitor
 from UIView import Ui_UIView
 from assets.plugins.ProcessException import *
 
@@ -261,23 +261,15 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             # 录制事件
             if not(not self.recording or self.running or self.pauserecord):
                 if self.extension.onrecord(event, self.actioncount):
-                    if event.event_type == 'EM':
+                    if event.event_type == 'EM' and not flag_multiplemonitor:
+                        record = [event.delay, event.event_type, event.message]
                         tx, ty = event.action
-                        if event.addon:
-                            self.record.append(
-                                [event.delay, event.event_type, event.message, ['{0}%'.format(tx), '{0}%'.format(ty)],
-                                 event.addon])
-                        else:
-                            self.record.append(
-                                [event.delay, event.event_type, event.message, ['{0}%'.format(tx), '{0}%'.format(ty)]])
+                        record.append(['{0}%'.format(tx), '{0}%'.format(ty)])
                     else:
-                        if event.addon:
-                            self.record.append(
-                                [event.delay, event.event_type, event.message, event.action,
-                                 event.addon])
-                        else:
-                            self.record.append(
-                                [event.delay, event.event_type, event.message, event.action])
+                        record = [event.delay, event.event_type, event.message, event.action]
+                    if event.addon:
+                        record.append(event.addon)
+                    self.record.append(record)
                     self.actioncount = self.actioncount + 1
                     text = '%d actions recorded' % self.actioncount
                     logger.debug('Recorded %s' % event)
