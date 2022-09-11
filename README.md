@@ -27,14 +27,14 @@
 
 该软件通过 `Python` 语言编写，已打包为可执行文件，未安装 `Python` 的用户可直接下载 [release](https://github.com/taojy123/KeymouseGo/releases) 版本 ，直接点击 `KeymouseGo` 运行
 
-### 源码打包 exe 文件
+### 源码打包可执行文件
 
 + Windows
 ```
 1. 安装 Python3
 2. pip install -r requirements-windows.txt
 3. pip install pyinstaller
-4. pyinstaller -F -w --add-data './assets;assets' KeymouseGo.py
+4. pyinstaller -F -w --add-data "./assets;assets" KeymouseGo.py
 ```
 
 + Linux或Mac
@@ -42,7 +42,7 @@
 1. 安装 Python3
 2. pip3 install -r requirements-universal.txt
 3. pip3 install pyinstaller
-4. pyinstaller -F -w --add-data './assets:assets' KeymouseGo.py
+4. pyinstaller -F -w --add-data "./assets:assets" KeymouseGo.py
 ```
 
 # 使用方法
@@ -103,6 +103,11 @@
 8、由于程序速度受限，当输入的鼠标速度大于一定值时脚本将无法以预期的输入速度执行
 
 部分系统环境中，可能出现无法录制完整的鼠标事件的情况，请以管理员身份/root身份运行此工具即可正常使用。
+
+使用Mac的用户，需要确保程序在辅助功能白名单，如果使用打包的exec文件，则还需要确保终端也在辅助功能白名单。 如果app程序闪退，请尝试给予`~/.qt_material`目录下文件的写权限:
+```bash
+chmod -R 770 ~/.qt_material
+```
 
 ## 脚本语法说明
 > 演示屏幕分辨率为`1920 * 1080`

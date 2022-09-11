@@ -38,7 +38,7 @@ This program is written in `Python` and packed as executable file. You can downl
 1. Install Python 3
 2. pip install -r requirements-windows.txt
 3. pip install pyinstaller
-4. pyinstaller -F -w --add-data './assets;assets' KeymouseGo.py
+4. pyinstaller -F -w --add-data "./assets;assets" KeymouseGo.py
 ```
 
 + Linux or Mac
@@ -46,7 +46,7 @@ This program is written in `Python` and packed as executable file. You can downl
 1. Install Python 3
 2. pip3 install -r requirements-universal.txt
 3. pip3 install pyinstaller
-4. pyinstaller -F -w --add-data './assets:assets' KeymouseGo.py
+4. pyinstaller -F -w --add-data "./assets:assets" KeymouseGo.py
 ```
 
 # Usage
@@ -107,6 +107,11 @@ Run specific script with extension `MyExtension`
 8. Due to the limitation of execution speed, the running speed cannot be set too high.
 
 In some system environment, there may be circumstances that the mouse events cannot be fully recorded. To settle this, you can run this program as administrator/root.
+
+For mac users, make sure that application must be white listed under Enable access for assistive devices. You may also need to whitelist terminal application if running from terminal. If the app crashes, you may try to give write permission for directory `~/.qt_material`.
+```bash
+chmod -R 770 ~/.qt_material
+```
 
 ## Grammar of scripts
 > Assume that the resolution of screen is `1920 * 1080`
