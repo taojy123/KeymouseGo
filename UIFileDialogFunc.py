@@ -8,6 +8,7 @@ from PySide2.QtWidgets import QMainWindow, QMessageBox
 from UIFileManageDialogView import Ui_Dialog
 from UIFunc import scripts, scripts_map
 
+from KeymouseGo import to_abs_path
 
 class FileDialog(Ui_Dialog):
     def __init__(self):
@@ -20,7 +21,7 @@ class FileDialog(Ui_Dialog):
         self.main_window = QMainWindow()
         self.filename = scripts[scripts_map['current_index']]
         self.lineEdit.setText(self.filename)
-        self.path = os.path.join(os.getcwd(), "scripts")
+        self.path = os.path.join(to_abs_path("scripts"))
         i18n_language = {
             '简体中文': ['文件管理', '当前文件', '选择文件', '编辑脚本', '重命名', '文件没有被找到', '请输入新文件名: ', '更新成功', '文件名不能为空或空格'], 
             'English': ['File Manage', 'Current file', 'Choice', 'Edit', 'Rename', 'File not found', 'Please input new name', 'Success', 'File name cannot be empty or space']
@@ -35,7 +36,7 @@ class FileDialog(Ui_Dialog):
     
 
     def choice_file(self):
-        file = QFileDialog.getOpenFileName(self.main_window, "选择文件", dir='scripts', filter='*.txt')[0]
+        file = QFileDialog.getOpenFileName(self.main_window, "选择文件", dir=to_abs_path('scripts'), filter='*.txt')[0]
         file_name = re.split(r'\\|\/', file)[-1]
         if file_name.strip() != '' and file_name is not None:
             self.lineEdit.setText(file_name)

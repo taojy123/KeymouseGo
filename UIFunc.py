@@ -23,6 +23,8 @@ from Event import ScriptEvent, flag_multiplemonitor
 from UIView import Ui_UIView
 from assets.plugins.ProcessException import *
 
+from KeymouseGo import to_abs_path
+
 os.environ['QT_ENABLE_HIGHDPI_SCALING'] = "1"
 QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
@@ -36,7 +38,7 @@ else:
 logger.remove()
 logger.add(sys.stdout, backtrace=True, diagnose=True,
            level='DEBUG')
-logger.add('logs/{time}.log', rotation='20MB', backtrace=True, diagnose=True,
+logger.add(to_abs_path('logs', '{time}.log'), rotation='20MB', backtrace=True, diagnose=True,
            level='INFO')
 
 
@@ -56,9 +58,9 @@ scripts_map = {'current_index': 0, 'choice_language': '简体中文'}
 def get_script_list_from_dir():
     global scripts
 
-    if not os.path.exists('scripts'):
-        os.mkdir('scripts')
-    scripts = os.listdir('scripts')[::-1]
+    if not os.path.exists(to_abs_path('scripts')):
+        os.mkdir(to_abs_path('scripts'))
+    scripts = os.listdir(to_abs_path('scripts'))[::-1]
     scripts = list(filter(lambda s: s.endswith('.txt'), scripts))
 
 
@@ -102,9 +104,9 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             self.choice_script.setCurrentIndex(0)
 
         self.choice_extension.addItems(['Extension'])
-        if not os.path.exists('plugins'):
-            os.mkdir('plugins')
-        for i in os.listdir('plugins'):
+        if not os.path.exists(to_abs_path('plugins')):
+            os.mkdir(to_abs_path('plugins'))
+        for i in os.listdir(to_abs_path('plugins')):
             if i[-3:] == '.py':
                 self.choice_extension.addItems([i[:-3]])
 
@@ -329,8 +331,8 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         event.accept()
 
     def loadconfig(self):
-        if not os.path.exists('config.ini'):
-            with open('config.ini', 'w', encoding='utf-8') as f:
+        if not os.path.exists(to_abs_path('config.ini')):
+            with open(to_abs_path('config.ini'), 'w', encoding='utf-8') as f:
                 f.write('[Config]\n'
                         'StartHotKeyIndex=3\n'
                         'StopHotKeyIndex=6\n'
@@ -341,14 +343,14 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                         'Language=zh-cn\n'
                         'Extension=Extension\n'
                         'Theme=light_cyan_500.xml\n')
-        return QSettings('config.ini', QSettings.IniFormat)
+        return QSettings(to_abs_path('config.ini'), QSettings.IniFormat)
 
     def get_script_path(self):
         i = self.choice_script.currentIndex()
         if i < 0:
             return ''
         script = self.scripts[i]
-        path = os.path.join(os.getcwd(), 'scripts', script)
+        path = os.path.join(to_abs_path('scripts'), script)
         logger.info('Script path: {0}'.format(path))
         return path
 
@@ -554,7 +556,7 @@ class RunScriptClass(threading.Thread):
             module = SourceFileLoader(module_name, get_assets_path('plugins', 'Extension.py')).load_module()
         else:
             module = SourceFileLoader(module_name,
-                                      os.path.join(os.getcwd(), 'plugins', '%s.py' % module_name)).load_module()
+                                      os.path.join(to_abs_path('plugins', '%s.py' % module_name))).load_module()
         module_cls = getattr(module, module_name)
         logger.info('Load plugin class {0} in module {1}'.format(module_cls, module_name))
         return module_cls(runtimes, speed, thd, swap)
