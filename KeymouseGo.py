@@ -22,7 +22,12 @@ def add_lib_path(libpaths):
             sys.path.append(libpath)
 
 
-add_lib_path([os.path.join(os.getcwd(), 'plugins')])
+def to_abs_path(*args):
+    return os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])),
+                        *args)
+
+
+add_lib_path([os.path.join(to_abs_path('plugins'))])
 
 
 def resize_layout(ui, ratio_w, ratio_h):

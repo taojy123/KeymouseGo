@@ -1,4 +1,4 @@
-# KeymouseGo v5.0
+# KeymouseGo v5.1
 
 功能：记录用户的鼠标键盘操作，通过触发按钮自动执行之前记录的操作，可设定执行的次数，可以理解为 `精简绿色版` 的 `按键精灵`。
 
@@ -25,16 +25,16 @@
 
 # 安装
 
-该软件通过 `Python` 语言编写，已编译为 `windows` 平台可执行文件，未安装 `Python` 的用户可直接下载 [release](https://github.com/taojy123/KeymouseGo/releases) 版本 ，直接点击 `KeymouseGo.exe` 运行
+该软件通过 `Python` 语言编写，已打包为可执行文件，未安装 `Python` 的用户可直接下载 [release](https://github.com/taojy123/KeymouseGo/releases) 版本 ，直接点击 `KeymouseGo` 运行
 
-### 源码编译，打包 exe 文件
+### 源码打包可执行文件
 
 + Windows
 ```
 1. 安装 Python3
 2. pip install -r requirements-windows.txt
 3. pip install pyinstaller
-4. pyinstaller -F -w --add-data './assets;assets' KeymouseGo.py
+4. pyinstaller -F -w --add-data "./assets;assets" KeymouseGo.py
 ```
 
 + Linux或Mac
@@ -42,7 +42,7 @@
 1. 安装 Python3
 2. pip3 install -r requirements-universal.txt
 3. pip3 install pyinstaller
-4. pyinstaller -F -w --add-data './assets:assets' KeymouseGo.py
+4. pyinstaller -F -w --add-data "./assets:assets" KeymouseGo.py
 ```
 
 # 使用方法
@@ -63,25 +63,25 @@
 
 直接运行指定脚本:
 ```
-> KeymouseGo.exe scripts/0314_1452.txt
+> ./KeymouseGo scripts/0314_1452.txt
 ```
 
 运行指定脚本3次:
 ```
-> KeymouseGo.exe scripts/0314_1452.txt -rt 3
-> KeymouseGo.exe scripts/0314_1452.txt --runtimes 3
+> ./KeymouseGo scripts/0314_1452.txt -rt 3
+> ./KeymouseGo scripts/0314_1452.txt --runtimes 3
 ```
 
 以200%的速度运行指定脚本:
 ```
-> KeymouseGo.exe scripts/0314_1452.txt -sp 200
-> KeymouseGo.exe scripts/0314_1452.txt --speed 200
+> ./KeymouseGo scripts/0314_1452.txt -sp 200
+> ./KeymouseGo scripts/0314_1452.txt --speed 200
 ```
 
 加载自定义扩展`MyExtension`运行指定脚本:
 ```
-> KeymouseGo.exe scripts/0314_1452.txt -m MyExtension
-> KeymouseGo.exe scripts/0314_1452.txt --module MyExtension
+> ./KeymouseGo scripts/0314_1452.txt -m MyExtension
+> ./KeymouseGo scripts/0314_1452.txt --module MyExtension
 ```
 
 ## 提示
@@ -104,18 +104,23 @@
 
 部分系统环境中，可能出现无法录制完整的鼠标事件的情况，请以管理员身份/root身份运行此工具即可正常使用。
 
+使用Mac的用户，需要确保程序在辅助功能白名单，如果使用打包的exec文件，则还需要确保终端也在辅助功能白名单。 如果app程序闪退，请尝试给予`~/.qt_material`目录下文件的写权限:
+```bash
+chmod -R 770 ~/.qt_material
+```
+
 ## 脚本语法说明
 > 演示屏幕分辨率为`1920 * 1080`
 
 ```
 [
- [3000, "EM", "mouse right down", [0.05208%, 0.1852%]],    // 开始运行 `3000ms` 后，在屏幕相对坐标 `(0.05208, 0.1852)`即 `(100,200)` 处 `按下鼠标右键`；
- [50,   "EM", "mouse right up",   [0.05208%, 0.1852%]],    // 等待 `50ms` 后在相同位置 `抬起鼠标右键`；
+ [3000, "EM", "mouse right down", ["0.05208%", "0.1852%"]],    // 开始运行 `3000ms` 后，在屏幕相对坐标 `(0.05208, 0.1852)`即 `(100,200)` 处 `按下鼠标右键`；
+ [50,   "EM", "mouse right up",   ["0.05208%", "0.1852%"]],    // 等待 `50ms` 后在相同位置 `抬起鼠标右键`；
  [1000, "EK", "key down",         (70, 'F', 0)],                                   // 等待 `1000ms` 后 `按下f键`；
  [50,   "EK", "key up",           (70, 'F', 0)],                                   // 等待 `50ms` 后 `抬起f键`；
- [100,  "EM", "mouse left down",  [0.2604%, 0.4630%]],      // 等待 `100ms` 后，在屏幕相对坐标 `(0.2604, 0.4630)`即 `(500, 500)` 处 `按下鼠标左键`；
- [100,  "EM", "mouse move",       [0.2604%, 0.5556%]],       // 等待 `100ms` 后，鼠标移动至相对坐标 `(0.2604, 0.5556)`即 `(500, 600)` 位置；
- [100,  "EM", "mouse left up",  [0.3125%, 0.5556%]],                   // 等待 `100ms` 后，在屏幕相对坐标 `(0.3125, 0.5556)`即 `(600, 600)` 处 `抬起鼠标左键`；
+ [100,  "EM", "mouse left down",  ["0.2604%", "0.4630%"]],      // 等待 `100ms` 后，在屏幕相对坐标 `(0.2604, 0.4630)`即 `(500, 500)` 处 `按下鼠标左键`；
+ [100,  "EM", "mouse move",       ["0.2604%", "0.5556%"]],       // 等待 `100ms` 后，鼠标移动至相对坐标 `(0.2604, 0.5556)`即 `(500, 600)` 位置；
+ [100,  "EM", "mouse left up",  ["0.3125%", "0.5556%"]],                   // 等待 `100ms` 后，在屏幕相对坐标 `(0.3125, 0.5556)`即 `(600, 600)` 处 `抬起鼠标左键`；
  [100,  "EX", "input",            "你好 world"],                                   // 等待 `100ms` 后，在当前位置输入 `你好 world` 文字。
 ]
 ```
@@ -136,6 +141,7 @@
   + 当为输入文字动作时，为要输入的文字内容。
 + 每行 `//` 后的部分为注释内容。
 + 修改时请严格遵守格式，否则可能导致脚本无法运行，建议修改前先备份一下。
++ 横纵坐标为[-1, -1]时，表示在鼠标当前所在位置执行操作。
 
 
 ## 自定义扩展
@@ -174,6 +180,11 @@
 # 更新说明
 
 暂时没法打包 `x86` 版本，32 位系统的同学请自行源码编译，或 [下载v1.5老版本](https://github.com/taojy123/KeymouseGo/releases/tag/v1.5) 使用
+
+## v5.1
+
++ 支持在Linux和Mac环境下运行
++ 支持在多屏环境下运行(仅Windows)
 
 ## v5.0
 

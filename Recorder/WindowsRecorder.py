@@ -1,7 +1,7 @@
 import pyWinhook
 from pyWinhook import cpyHook, HookConstants
 import win32api
-from Event import ScreenWidth as SW, ScreenHeight as SH
+from Event import ScreenWidth as SW, ScreenHeight as SH, flag_multiplemonitor
 from loguru import logger
 import Recorder.globals as globalv
 import collections
@@ -61,16 +61,15 @@ def on_mouse_event(event):
         delay = 0
     globalv.latest_time = globalv.current_ts()
 
-    x, y = pos
-    tx = x / SW
-    ty = y / SH
-    tpos = (tx, ty)
+    if not flag_multiplemonitor:
+        x, y = pos
+        pos = (x / SW, y / SH)
 
     sevent = globalv.ScriptEvent({
         'delay': delay,
         'event_type': 'EM',
         'message': message,
-        'action': tpos,
+        'action': pos,
         'addon': None
     })
     record_signals.event_signal.emit(sevent)
