@@ -1,122 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.1" language="zh_CN">
+<!DOCTYPE TS><TS version="1.1">
 <context>
     <name>UIView</name>
     <message>
-        <location filename="UIView.py" line="172"/>
+        <location filename="UIView.ui" line="14"/>
+        <source>KeymomuseGo v5.1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="UIView.ui" line="31"/>
         <source>Hotkeys</source>
-        <translation>热键</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="UIView.py" line="173"/>
-        <source>Launch/Pause</source>
-        <translation>启动/暂停执行</translation>
-    </message>
-    <message>
-        <location filename="UIView.py" line="175"/>
-        <source>Record/Pause</source>
-        <translation>开始/暂停录制</translation>
-    </message>
-    <message>
-        <location filename="UIView.py" line="176"/>
+        <location filename="UIView.ui" line="69"/>
         <source>Terminate</source>
-        <translation>终止录制/执行</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="UIView.py" line="177"/>
+        <location filename="UIView.ui" line="76"/>
         <source>Language</source>
-        <translation>语言</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="UIView.py" line="178"/>
-        <source>Config</source>
-        <translation>配置</translation>
+        <location filename="UIView.ui" line="106"/>
+        <source>Record/Pause</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="UIView.py" line="179"/>
-        <source>Sctipt</source>
-        <translation>脚本</translation>
-    </message>
-    <message>
-        <location filename="UIView.py" line="185"/>
-        <source>Execution times(0 for endless looping)</source>
-        <translation>执行次数(0为无限循环)</translation>
-    </message>
-    <message>
-        <location filename="UIView.py" line="183"/>
-        <source>Run times</source>
-        <translation>执行次数</translation>
-    </message>
-    <message>
-        <location filename="UIView.py" line="192"/>
-        <source>The smaller the value is, the preciser the trace will be</source>
-        <translation>数值越小鼠标轨迹越精准</translation>
-    </message>
-    <message>
-        <location filename="UIView.py" line="190"/>
-        <source>Mouse precision</source>
-        <translation>鼠标精度</translation>
-    </message>
-    <message>
-        <location filename="UIView.py" line="195"/>
-        <source>Range(20%-500%)</source>
-        <translation>范围(20%-500%)</translation>
-    </message>
-    <message>
-        <location filename="UIView.py" line="197"/>
-        <source>Running speed(%)</source>
-        <translation>执行速度(%)</translation>
-    </message>
-    <message>
-        <location filename="UIView.py" line="198"/>
-        <source>Ready...</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="UIView.py" line="199"/>
-        <source>Record</source>
-        <translation>录制</translation>
-    </message>
-    <message>
-        <location filename="UIView.py" line="200"/>
-        <source>Launch</source>
-        <translation>启动</translation>
-    </message>
-    <message>
-        <location filename="UIView.py" line="201"/>
-        <source>Pause Record</source>
-        <translation>暂停录制</translation>
-    </message>
-    <message>
-        <location filename="UIFunc.py" line="355"/>
-        <source>Pause</source>
-        <translation>暂停</translation>
-    </message>
-    <message>
-        <location filename="UIFunc.py" line="359"/>
-        <source>Continue</source>
-        <translation>继续录制</translation>
-    </message>
-    <message>
-        <location filename="UIFunc.py" line="390"/>
-        <source>Finish</source>
-        <translation>结束</translation>
-    </message>
-    <message>
-        <location filename="UIView.py" line="195"/>
+        <location filename="UIView.ui" line="123"/>
         <source>Extension</source>
-        <translation>扩展插件</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="UIView.py" line="232"/>
-        <source>Theme</source>
-        <translation>主题</translation>
+        <location filename="UIView.ui" line="130"/>
+        <source>Launch/Pause</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="UIView.py" line="297"/>
+        <location filename="UIView.ui" line="158"/>
+        <source>Record</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="UIView.ui" line="171"/>
+        <source>Launch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="UIView.ui" line="187"/>
+        <source>Pause Record</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="UIView.ui" line="206"/>
+        <source>Ready...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="UIView.ui" line="241"/>
         <source>Volume</source>
-        <translation>音量</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="UIView.ui" line="264"/>
+        <source>Config</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="UIView.ui" line="292"/>
+        <source>Mouse precision</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="UIView.ui" line="299"/>
+        <source>Running speed(%)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="UIView.ui" line="306"/>
+        <source>Run times</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="UIView.ui" line="313"/>
+        <source>Theme</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="UIView.ui" line="320"/>
+        <source>Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="UIView.ui" line="402"/>
+        <source>...</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
