@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="1.1">
+<!DOCTYPE TS>
+<TS version="2.1" language="en">
 <context>
     <name>UIView</name>
     <message>
@@ -10,47 +11,56 @@
     <message>
         <location filename="UIView.ui" line="31"/>
         <source>Hotkeys</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Hotkeys</translatorcomment>
+        <translation type="unfinished">Hotkeys</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="69"/>
         <source>Terminate</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Terminate</translatorcomment>
+        <translation type="unfinished">Terminate</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="76"/>
         <source>Language</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Language</translatorcomment>
+        <translation type="unfinished">Language</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="106"/>
         <source>Record/Pause</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Record/Pause</translatorcomment>
+        <translation type="unfinished">Record/Pause</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="123"/>
         <source>Extension</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Extension</translatorcomment>
+        <translation type="unfinished">Extension</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="130"/>
         <source>Launch/Pause</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Launch/Pause</translatorcomment>
+        <translation type="unfinished">Launch/Pause</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="158"/>
         <source>Record</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Record</translatorcomment>
+        <translation type="unfinished">Record</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="171"/>
         <source>Launch</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Launch/Pause</translatorcomment>
+        <translation type="unfinished">Launch/Pause</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="187"/>
         <source>Pause Record</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Record/Pause</translatorcomment>
+        <translation type="unfinished">Record/Pause</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="206"/>
@@ -60,37 +70,44 @@
     <message>
         <location filename="UIView.ui" line="241"/>
         <source>Volume</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Volume</translatorcomment>
+        <translation type="unfinished">Volume</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="264"/>
         <source>Config</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Config</translatorcomment>
+        <translation type="unfinished">Config</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="292"/>
         <source>Mouse precision</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Mouse precision</translatorcomment>
+        <translation type="unfinished">Mouse precision</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="299"/>
         <source>Running speed(%)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Running speed(%)</translatorcomment>
+        <translation type="unfinished">Running speed(%)</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="306"/>
         <source>Run times</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Run times</translatorcomment>
+        <translation type="unfinished">Run times</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="313"/>
         <source>Theme</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Theme</translatorcomment>
+        <translation type="unfinished">Theme</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="320"/>
         <source>Script</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>Script</translatorcomment>
+        <translation type="unfinished">Script</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="402"/>
