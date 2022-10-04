@@ -13,7 +13,7 @@ from importlib.machinery import SourceFileLoader
 
 from PySide2.QtGui import QTextCursor
 from qt_material import list_themes, QtStyleTools
-from PySide2.QtCore import QSettings, Qt, QUrl, Slot
+from PySide2.QtCore import QSettings, Qt, QUrl, Slot, Signal, QWaitCondition, QMutex, QThread, QDeadlineTimer, QObject
 from PySide2.QtCore import QTranslator, QCoreApplication
 from PySide2.QtWidgets import QMainWindow, QApplication
 from PySide2.QtMultimedia import QSoundEffect
@@ -24,6 +24,9 @@ from UIView import Ui_UIView
 from assets.plugins.ProcessException import *
 
 from KeymouseGo import to_abs_path
+
+mutex = QMutex()
+cond = QWaitCondition()
 
 os.environ['QT_ENABLE_HIGHDPI_SCALING'] = "1"
 QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
@@ -150,8 +153,6 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
         # for pause-resume feature
         self.paused = False
-        self.pause_event = threading.Event()
-        self.exe_event = threading.Event()
 
         # Pause-Resume Record
         self.pauserecord = False
@@ -200,7 +201,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             if key_name == start_name and not self.running and not self.recording:
                 logger.info('Script start')
                 self.textlog.clear()
-                self.runthread = RunScriptClass(self, self.pause_event, self.exe_event)
+                self.runthread = RunScriptClass(self)
                 self.runthread.start()
                 self.isbrokenorfinish = False
                 logger.debug('{0} host start'.format(key_name))
@@ -208,12 +209,12 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 if self.paused:
                     logger.info('Script resume')
                     self.paused = False
-                    self.pause_event.set()
+                    self.runthread.resume()
                     logger.debug('{0} host resume'.format(key_name))
                 else:
                     logger.info('Script pause')
                     self.paused = True
-                    self.pause_event.clear()
+                    self.runthread.eventPause = True
                     logger.debug('{0} host pause'.format(key_name))
             elif key_name == stop_name and self.running and not self.recording:
                 logger.info('Script stop')
@@ -221,8 +222,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 self.isbrokenorfinish = True
                 if self.paused:
                     self.paused = False
-                self.pause_event.set()
-                self.exe_event.set()
+                self.runthread.resume()
                 logger.debug('{0} host stop'.format(key_name))
             elif key_name == stop_name and self.recording:
                 self.recordMethod()
@@ -276,6 +276,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                     text = '%d actions recorded' % self.actioncount
                     logger.debug('Recorded %s' % event)
                     self.tnumrd.setText(text)
+        logger.debug('Initialize at thread ' + str(threading.currentThread()))
         Recorder.setuphook()
         Recorder.set_callback(on_record_event)
         Recorder.set_interval(self.mouse_move_interval_ms.value())
@@ -327,7 +328,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             self.isbrokenorfinish = True
             if self.paused:
                 self.paused = False
-            self.pause_event.set()
+            self.runthread.resume()
         event.accept()
 
     def loadconfig(self):
@@ -444,24 +445,52 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         logger.info('Script start')
         logger.debug('Script start by btn')
         self.textlog.clear()
-        self.runthread = RunScriptClass(self, self.pause_event, self.exe_event)
+        self.runthread = RunScriptClass(self)
         self.runthread.start()
         self.isbrokenorfinish = False
 
 
-class RunScriptClass(threading.Thread):
+class RunScriptClass(QThread):
+    logSignal = Signal(str)
+    tnumrdSignal = Signal(str)
+    btnSignal = Signal(bool)
 
-    def __init__(self, frame: UIFunc, pause_event: threading.Event, exe_event: threading.Event):
+    def __init__(self, frame: UIFunc):
+        super().__init__()
+        logger.debug('Thread created at thread' + str(threading.currentThread()))
         self.frame = frame
-        self.pause_event = pause_event  # UI pause event
-        self.pause_event.set()
-        self.exe_event = exe_event  # For sleep method during execution
-        self.exe_event.set()
-        super(RunScriptClass, self).__init__()
+        self.eventPause = False
+
+        # 更新控件的槽函数
+        self.logSignal.connect(frame.textlog.append)
+        self.tnumrdSignal.connect(frame.tnumrd.setText)
+        self.btnSignal.connect(frame.btrun.setEnabled)
+        self.btnSignal.connect(frame.btrecord.setEnabled)
+
+    def pause(self):
+        mutex.lock()
+        cond.wait(mutex)
+        mutex.unlock()
+
+    def sleep(self, msecs: int):
+        mutex.lock()
+        cond.wait(mutex, QDeadlineTimer(int(msecs)))
+        mutex.unlock()
+
+    def resume(self):
+        self.eventPause = False
+        mutex.lock()
+        cond.wakeAll()
+        mutex.unlock()
+
+    def wait_if_pause(self):
+        if self.eventPause:
+            self.pause()
+        else:
+            self.resume()
 
     @logger.catch
     def run(self):
-
         status = self.frame.tnumrd.text()
         if self.frame.running or self.frame.recording:
             return
@@ -471,34 +500,34 @@ class RunScriptClass(threading.Thread):
 
         script_path = self.frame.get_script_path()
         if not script_path:
-            self.frame.tnumrd.setText('script not found, please self.record first!')
+            self.tnumrdSignal.emit('script not found, please self.record first!')
             logger.warning('Script not found, please record first!')
             return
 
         self.frame.running = True
 
-        self.frame.btrun.setEnabled(False)
-        self.frame.btrecord.setEnabled(False)
+        self.btnSignal.emit(False)
         try:
             self.running_text = '%s running..' % script_path.split('/')[-1].split('\\')[-1]
-            self.frame.tnumrd.setText(self.running_text)
+            self.tnumrdSignal.emit(self.running_text)
             logger.info('%s running..' % script_path.split('/')[-1].split('\\')[-1])
 
             # 解析脚本，返回事件集合与扩展类对象
             logger.debug('Parse script..')
             try:
-                events, module_name, labeldict = RunScriptClass.parsescript(script_path, speed=self.frame.execute_speed.value())
+                events, module_name, labeldict = RunScriptClass.parsescript(script_path,
+                                                                            speed=self.frame.execute_speed.value())
             except Exception as e:
                 logger.error(e)
-                self.frame.textlog.append('==============\nAn error occurred while parsing script')
-                self.frame.textlog.append(str(e))
-                self.frame.textlog.append('==============')
+                self.logSignal.emit('==============\nAn error occurred while parsing script')
+                self.logSignal.emit(str(e))
+                self.logSignal.emit('==============')
             extension = RunScriptClass.getextension(
                 module_name if module_name is not None else self.frame.choice_extension.currentText(),
                 runtimes=self.frame.stimes.value(),
                 speed=self.frame.execute_speed.value(),
                 thd=self
-                )
+            )
 
             self.j = 0
             nointerrupt = True
@@ -511,11 +540,12 @@ class RunScriptClass(threading.Thread):
                 if current_status in ['broken', 'finished']:
                     self.frame.running = False
                     break
-                self.frame.tnumrd.setText('{0}... Looptimes [{1}/{2}]'.format(
+                self.tnumrdSignal.emit('{0}... Looptimes [{1}/{2}]'.format(
                     self.running_text, self.j + 1, extension.runtimes))
                 try:
                     if extension.onbeforeeachloop(self.j):
-                        nointerrupt = nointerrupt and RunScriptClass.run_script_once(events, extension, thd=self, labeldict=labeldict)
+                        nointerrupt = nointerrupt and RunScriptClass.run_script_once(events, extension, thd=self,
+                                                                                     labeldict=labeldict)
                     else:
                         nointerrupt = True
                     extension.onaftereachloop(self.j)
@@ -530,7 +560,7 @@ class RunScriptClass(threading.Thread):
             extension.onendp()
             self.frame.playtune('end.wav')
             if nointerrupt:
-                self.frame.tnumrd.setText('finished')
+                self.tnumrdSignal.emit('finished')
                 logger.info('Script run finish')
             else:
                 logger.info('Script run interrupted')
@@ -539,14 +569,13 @@ class RunScriptClass(threading.Thread):
         except Exception as e:
             logger.error('Run error: {0}'.format(e))
             traceback.print_exc()
-            self.frame.textlog.append('==============\nAn error occurred during runtime')
-            self.frame.textlog.append(str(e))
-            self.frame.textlog.append('==============')
-            self.frame.tnumrd.setText('failed')
+            self.logSignal.emit('==============\nAn error occurred during runtime')
+            self.logSignal.emit(str(e))
+            self.logSignal.emit('==============')
+            self.logSignal.emit('failed')
             self.frame.running = False
         finally:
-            self.frame.btrun.setEnabled(True)
-            self.frame.btrecord.setEnabled(True)
+            self.btnSignal.emit(True)
 
     # 获取扩展实例
     @classmethod
@@ -669,10 +698,10 @@ class RunScriptClass(threading.Thread):
                 if thd.frame.isbrokenorfinish:
                     logger.info('Broken at [%d/%d]' % (i, steps))
                     return False
-                thd.pause_event.wait()
+                thd.wait_if_pause()
                 logger.trace(
                     '%s  [%d/%d %d/%d] %d%%' % (thd.running_text, i + 1, steps, thd.j + 1, extension.runtimes, extension.speed))
-                thd.frame.textlog.append('{0} [{1}/{2}]'.format(
+                thd.logSignal.emit('{0} [{1}/{2}]'.format(
                             events[i].summarystr(), i + 1, steps))
 
             event = events[i]

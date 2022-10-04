@@ -25,9 +25,7 @@ class Event(metaclass=ABCMeta):
     # 延时
     def sleep(self, thd=None):
         if thd:
-            thd.exe_event.clear()
-            thd.exe_event.wait(timeout=self.delay / 1000.0)
-            thd.exe_event.set()
+            thd.sleep(self.delay)
         else:
             time.sleep(self.delay / 1000.0)
 

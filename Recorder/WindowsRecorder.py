@@ -25,6 +25,13 @@ MyMouseEvent = collections.namedtuple("MyMouseEvent", ["MessageName"])
 record_signals = globalv.RecordSignal()
 
 
+# def threadwrapper(func):
+#     def wrapper(*args):
+#         threading.Thread(target=func, args=args).start()
+#
+#     return wrapper
+
+
 def on_mouse_event(event):
     # print('MessageName:',event.MessageName)  #事件名称
     # print('Message:',event.Message)          #windows消息常量
@@ -131,6 +138,7 @@ def mouse_handler(msg, x, y, data, flags, time, hwnd, window_name):
         return True
 
 
+# @threadwrapper
 def setuphook(commandline=False):
     hm = pyWinhook.HookManager()
     if not commandline:
@@ -138,3 +146,5 @@ def setuphook(commandline=False):
         cpyHook.cSetHook(HookConstants.WH_MOUSE_LL, mouse_handler)
     hm.KeyAll = on_keyboard_event
     hm.HookKeyboard()
+    # Wait Forever
+    # pythoncom.PumpMessages()
