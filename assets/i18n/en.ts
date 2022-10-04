@@ -2,6 +2,39 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en">
 <context>
+    <name>Dialog</name>
+    <message>
+        <location filename="UIFileDialogView.ui" line="14"/>
+        <source>File Manage</source>
+        <translatorcomment>File Manage</translatorcomment>
+        <translation type="unfinished">File Manage</translation>
+    </message>
+    <message>
+        <location filename="UIFileDialogView.ui" line="33"/>
+        <source>file name</source>
+        <translatorcomment>file name</translatorcomment>
+        <translation type="unfinished">file name</translation>
+    </message>
+    <message>
+        <location filename="UIFileDialogView.ui" line="59"/>
+        <source>choice</source>
+        <translatorcomment>Choice</translatorcomment>
+        <translation type="unfinished">Choice</translation>
+    </message>
+    <message>
+        <location filename="UIFileDialogView.ui" line="66"/>
+        <source>edit</source>
+        <translatorcomment>Edit</translatorcomment>
+        <translation type="unfinished">Edit</translation>
+    </message>
+    <message>
+        <location filename="UIFileDialogView.ui" line="73"/>
+        <source>rename</source>
+        <translatorcomment>Rename</translatorcomment>
+        <translation type="unfinished">Rename</translation>
+    </message>
+</context>
+<context>
     <name>UIView</name>
     <message>
         <location filename="UIView.ui" line="14"/>
