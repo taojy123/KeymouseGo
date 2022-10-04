@@ -1,9 +1,9 @@
 <div align="center">
 
-# KeymouseGo v5.1
+# KeymouseGo
 
 <br>
-<img src="../Preview.png" width="50%" height="50%" />
+<img src="Preview.png" width="50%" height="50%" />
 <div>
     <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-blueviolet">
 </div>
@@ -14,7 +14,7 @@
 </div>
 <br>
 
-[简体中文](../README.md) | [English](README.English.md)
+[简体中文](README.md) | [English](README_en-US.md)
 
 </div>
 
@@ -30,7 +30,7 @@ Usage:
 
 # Table of content
 
-- [KeymouseGo v5.1](#keymousego-v51)
+- [KeymouseGo](#keymousego)
 - [Table of content](#table-of-content)
 - [Installation](#installation)
     - [Bundle with source code](#bundle-with-source-code)

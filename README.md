@@ -1,6 +1,6 @@
 <div align="center">
 
-# KeymouseGo v5.1
+# KeymouseGo
 
 <br>
 <img src="Preview.png" width="50%" height="50%" />
@@ -16,7 +16,7 @@
 
 <br>
 
-[简体中文](README.md) | [English](readme/README.English.md)
+[简体中文](README.md) | [English](README_en-US.md)
 
 </div>
 
