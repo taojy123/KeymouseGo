@@ -472,9 +472,9 @@ class RunScriptClass(QThread):
         cond.wait(mutex)
         mutex.unlock()
 
-    def sleep(self, msecs):
+    def sleep(self, msecs: int):
         mutex.lock()
-        cond.wait(mutex, QDeadlineTimer(msecs))
+        cond.wait(mutex, QDeadlineTimer(int(msecs)))
         mutex.unlock()
 
     def resume(self):
