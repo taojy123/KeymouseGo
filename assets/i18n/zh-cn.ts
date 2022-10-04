@@ -2,6 +2,39 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="zh_CN">
 <context>
+    <name>Dialog</name>
+    <message>
+        <location filename="UIFileDialogView.ui" line="14"/>
+        <source>File Manage</source>
+        <translatorcomment>文件管理</translatorcomment>
+        <translation type="unfinished">文件管理</translation>
+    </message>
+    <message>
+        <location filename="UIFileDialogView.ui" line="33"/>
+        <source>file name</source>
+        <translatorcomment>文件名称</translatorcomment>
+        <translation type="unfinished">文件名称</translation>
+    </message>
+    <message>
+        <location filename="UIFileDialogView.ui" line="59"/>
+        <source>choice</source>
+        <translatorcomment>选择文件</translatorcomment>
+        <translation type="unfinished">选择文件</translation>
+    </message>
+    <message>
+        <location filename="UIFileDialogView.ui" line="66"/>
+        <source>edit</source>
+        <translatorcomment>编辑文件</translatorcomment>
+        <translation type="unfinished">编辑文件</translation>
+    </message>
+    <message>
+        <location filename="UIFileDialogView.ui" line="73"/>
+        <source>rename</source>
+        <translatorcomment>重命名</translatorcomment>
+        <translation type="unfinished">重命名</translation>
+    </message>
+</context>
+<context>
     <name>UIView</name>
     <message>
         <location filename="UIView.ui" line="14"/>

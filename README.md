@@ -1,15 +1,29 @@
-# KeymouseGo v5.1
+<div align="center">
+
+# KeymouseGo
+
+<br>
+<img src="Preview.png" width="50%" height="50%" />
+
+<div>
+    <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-blueviolet">
+</div>
+<div>
+    <img alt="license" src="https://img.shields.io/github/license/taojy123/KeymouseGo">
+    <img alt="language" src="https://img.shields.io/badge/python-%3E%3D%203.7-green">
+    <img alt="stars" src="https://img.shields.io/github/stars/taojy123/KeymouseGo?style=social">
+</div>
+
+<br>
+
+[简体中文](README.md) | [English](README_en-US.md)
+
+</div>
 
 功能：记录用户的鼠标键盘操作，通过触发按钮自动执行之前记录的操作，可设定执行的次数，可以理解为 `精简绿色版` 的 `按键精灵`。
 
 用途：在进行某些操作简单、单调重复的工作时，使用本软件就可以很省力了。自己只要做一遍，然后接下来就让电脑来做。
 
-![image](Preview.png)
-
-# Readme.md
-
-+ [简体中文](https://github.com/taojy123/KeymouseGo/blob/master/README.md)
-+ [English](https://github.com/taojy123/KeymouseGo/blob/master/readme/README.English.md)
 
 # 目录
 
