@@ -114,7 +114,7 @@ if __name__ == '__main__':
     logger.debug(sys.argv)
     if len(sys.argv) > 1:
         parser = argparse.ArgumentParser()
-        parser.add_argument('sctipts',
+        parser.add_argument('scripts',
                             help='Path for the scripts',
                             type=str,
                             nargs='+'
@@ -139,7 +139,7 @@ if __name__ == '__main__':
         if args['speed'] <= 0:
             logger.warning('Unsupported speed')
         else:
-            single_run(args['sctipts'],
+            single_run(args['scripts'],
                        run_times=args['runtimes'],
                        speed=args['speed'],
                        module_name=args['module']

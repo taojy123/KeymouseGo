@@ -5,7 +5,7 @@ import subprocess
 from PySide2.QtWidgets import QDialog, QFileDialog, QInputDialog
 from PySide2.QtWidgets import QMainWindow, QMessageBox
 
-from UIFileManageDialogView import Ui_Dialog
+from UIFileDialogView import Ui_Dialog
 from UIFunc import scripts, scripts_map
 
 from KeymouseGo import to_abs_path
@@ -38,8 +38,10 @@ class FileDialog(Ui_Dialog):
     def choice_file(self):
         file = QFileDialog.getOpenFileName(self.main_window, "选择文件", dir=to_abs_path('scripts'), filter='*.txt')[0]
         file_name = re.split(r'\\|\/', file)[-1]
-        if file_name.strip() != '' and file_name is not None:
-            self.lineEdit.setText(file_name)
+        if file_name != '':
+            scripts_map['current_index'] = scripts_map[file_name]
+            if file_name.strip() != '' and file_name is not None:
+                self.lineEdit.setText(file_name)
 
 
     def edit_file(self):
