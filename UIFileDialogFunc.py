@@ -47,13 +47,13 @@ class FileDialog(Ui_Dialog):
 
 
     def edit_file(self):
-        # Mac打开文件防止以后需要
-        # if userPlatform == 'Darwin':
-        #     subprocess.call(['open', filename.get()])
-        user_paltform = platform.system()
+        user_platform = platform.system()
         try:
-            if user_paltform == 'Linux':
+            if user_platform == 'Linux':
                 subprocess.call(['xdg-open', os.path.join(self.path, self.lineEdit.text())])
+            elif user_platform == 'Darwin':
+                # mac
+                subprocess.call(['open', os.path.join(self.path, self.lineEdit.text())])
             else:
                 os.startfile(os.path.join(self.path, self.lineEdit.text()))
         except FileNotFoundError:
