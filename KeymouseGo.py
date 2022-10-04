@@ -13,7 +13,7 @@ import argparse
 from Event import ScriptEvent, ScreenWidth as SW, ScreenHeight as SH
 from loguru import logger
 
-from assets.plugins.ProcessException import BreakProcess, EndProcess
+from assets.plugins.ProcessException import *
 
 
 def add_lib_path(libpaths):

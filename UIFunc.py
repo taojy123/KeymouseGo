@@ -13,8 +13,7 @@ from importlib.machinery import SourceFileLoader
 
 from PySide2.QtGui import QTextCursor
 from qt_material import list_themes, QtStyleTools
-from PySide2.QtCore import QSettings, Qt, QUrl, Slot, Signal, QWaitCondition, QMutex, QThread, QDeadlineTimer, QObject
-from PySide2.QtCore import QTranslator, QCoreApplication
+from PySide2.QtCore import *
 from PySide2.QtWidgets import QMainWindow, QApplication
 from PySide2.QtMultimedia import QSoundEffect
 from loguru import logger
