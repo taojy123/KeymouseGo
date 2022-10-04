@@ -1,4 +1,22 @@
+<div align="center">
+
 # KeymouseGo v5.1
+
+<br>
+<img src="../Preview.png" width="50%" height="50%" />
+<div>
+    <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-blueviolet">
+</div>
+<div>
+    <img alt="license" src="https://img.shields.io/github/license/taojy123/KeymouseGo">
+    <img alt="language" src="https://img.shields.io/badge/python-%3E%3D%203.7-green">
+    <img alt="stars" src="https://img.shields.io/github/stars/taojy123/KeymouseGo?style=social">
+</div>
+<br>
+
+[简体中文](../README.md) | [English](README.English.md)
+
+</div>
 
 Features:
   + Record mouse/keyboard operations
@@ -9,23 +27,22 @@ Usage:
   + Free users away from works that are simple and repetitive
   + You can record the necessary operations once and left the rest of works to computer
 
-![image](../Preview.png)
-
-# Readme.md
-
-+ [简体中文](https://github.com/taojy123/KeymouseGo/blob/master/README.md)
-+ [English](https://github.com/taojy123/KeymouseGo/blob/master/readme/README.English.md)
 
 # Table of content
 
-+ [Installation](#Installation)
-+ [Usage](#Usage)
-  + [Basic operation](#Basic-operation)
-  + [Tips](#Tips)
-  + [Grammar of scripts](#Grammar-of-scripts)
-  + [Extensions](#Extensions)
-+ [About me](#About-me)
-+ [Contributors](#Contributors)
+- [KeymouseGo v5.1](#keymousego-v51)
+- [Table of content](#table-of-content)
+- [Installation](#installation)
+    - [Bundle with source code](#bundle-with-source-code)
+- [Usage](#usage)
+  - [Basic operation](#basic-operation)
+    - [Desktop mode](#desktop-mode)
+    - [Command line mode](#command-line-mode)
+  - [Tips](#tips)
+  - [Grammar of scripts](#grammar-of-scripts)
+  - [Extensions](#extensions)
+- [About me](#about-me)
+- [Contributors](#contributors)
 
 # Installation
 
