@@ -304,13 +304,11 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             _app = QApplication.instance()
             _app.installTranslator(self.trans)
             self.retranslateUi(self)
-            scripts_map['choice_language'] = '简体中文'
         elif self.choice_language.currentText() == 'English':
             self.trans.load(get_assets_path('i18n', 'en'))
             _app = QApplication.instance()
             _app.installTranslator(self.trans)
             self.retranslateUi(self)
-            scripts_map['choice_language'] = 'English'
         self.retranslateUi(self)
 
     def onchangetheme(self):

@@ -33,6 +33,26 @@
         <translatorcomment>Rename</translatorcomment>
         <translation>Rename</translation>
     </message>
+    <message>
+        <source>FNF</source>
+        <translatorcomment>File not found</translatorcomment>
+        <translation>File not found</translation>
+    </message>
+    <message>
+        <source>PINFN</source>
+        <translatorcomment>Please input new file name</translatorcomment>
+        <translation>Please input new file name</translation>
+    </message>
+    <message>
+        <source>Success</source>
+        <translatorcomment>Success</translatorcomment>
+        <translation>Success</translation>
+    </message>
+    <message>
+        <source>FNCBEOS</source>
+        <translatorcomment>File name cannot be empty or space</translatorcomment>
+        <translation>File name cannot be empty or space</translation>
+    </message>
 </context>
 <context>
     <name>UIView</name>
@@ -146,6 +166,11 @@
         <location filename="UIView.ui" line="402"/>
         <source>...</source>
         <translation></translation>
+    </message>
+    <message>
+        <source>Finish</source>
+        <translatorcomment>Finish</translatorcomment>
+        <translation>Finish</translation>
     </message>
 </context>
 </TS>

@@ -33,6 +33,26 @@
         <translatorcomment>重命名</translatorcomment>
         <translation>重命名</translation>
     </message>
+    <message>
+        <source>FNF</source>
+        <translatorcomment>文件未被找到</translatorcomment>
+        <translation>文件未被找到</translation>
+    </message>
+    <message>
+        <source>PINFN</source>
+        <translatorcomment>请输入新文件名：</translatorcomment>
+        <translation>请输入新文件名：</translation>
+    </message>
+    <message>
+        <source>Success</source>
+        <translatorcomment>更新成功</translatorcomment>
+        <translation>更新成功</translation>
+    </message>
+    <message>
+        <source>FNCBEOS</source>
+        <translatorcomment>文件名不能未空或空格</translatorcomment>
+        <translation>文件名不能为空或空格</translation>
+    </message>
 </context>
 <context>
     <name>UIView</name>
@@ -146,6 +166,11 @@
         <location filename="UIView.ui" line="402"/>
         <source>...</source>
         <translation></translation>
+    </message>
+    <message>
+        <source>Finish</source>
+        <translatorcomment>结束录制</translatorcomment>
+        <translation>结束录制</translation>
     </message>
 </context>
 </TS>
