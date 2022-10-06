@@ -50,8 +50,8 @@
     <message>
         <location filename="UIView.ui" line="69"/>
         <source>Terminate</source>
-        <translatorcomment>终止录制/执行</translatorcomment>
-        <translation>终止录制/执行</translation>
+        <translatorcomment>终止录制</translatorcomment>
+        <translation>终止录制</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="76"/>
@@ -74,8 +74,8 @@
     <message>
         <location filename="UIView.ui" line="130"/>
         <source>Launch/Pause</source>
-        <translatorcomment>暂停执行</translatorcomment>
-        <translation>暂停执行</translation>
+        <translatorcomment>开始/暂停执行</translatorcomment>
+        <translation>开始/暂停执行</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="158"/>
