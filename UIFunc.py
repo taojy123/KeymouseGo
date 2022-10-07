@@ -160,7 +160,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
         # For better thread control
         self.runthread = None
-        self.isbrokenorfinish = True
+        self.is_broken_or_finish = True
 
         self.btrun.clicked.connect(self.OnBtrunButton)
         self.btrecord.clicked.connect(self.OnBtrecordButton)
@@ -202,7 +202,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 self.textlog.clear()
                 self.runthread = RunScriptClass(self)
                 self.runthread.start()
-                self.isbrokenorfinish = False
+                self.is_broken_or_finish = False
                 logger.debug('{0} host start'.format(key_name))
             elif key_name == start_name and self.running and not self.recording:
                 if self.paused:
@@ -218,7 +218,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             elif key_name == stop_name and self.running and not self.recording:
                 logger.info('Script stop')
                 self.tnumrd.setText('broken')
-                self.isbrokenorfinish = True
+                self.is_broken_or_finish = True
                 if self.paused:
                     self.paused = False
                 self.runthread.resume()
@@ -322,7 +322,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
     def closeEvent(self, event):
         self.config.sync()
         if self.running:
-            self.isbrokenorfinish = True
+            self.is_broken_or_finish = True
             if self.paused:
                 self.paused = False
             self.runthread.resume()
@@ -444,7 +444,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.textlog.clear()
         self.runthread = RunScriptClass(self)
         self.runthread.start()
-        self.isbrokenorfinish = False
+        self.is_broken_or_finish = False
 
 
 class RunScriptClass(QThread):
@@ -692,7 +692,7 @@ class RunScriptClass(QThread):
         i = 0
         while i < steps:
             if thd:
-                if thd.frame.isbrokenorfinish:
+                if thd.frame.is_broken_or_finish:
                     logger.info('Broken at [%d/%d]' % (i, steps))
                     return False
                 thd.wait_if_pause()
