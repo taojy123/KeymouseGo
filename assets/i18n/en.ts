@@ -172,5 +172,15 @@
         <translatorcomment>Finish</translatorcomment>
         <translation>Finish</translation>
     </message>
+    <message>
+        <source>Continue</source>
+        <translatorcomment>Continue</translatorcomment>
+        <translation>Continue</translation>
+    </message>
+    <message>
+        <source>Pause</source>
+        <translatorcomment>Pause</translatorcomment>
+        <translation>Pause</translation>
+    </message>
 </context>
 </TS>

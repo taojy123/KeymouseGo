@@ -172,5 +172,15 @@
         <translatorcomment>结束录制</translatorcomment>
         <translation>结束录制</translation>
     </message>
+    <message>
+        <source>Continue</source>
+        <translatorcomment>继续录制</translatorcomment>
+        <translation>继续录制</translation>
+    </message>
+    <message>
+        <source>Pause</source>
+        <translatorcomment>暂停录制</translatorcomment>
+        <translation>暂停录制</translation>
+    </message>
 </context>
 </TS>
