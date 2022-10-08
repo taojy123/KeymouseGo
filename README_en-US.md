@@ -137,8 +137,8 @@ chmod -R 770 ~/.qt_material
 [
  [3000, "EM", "mouse right down", ["0.05208%", "0.1852%"]],    // Press mouse right button at the relative coordinates `(0.05208, 0.1852)`(i.e. absolute coordinates `(100,200)`) after 3000ms
  [50,   "EM", "mouse right up",   ["0.05208%", "0.1852%"]],    // Release mouse right button at the coordinates after 50ms
- [1000, "EK", "key down",         (70, 'F', 0)],                                   // Press key 'f' after 1000ms
- [50,   "EK", "key up",           (70, 'F', 0)],                                   // Release key 'f' after 50ms
+ [1000, "EK", "key down",         [70, "F", 0]],                                   // Press key 'f' after 1000ms
+ [50,   "EK", "key up",           [70, "F", 0]],                                   // Release key 'f' after 50ms
  [100,  "EM", "mouse left down",  ["0.2604%", "0.4630%"]],      // Press mouse left button at the relative coordinates `(0.2604, 0.4630)`(i.e. absolute coordinates `(500,500)`) after 100ms
  [100,  "EM", "mouse move",       ["0.2604%", "0.5556%"]],       // Move mouse to the relative coordinates `(0.2604, 0.4630)`(i.e. absolute coordinates `(500,500)`) after 100ms
  [100,  "EM", "mouse left up",  ["0.3125%", "0.5556%"]],                   // Release mouse left button at the relative coordinates `(0.3125, 0.5556)`(i.e. absolute coordinates `(600,600)`) after 100ms
