@@ -59,6 +59,7 @@ def main():
     if ratio_w > 1 and ratio_h > 1:
         resize_layout(ui, ratio_w, ratio_h)
 
+    ui.setFixedSize(ui.width(), ui.height())
     ui.show()
     sys.exit(app.exec_())
 

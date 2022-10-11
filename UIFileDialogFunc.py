@@ -16,6 +16,7 @@ class FileDialog(Ui_Dialog):
     def __init__(self):
         self.dialog = QDialog()
         self.setupUi(self.dialog)
+        self.dialog.setFixedSize(self.dialog.width(), self.dialog.height())
         self.choice.clicked.connect(self.choice_file)
         self.edit.clicked.connect(self.edit_file)
         self.rename.clicked.connect(self.rename_file)
@@ -24,11 +25,6 @@ class FileDialog(Ui_Dialog):
         self.filename = scripts[scripts_map['current_index']]
         self.lineEdit.setText(self.filename)
         self.path = os.path.join(to_abs_path("scripts"))
-        i18n_tips = {
-            '简体中文': ['文件没有被找到', '请输入新文件名: ', '更新成功', '文件名不能为空或空格'], 
-            'English': ['File not found', 'Please input new name', 'Success', 'File name cannot be empty or space']
-            }
-        self.tips = i18n_tips[scripts_map['choice_language']]
         
         self.dialog.setWindowTitle(QCoreApplication.translate('Dialog', 'File Manage', None))
         self.file_name.setText(QCoreApplication.translate('Dialog', 'file name', None))
@@ -57,14 +53,14 @@ class FileDialog(Ui_Dialog):
             else:
                 os.startfile(os.path.join(self.path, self.lineEdit.text()))
         except FileNotFoundError:
-            QMessageBox().warning(self.main_window, "warning", self.tips[0])
+            QMessageBox().warning(self.main_window, "warning", QCoreApplication.translate('Dialog', 'FNF', None))
             self.lineEdit.setText('')
 
 
     def rename_file(self):
         new_file_name = str(QInputDialog.getText(self.main_window, 
                                                  QCoreApplication.translate('Dialog', 'rename', None), 
-                                                 self.tips[1])[0])
+                                                 QCoreApplication.translate('Dialog', 'PINFN', None))[0])
 
         if new_file_name != None and new_file_name.strip() != '':
             if not new_file_name.endswith('.txt'):
@@ -72,7 +68,7 @@ class FileDialog(Ui_Dialog):
 
             try:
                 os.rename(os.path.join(self.path, self.lineEdit.text()), os.path.join(self.path, new_file_name))
-                QMessageBox().information(self.main_window, 'info', self.tips[2])
+                QMessageBox().information(self.main_window, 'info', QCoreApplication.translate('Dialog', 'Success', None))
                 # 更新
                 filename = self.lineEdit.text()
                 index = scripts_map.get(filename)
@@ -81,9 +77,9 @@ class FileDialog(Ui_Dialog):
                 scripts[index] = new_file_name
                 self.lineEdit.setText(new_file_name)
             except FileNotFoundError:
-                QMessageBox.warning(self.main_window, 'warning', self.tips[0])
+                QMessageBox.warning(self.main_window, 'warning', QCoreApplication.translate('Dialog', 'FNF', None))
         else:
-            QMessageBox.warning(self.main_window, 'warning', self.tips[3])
+            QMessageBox.warning(self.main_window, 'warning', QCoreApplication.translate('Dialog', 'FNCBEOS', None))
 
 
     def show(self):
