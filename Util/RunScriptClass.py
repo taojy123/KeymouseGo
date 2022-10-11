@@ -124,7 +124,7 @@ class RunScriptClass(QThread):
         i = 0
         while i < steps:
             if thd:
-                if thd.frame.isbrokenorfinish:
+                if thd.frame.is_broken_or_finish:
                     logger.info('Broken at [%d/%d]' % (i, steps))
                     return False
                 thd.wait_if_pause()
