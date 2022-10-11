@@ -16,6 +16,7 @@ class FileDialog(Ui_Dialog):
     def __init__(self):
         self.dialog = QDialog()
         self.setupUi(self.dialog)
+        self.dialog.setFixedSize(self.dialog.width(), self.dialog.height())
         self.choice.clicked.connect(self.choice_file)
         self.edit.clicked.connect(self.edit_file)
         self.rename.clicked.connect(self.rename_file)
