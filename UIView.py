@@ -30,39 +30,44 @@ class Ui_UIView(object):
         self.gridLayout_3 = QGridLayout(self.groupBox)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.choice_stop = QComboBox(self.groupBox)
-        self.choice_stop.setObjectName(u"choice_stop")
+        self.choice_start = QComboBox(self.groupBox)
+        self.choice_start.setObjectName(u"choice_start")
         sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.choice_start.sizePolicy().hasHeightForWidth())
+        self.choice_start.setSizePolicy(sizePolicy)
+
+        self.gridLayout_3.addWidget(self.choice_start, 0, 1, 1, 1)
+
+        self.choice_language = QComboBox(self.groupBox)
+        self.choice_language.setObjectName(u"choice_language")
+        sizePolicy.setHeightForWidth(self.choice_language.sizePolicy().hasHeightForWidth())
+        self.choice_language.setSizePolicy(sizePolicy)
+
+        self.gridLayout_3.addWidget(self.choice_language, 3, 1, 1, 1)
+
+        self.choice_stop = QComboBox(self.groupBox)
+        self.choice_stop.setObjectName(u"choice_stop")
         sizePolicy.setHeightForWidth(self.choice_stop.sizePolicy().hasHeightForWidth())
         self.choice_stop.setSizePolicy(sizePolicy)
 
         self.gridLayout_3.addWidget(self.choice_stop, 2, 1, 1, 1)
-
-        self.choice_extension = QComboBox(self.groupBox)
-        self.choice_extension.setObjectName(u"choice_extension")
-        sizePolicy.setHeightForWidth(self.choice_extension.sizePolicy().hasHeightForWidth())
-        self.choice_extension.setSizePolicy(sizePolicy)
-
-        self.gridLayout_3.addWidget(self.choice_extension, 4, 1, 1, 1)
-
-        self.label_stop = QLabel(self.groupBox)
-        self.label_stop.setObjectName(u"label_stop")
-
-        self.gridLayout_3.addWidget(self.label_stop, 2, 0, 1, 1)
 
         self.label_language = QLabel(self.groupBox)
         self.label_language.setObjectName(u"label_language")
 
         self.gridLayout_3.addWidget(self.label_language, 3, 0, 1, 1)
 
-        self.choice_start = QComboBox(self.groupBox)
-        self.choice_start.setObjectName(u"choice_start")
-        sizePolicy.setHeightForWidth(self.choice_start.sizePolicy().hasHeightForWidth())
-        self.choice_start.setSizePolicy(sizePolicy)
+        self.label_start_key = QLabel(self.groupBox)
+        self.label_start_key.setObjectName(u"label_start_key")
 
-        self.gridLayout_3.addWidget(self.choice_start, 0, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.label_start_key, 0, 0, 1, 1)
+
+        self.label_stop = QLabel(self.groupBox)
+        self.label_stop.setObjectName(u"label_stop")
+
+        self.gridLayout_3.addWidget(self.label_stop, 2, 0, 1, 1)
 
         self.choice_record = QComboBox(self.groupBox)
         self.choice_record.setObjectName(u"choice_record")
@@ -75,23 +80,6 @@ class Ui_UIView(object):
         self.label_record.setObjectName(u"label_record")
 
         self.gridLayout_3.addWidget(self.label_record, 1, 0, 1, 1)
-
-        self.choice_language = QComboBox(self.groupBox)
-        self.choice_language.setObjectName(u"choice_language")
-        sizePolicy.setHeightForWidth(self.choice_language.sizePolicy().hasHeightForWidth())
-        self.choice_language.setSizePolicy(sizePolicy)
-
-        self.gridLayout_3.addWidget(self.choice_language, 3, 1, 1, 1)
-
-        self.label_extension = QLabel(self.groupBox)
-        self.label_extension.setObjectName(u"label_extension")
-
-        self.gridLayout_3.addWidget(self.label_extension, 4, 0, 1, 1)
-
-        self.label_start_key = QLabel(self.groupBox)
-        self.label_start_key.setObjectName(u"label_start_key")
-
-        self.gridLayout_3.addWidget(self.label_start_key, 0, 0, 1, 1)
 
         self.horizontalLayoutWidget = QWidget(self.centralwidget)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
@@ -124,7 +112,7 @@ class Ui_UIView(object):
 
         self.verticalLayoutWidget = QWidget(self.centralwidget)
         self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
-        self.verticalLayoutWidget.setGeometry(QRect(10, 260, 631, 161))
+        self.verticalLayoutWidget.setGeometry(QRect(10, 260, 631, 216))
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -265,12 +253,11 @@ class Ui_UIView(object):
     def retranslateUi(self, UIView):
         UIView.setWindowTitle(QCoreApplication.translate("UIView", u"KeymomuseGo v5.1", None))
         self.groupBox.setTitle(QCoreApplication.translate("UIView", u"Hotkeys", None))
-        self.label_stop.setText(QCoreApplication.translate("UIView", u"Terminate", None))
-        self.label_language.setText(QCoreApplication.translate("UIView", u"Language", None))
         self.choice_start.setCurrentText("")
-        self.label_record.setText(QCoreApplication.translate("UIView", u"Record/Pause", None))
-        self.label_extension.setText(QCoreApplication.translate("UIView", u"Extension", None))
+        self.label_language.setText(QCoreApplication.translate("UIView", u"Language", None))
         self.label_start_key.setText(QCoreApplication.translate("UIView", u"Launch/Pause", None))
+        self.label_stop.setText(QCoreApplication.translate("UIView", u"Terminate", None))
+        self.label_record.setText(QCoreApplication.translate("UIView", u"Record/Pause", None))
         self.btrecord.setText(QCoreApplication.translate("UIView", u"Record", None))
         self.btrun.setText(QCoreApplication.translate("UIView", u"Launch", None))
         self.btpauserecord.setText(QCoreApplication.translate("UIView", u"Pause Record", None))
