@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>652</width>
-    <height>476</height>
+    <height>444</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
       <x>370</x>
       <y>10</y>
       <width>271</width>
-      <height>191</height>
+      <height>151</height>
      </rect>
     </property>
     <property name="title">
@@ -120,7 +120,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>210</y>
+      <y>170</y>
       <width>361</width>
       <height>41</height>
      </rect>
@@ -177,9 +177,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>260</y>
+      <y>210</y>
       <width>631</width>
-      <height>216</height>
+      <height>181</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -212,7 +212,7 @@
     <property name="geometry">
      <rect>
       <x>420</x>
-      <y>220</y>
+      <y>180</y>
       <width>221</width>
       <height>31</height>
      </rect>
@@ -240,7 +240,7 @@
       <x>10</x>
       <y>10</y>
       <width>348</width>
-      <height>191</height>
+      <height>151</height>
      </rect>
     </property>
     <property name="title">
@@ -259,7 +259,7 @@
      <property name="bottomMargin">
       <number>0</number>
      </property>
-     <item row="4" column="1">
+     <item row="3" column="1">
       <widget class="QComboBox" name="choice_theme">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -277,49 +277,9 @@
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QLabel" name="label_execute_speed">
-       <property name="text">
-        <string>Running speed(%)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_run_times">
-       <property name="text">
-        <string>Run times</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
       <widget class="QLabel" name="label_theme">
        <property name="text">
         <string>Theme</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_script">
-       <property name="text">
-        <string>Script</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QSpinBox" name="execute_speed">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimum">
-        <number>20</number>
-       </property>
-       <property name="maximum">
-        <number>500</number>
-       </property>
-       <property name="value">
-        <number>100</number>
        </property>
       </widget>
      </item>
@@ -339,22 +299,6 @@
        </property>
        <property name="value">
         <number>100</number>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QSpinBox" name="stimes">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="maximum">
-        <number>99999</number>
-       </property>
-       <property name="value">
-        <number>1</number>
        </property>
       </widget>
      </item>
@@ -387,6 +331,36 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_script">
+       <property name="text">
+        <string>Script</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_run_times">
+       <property name="text">
+        <string>Run times</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QSpinBox" name="stimes">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximum">
+        <number>99999</number>
+       </property>
+       <property name="value">
+        <number>1</number>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>

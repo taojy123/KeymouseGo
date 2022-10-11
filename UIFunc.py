@@ -109,7 +109,6 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.choice_record.setCurrentIndex(int(self.config.value("Config/RecordHotKeyIndex")))
         self.stimes.setValue(int(self.config.value("Config/LoopTimes")))
         self.mouse_move_interval_ms.setValue(int(self.config.value("Config/Precision")))
-        self.execute_speed.setValue(int(self.config.value("Config/ExecuteSpeed")))
         self.choice_theme.setCurrentText(self.config.value("Config/Theme"))
         if self.config.value('Config/Script') is not None and self.config.value('Config/Script') in self.scripts:
             self.choice_script.setCurrentText(self.config.value('Config/Script'))
@@ -117,7 +116,6 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.choice_stop.currentIndexChanged.connect(self.onconfigchange)
         self.choice_record.currentIndexChanged.connect(self.onconfigchange)
         self.stimes.valueChanged.connect(self.onconfigchange)
-        self.execute_speed.valueChanged.connect(self.onconfigchange)
         self.mouse_move_interval_ms.valueChanged.connect(self.onconfigchange)
         self.mouse_move_interval_ms.valueChanged.connect(Recorder.set_interval)
         self.choice_theme.currentTextChanged.connect(self.onchangetheme)
@@ -271,7 +269,6 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.config.setValue("Config/RecordHotKeyIndex", self.choice_record.currentIndex())
         self.config.setValue("Config/LoopTimes", self.stimes.value())
         self.config.setValue("Config/Precision", self.mouse_move_interval_ms.value())
-        self.config.setValue("Config/ExecuteSpeed", self.execute_speed.value())
         self.config.setValue("Config/Theme", self.choice_theme.currentText())
         self.config.setValue("Config/Script", self.choice_script.currentText())
 
@@ -316,7 +313,6 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                         'RecordHotKeyIndex=7\n'
                         'LoopTimes=1\n'
                         'Precision=200\n'
-                        'ExecuteSpeed=100\n'
                         'Language=zh-cn\n'
                         'Theme=light_cyan_500.xml\n')
         return QSettings(to_abs_path('config.ini'), QSettings.IniFormat)

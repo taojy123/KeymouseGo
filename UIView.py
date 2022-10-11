@@ -18,7 +18,7 @@ class Ui_UIView(object):
     def setupUi(self, UIView):
         if not UIView.objectName():
             UIView.setObjectName(u"UIView")
-        UIView.resize(652, 476)
+        UIView.resize(652, 444)
         icon = QIcon()
         icon.addFile(u":/pic/Mondrian.png", QSize(), QIcon.Normal, QIcon.Off)
         UIView.setWindowIcon(icon)
@@ -26,7 +26,7 @@ class Ui_UIView(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.groupBox = QGroupBox(self.centralwidget)
         self.groupBox.setObjectName(u"groupBox")
-        self.groupBox.setGeometry(QRect(370, 10, 271, 191))
+        self.groupBox.setGeometry(QRect(370, 10, 271, 151))
         self.gridLayout_3 = QGridLayout(self.groupBox)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -83,7 +83,7 @@ class Ui_UIView(object):
 
         self.horizontalLayoutWidget = QWidget(self.centralwidget)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
-        self.horizontalLayoutWidget.setGeometry(QRect(10, 210, 361, 41))
+        self.horizontalLayoutWidget.setGeometry(QRect(10, 170, 361, 41))
         self.horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setSizeConstraint(QLayout.SetDefaultConstraint)
@@ -112,7 +112,7 @@ class Ui_UIView(object):
 
         self.verticalLayoutWidget = QWidget(self.centralwidget)
         self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
-        self.verticalLayoutWidget.setGeometry(QRect(10, 260, 631, 216))
+        self.verticalLayoutWidget.setGeometry(QRect(10, 210, 631, 181))
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -132,7 +132,7 @@ class Ui_UIView(object):
 
         self.formLayoutWidget_3 = QWidget(self.centralwidget)
         self.formLayoutWidget_3.setObjectName(u"formLayoutWidget_3")
-        self.formLayoutWidget_3.setGeometry(QRect(420, 220, 221, 31))
+        self.formLayoutWidget_3.setGeometry(QRect(420, 180, 221, 31))
         self.formLayout_3 = QFormLayout(self.formLayoutWidget_3)
         self.formLayout_3.setObjectName(u"formLayout_3")
         self.formLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -149,7 +149,7 @@ class Ui_UIView(object):
 
         self.groupBox_2 = QGroupBox(self.centralwidget)
         self.groupBox_2.setObjectName(u"groupBox_2")
-        self.groupBox_2.setGeometry(QRect(10, 10, 348, 191))
+        self.groupBox_2.setGeometry(QRect(10, 10, 348, 151))
         self.gridLayout_4 = QGridLayout(self.groupBox_2)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
         self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
@@ -158,42 +158,17 @@ class Ui_UIView(object):
         sizePolicy.setHeightForWidth(self.choice_theme.sizePolicy().hasHeightForWidth())
         self.choice_theme.setSizePolicy(sizePolicy)
 
-        self.gridLayout_4.addWidget(self.choice_theme, 4, 1, 1, 1)
+        self.gridLayout_4.addWidget(self.choice_theme, 3, 1, 1, 1)
 
         self.label_execute_interval = QLabel(self.groupBox_2)
         self.label_execute_interval.setObjectName(u"label_execute_interval")
 
         self.gridLayout_4.addWidget(self.label_execute_interval, 2, 0, 1, 1)
 
-        self.label_execute_speed = QLabel(self.groupBox_2)
-        self.label_execute_speed.setObjectName(u"label_execute_speed")
-
-        self.gridLayout_4.addWidget(self.label_execute_speed, 3, 0, 1, 1)
-
-        self.label_run_times = QLabel(self.groupBox_2)
-        self.label_run_times.setObjectName(u"label_run_times")
-
-        self.gridLayout_4.addWidget(self.label_run_times, 1, 0, 1, 1)
-
         self.label_theme = QLabel(self.groupBox_2)
         self.label_theme.setObjectName(u"label_theme")
 
-        self.gridLayout_4.addWidget(self.label_theme, 4, 0, 1, 1)
-
-        self.label_script = QLabel(self.groupBox_2)
-        self.label_script.setObjectName(u"label_script")
-
-        self.gridLayout_4.addWidget(self.label_script, 0, 0, 1, 1)
-
-        self.execute_speed = QSpinBox(self.groupBox_2)
-        self.execute_speed.setObjectName(u"execute_speed")
-        sizePolicy.setHeightForWidth(self.execute_speed.sizePolicy().hasHeightForWidth())
-        self.execute_speed.setSizePolicy(sizePolicy)
-        self.execute_speed.setMinimum(20)
-        self.execute_speed.setMaximum(500)
-        self.execute_speed.setValue(100)
-
-        self.gridLayout_4.addWidget(self.execute_speed, 3, 1, 1, 1)
+        self.gridLayout_4.addWidget(self.label_theme, 3, 0, 1, 1)
 
         self.mouse_move_interval_ms = QSpinBox(self.groupBox_2)
         self.mouse_move_interval_ms.setObjectName(u"mouse_move_interval_ms")
@@ -204,15 +179,6 @@ class Ui_UIView(object):
         self.mouse_move_interval_ms.setValue(100)
 
         self.gridLayout_4.addWidget(self.mouse_move_interval_ms, 2, 1, 1, 1)
-
-        self.stimes = QSpinBox(self.groupBox_2)
-        self.stimes.setObjectName(u"stimes")
-        sizePolicy.setHeightForWidth(self.stimes.sizePolicy().hasHeightForWidth())
-        self.stimes.setSizePolicy(sizePolicy)
-        self.stimes.setMaximum(99999)
-        self.stimes.setValue(1)
-
-        self.gridLayout_4.addWidget(self.stimes, 1, 1, 1, 1)
 
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
@@ -235,6 +201,25 @@ class Ui_UIView(object):
         self.gridLayout.setColumnStretch(1, 1)
 
         self.gridLayout_4.addLayout(self.gridLayout, 0, 1, 1, 1)
+
+        self.label_script = QLabel(self.groupBox_2)
+        self.label_script.setObjectName(u"label_script")
+
+        self.gridLayout_4.addWidget(self.label_script, 0, 0, 1, 1)
+
+        self.label_run_times = QLabel(self.groupBox_2)
+        self.label_run_times.setObjectName(u"label_run_times")
+
+        self.gridLayout_4.addWidget(self.label_run_times, 1, 0, 1, 1)
+
+        self.stimes = QSpinBox(self.groupBox_2)
+        self.stimes.setObjectName(u"stimes")
+        sizePolicy.setHeightForWidth(self.stimes.sizePolicy().hasHeightForWidth())
+        self.stimes.setSizePolicy(sizePolicy)
+        self.stimes.setMaximum(99999)
+        self.stimes.setValue(1)
+
+        self.gridLayout_4.addWidget(self.stimes, 1, 1, 1, 1)
 
         UIView.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(UIView)
@@ -265,10 +250,9 @@ class Ui_UIView(object):
         self.label_volume.setText(QCoreApplication.translate("UIView", u"Volume", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("UIView", u"Config", None))
         self.label_execute_interval.setText(QCoreApplication.translate("UIView", u"Mouse precision", None))
-        self.label_execute_speed.setText(QCoreApplication.translate("UIView", u"Running speed(%)", None))
-        self.label_run_times.setText(QCoreApplication.translate("UIView", u"Run times", None))
         self.label_theme.setText(QCoreApplication.translate("UIView", u"Theme", None))
-        self.label_script.setText(QCoreApplication.translate("UIView", u"Script", None))
         self.bt_open_script_files.setText(QCoreApplication.translate("UIView", u"...", None))
+        self.label_script.setText(QCoreApplication.translate("UIView", u"Script", None))
+        self.label_run_times.setText(QCoreApplication.translate("UIView", u"Run times", None))
     # retranslateUi
 
