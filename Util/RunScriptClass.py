@@ -133,6 +133,8 @@ class RunScriptClass(QThread):
                 thd.logSignal.emit('{0} [{1}/{2}]'.format(
                             events[i].summarystr(), i + 1, steps))
             event = events[i]
+            if thd is None:
+                logger.debug(event)
             event.execute(thd)
             i = i + 1
         return True
