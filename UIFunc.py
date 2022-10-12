@@ -1,6 +1,6 @@
 # -*- encoding:utf-8 -*-
 import datetime
-import json
+import json5
 import os
 import sys
 import threading
@@ -243,12 +243,9 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             # 录制事件
             if not(not self.recording or self.running or self.pauserecord):
                 if event.event_type == 'EM' and not flag_multiplemonitor:
-                    record = [event.delay, event.event_type, event.message]
                     tx, ty = event.action
-                    record.append(['{0}%'.format(tx), '{0}%'.format(ty)])
-                else:
-                    record = [event.delay, event.event_type, event.message, event.action]
-                self.record.append(record)
+                    event.action = ['{0}%'.format(tx), '{0}%'.format(ty)]
+                self.record.append(event.__dict__)
                 self.actioncount = self.actioncount + 1
                 text = '%d actions recorded' % self.actioncount
                 logger.debug('Recorded %s' % event)
@@ -375,12 +372,8 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         if self.recording:
             logger.info('Record stop')
             self.recording = False
-            output = json.dumps(self.record, indent=1, ensure_ascii=False)
-            output = output.replace('\r\n', '\n').replace('\r', '\n')
-            output = output.replace('\n   ', '').replace('\n  ', '')
-            output = output.replace('\n ]', ']')
             with open(self.new_script_path(), 'w', encoding='utf-8') as f:
-                f.write(output)
+                json5.dump({"scripts": self.record}, indent=2, ensure_ascii=False, fp=f)
             self.btrecord.setText(QCoreApplication.translate("UIView", 'Record', None))
             self.tnumrd.setText('finished')
             self.record = []

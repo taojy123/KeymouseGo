@@ -4,8 +4,7 @@ import traceback
 from PySide2.QtCore import QThread, Signal, QMutex, QWaitCondition, QDeadlineTimer
 from PySide2.QtWidgets import QWidget
 from loguru import logger
-from Util.Parser import LegacyParser
-
+from Util.Parser import LegacyParser, ScriptParser
 
 mutex = QMutex()
 cond = QWaitCondition()
@@ -76,12 +75,16 @@ class RunScriptClass(QThread):
             # 解析脚本，返回事件集合与扩展类对象
             logger.debug('Parse script..')
             try:
-                events = LegacyParser.parse(script_path)
+                events = ScriptParser.parse(script_path)
             except Exception as e:
-                logger.error(e)
-                self.logSignal.emit('==============\nAn error occurred while parsing script')
-                self.logSignal.emit(str(e))
-                self.logSignal.emit('==============')
+                logger.warning('Failed to parse script, maybe it is using legacy grammar')
+                try:
+                    events = LegacyParser.parse(script_path)
+                except Exception as e:
+                    logger.error(e)
+                    self.logSignal.emit('==============\nAn error occurred while parsing script')
+                    self.logSignal.emit(str(e))
+                    self.logSignal.emit('==============')
 
             self.j = 0
             nointerrupt = True
@@ -131,10 +134,9 @@ class RunScriptClass(QThread):
                 logger.trace(
                     '%s  [%d/%d %d/%d]' % (thd.running_text, i + 1, steps, thd.j + 1, thd.runtimes))
                 thd.logSignal.emit('{0} [{1}/{2}]'.format(
-                            events[i].summarystr(), i + 1, steps))
+                            events[i], i + 1, steps))
             event = events[i]
-            if thd is None:
-                logger.debug(event)
+            logger.debug(event)
             event.execute(thd)
             i = i + 1
         return True

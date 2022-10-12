@@ -44,8 +44,7 @@ def get_mouse_event(x, y, message):
             'delay': delay,
             'event_type': 'EM',
             'message': message,
-            'action': tpos,
-            'addon': None
+            'action': tpos
         })
 
 
@@ -89,8 +88,7 @@ def get_keyboard_event(key, message):
             'delay': delay,
             'event_type': 'EK',
             'message': message,
-            'action': (keycode, keyname, 0),
-            'addon': None
+            'action': (keycode, keyname, 0)
         })
         return event
 
