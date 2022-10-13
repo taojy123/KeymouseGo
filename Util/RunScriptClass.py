@@ -1,5 +1,6 @@
 import threading
 import traceback
+from dataclasses import dataclass
 
 from PySide2.QtCore import QThread, Signal, QMutex, QWaitCondition, QDeadlineTimer
 from PySide2.QtWidgets import QWidget
@@ -10,7 +11,24 @@ mutex = QMutex()
 cond = QWaitCondition()
 
 
-class RunScriptClass(QThread):
+class RunScriptMeta:
+    def pause(self):
+        mutex.lock()
+        cond.wait(mutex)
+        mutex.unlock()
+
+    def sleep(self, msecs: int):
+        mutex.lock()
+        cond.wait(mutex, QDeadlineTimer(int(msecs)))
+        mutex.unlock()
+
+    def resume(self):
+        mutex.lock()
+        cond.wakeAll()
+        mutex.unlock()
+
+
+class RunScriptClass(QThread, RunScriptMeta):
     logSignal = Signal(str)
     tnumrdSignal = Signal(str)
     btnSignal = Signal(bool)
@@ -27,21 +45,12 @@ class RunScriptClass(QThread):
         self.btnSignal.connect(frame.btrun.setEnabled)
         self.btnSignal.connect(frame.btrecord.setEnabled)
 
-    def pause(self):
-        mutex.lock()
-        cond.wait(mutex)
-        mutex.unlock()
-
     def sleep(self, msecs: int):
-        mutex.lock()
-        cond.wait(mutex, QDeadlineTimer(int(msecs)))
-        mutex.unlock()
+        RunScriptMeta.sleep(self, msecs)
 
     def resume(self):
         self.eventPause = False
-        mutex.lock()
-        cond.wakeAll()
-        mutex.unlock()
+        super().resume()
 
     def wait_if_pause(self):
         if self.eventPause:
@@ -51,6 +60,7 @@ class RunScriptClass(QThread):
 
     @logger.catch
     def run(self):
+        logger.debug('Run script at thread' + str(threading.currentThread()))
         status = self.frame.tnumrd.text()
         if self.frame.running or self.frame.recording:
             return
@@ -99,7 +109,7 @@ class RunScriptClass(QThread):
                     break
                 self.tnumrdSignal.emit('{0}... Looptimes [{1}/{2}]'.format(
                     self.running_text, self.j + 1, self.runtimes))
-                nointerrupt = nointerrupt and RunScriptClass.run_script_once(events, thd=self)
+                nointerrupt = nointerrupt and self.run_script_once(events)
                 self.j += 1
             self.frame.playtune('end.wav')
             if nointerrupt:
@@ -121,22 +131,70 @@ class RunScriptClass(QThread):
             self.btnSignal.emit(True)
 
     # 执行集合中的ScriptEvent
-    @classmethod
-    def run_script_once(cls, events, thd=None):
+    def run_script_once(self, events):
         steps = len(events)
         i = 0
         while i < steps:
-            if thd:
-                if thd.frame.is_broken_or_finish:
-                    logger.info('Broken at [%d/%d]' % (i, steps))
-                    return False
-                thd.wait_if_pause()
-                logger.trace(
-                    '%s  [%d/%d %d/%d]' % (thd.running_text, i + 1, steps, thd.j + 1, thd.runtimes))
-                thd.logSignal.emit('{0} [{1}/{2}]'.format(
-                            events[i], i + 1, steps))
+            self.wait_if_pause()
+            if self.frame.is_broken_or_finish:
+                logger.info('Broken at [%d/%d]' % (i, steps))
+                return False
+            logger.trace(
+                '%s  [%d/%d %d/%d]' % (self.running_text, i + 1, steps, self.j + 1, self.runtimes))
+            self.logSignal.emit('{0} [{1}/{2}]'.format(
+                        events[i], i + 1, steps))
             event = events[i]
             logger.debug(event)
-            event.execute(thd)
+            event.execute(self)
             i = i + 1
         return True
+
+
+@dataclass
+class StopFlag:
+    flag: bool
+
+
+class RunScriptCMDClass(QThread, RunScriptMeta):
+    def __init__(self, script_path: str, run_times: int, flag: StopFlag):
+        super().__init__()
+        self.script_path = script_path
+        self.run_times = run_times
+        self.flag = flag
+
+    def sleep(self, msecs: int):
+        RunScriptMeta.sleep(self, msecs)
+
+    def run(self) -> None:
+        try:
+            for path in self.script_path:
+                logger.info('Script path:%s' % path)
+                logger.debug('Parse script..')
+                try:
+                    events = ScriptParser.parse(path)
+                except Exception as e:
+                    logger.warning('Failed to parse script, maybe it is using legacy grammar')
+                    try:
+                        events = LegacyParser.parse(path)
+                    except Exception as e:
+                        logger.error(e)
+                j = 0
+                while j < self.run_times or self.run_times == 0:
+                    logger.info('===========%d==============' % j)
+                    steps = len(events)
+                    i = 0
+                    while i < steps:
+                        event = events[i]
+                        if self.flag.flag:
+                            break
+                        event.execute(self)
+                        logger.debug(event)
+                        i = i + 1
+                    if self.flag.flag:
+                        logger.info('Stop Running thread')
+                        break
+                    j += 1
+                logger.info('%s run finish' % path)
+        except Exception as e:
+            logger.error(e)
+            raise e

@@ -1,4 +1,3 @@
-import time
 from abc import ABCMeta, abstractmethod
 from typing import Dict, Any
 
@@ -17,11 +16,8 @@ class Event(metaclass=ABCMeta):
             return '{0} at {2} after {1}ms'.format(self.message, self.delay, self.action)
 
     # 延时
-    def sleep(self, thd=None):
-        if thd:
-            thd.sleep(self.delay)
-        else:
-            time.sleep(self.delay / 1000.0)
+    def sleep(self, thd):
+        thd.sleep(self.delay)
 
     @abstractmethod
     def execute(self, thd=None):
