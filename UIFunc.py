@@ -100,6 +100,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         if self.scripts:
             self.choice_script.setCurrentIndex(0)
 
+        self.choice_theme.addItems(['Default'])
         self.choice_theme.addItems(list_themes())
         self.choice_start.addItems(HOT_KEYS)
         self.choice_stop.addItems(HOT_KEYS)
@@ -285,7 +286,11 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.retranslateUi(self)
 
     def onchangetheme(self):
-        self.apply_stylesheet(self.app, theme=self.choice_theme.currentText())
+        theme = self.choice_theme.currentText()
+        if theme == 'Default':
+            self.apply_stylesheet(self.app, theme='default')
+        else:
+            self.apply_stylesheet(self.app, theme=theme)
         self.config.setValue("Config/Theme", self.choice_theme.currentText())
 
     def playtune(self, filename: str):
@@ -311,7 +316,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                         'LoopTimes=1\n'
                         'Precision=200\n'
                         'Language=zh-cn\n'
-                        'Theme=light_cyan_500.xml\n')
+                        'Theme=Default\n')
         return QSettings(to_abs_path('config.ini'), QSettings.IniFormat)
 
     def get_script_path(self):
