@@ -251,6 +251,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 text = '%d actions recorded' % self.actioncount
                 logger.debug('Recorded %s' % event)
                 self.tnumrd.setText(text)
+                self.textlog.append(str(event))
         logger.debug('Initialize at thread ' + str(threading.currentThread()))
         Recorder.setuphook()
         Recorder.set_callback(on_record_event)
