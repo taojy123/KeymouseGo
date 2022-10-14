@@ -58,7 +58,7 @@ def get_script_list_from_dir():
     if not os.path.exists(to_abs_path('scripts')):
         os.mkdir(to_abs_path('scripts'))
     scripts = os.listdir(to_abs_path('scripts'))[::-1]
-    scripts = list(filter(lambda s: s.endswith('.txt'), scripts))
+    scripts = list(filter(lambda s: s.endswith('.txt') or s.endswith('.json5'), scripts))
 
 
 def update_script_map():
@@ -331,9 +331,9 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
     def new_script_path(self):
         now = datetime.datetime.now()
-        script = '%s.txt' % now.strftime('%m%d_%H%M')
+        script = '%s.json5' % now.strftime('%m%d_%H%M')
         if script in self.scripts:
-            script = '%s.txt' % now.strftime('%m%d_%H%M%S')
+            script = '%s.json5' % now.strftime('%m%d_%H%M%S')
         self.scripts.insert(0, script)
         update_script_map()
         self.choice_script.clear()
