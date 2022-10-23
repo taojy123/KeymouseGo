@@ -6,8 +6,8 @@ class Event(metaclass=ABCMeta):
     # 传入字典进行初始化
     def __init__(self, content: Dict[str, Any]):
         """Default param: delay, event_type, message, action"""
-        for key, value in content.items():
-            setattr(self, key, value)
+        for key in ['delay', 'event_type', 'message', 'action']:
+            setattr(self, key, content[key])
 
     def __str__(self):
         if self.event_type == 'EK':

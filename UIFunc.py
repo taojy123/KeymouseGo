@@ -16,6 +16,7 @@ from PySide2.QtMultimedia import QSoundEffect
 from loguru import logger
 
 from Event import ScriptEvent, flag_multiplemonitor
+from Plugin.Manager import PluginManager
 from UIView import Ui_UIView
 
 from KeymouseGo import to_abs_path
@@ -100,8 +101,11 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         if self.scripts:
             self.choice_script.setCurrentIndex(0)
 
+        PluginManager.reload()
+
         self.choice_theme.addItems(['Default'])
         self.choice_theme.addItems(list_themes())
+        self.choice_theme.addItems(PluginManager.resources_paths)
         self.choice_start.addItems(HOT_KEYS)
         self.choice_stop.addItems(HOT_KEYS)
         self.choice_record.addItems(HOT_KEYS)
@@ -246,7 +250,9 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 if event.event_type == 'EM' and not flag_multiplemonitor:
                     tx, ty = event.action
                     event.action = ['{0}%'.format(tx), '{0}%'.format(ty)]
-                self.record.append(event.__dict__)
+                event_dict = event.__dict__
+                PluginManager.call_record(event_dict)
+                self.record.append(event_dict)
                 self.actioncount = self.actioncount + 1
                 text = '%d actions recorded' % self.actioncount
                 logger.debug('Recorded %s' % event)

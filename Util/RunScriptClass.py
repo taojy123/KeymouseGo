@@ -1,11 +1,15 @@
 import threading
 import traceback
 from dataclasses import dataclass
+from typing import List
 
 from PySide2.QtCore import QThread, Signal, QMutex, QWaitCondition, QDeadlineTimer
 from PySide2.QtWidgets import QWidget
 from loguru import logger
-from Util.Parser import LegacyParser, ScriptParser
+
+from Event import ScriptEvent
+from Plugin.Manager import PluginManager
+from Util.Parser import LegacyParser, ScriptParser, JsonObject
 
 mutex = QMutex()
 cond = QWaitCondition()
@@ -29,9 +33,9 @@ class RunScriptMeta:
 
 
 class RunScriptClass(QThread, RunScriptMeta):
-    logSignal = Signal(str)
-    tnumrdSignal = Signal(str)
-    btnSignal = Signal(bool)
+    logSignal: Signal = Signal(str)
+    tnumrdSignal: Signal = Signal(str)
+    btnSignal: Signal = Signal(bool)
 
     def __init__(self, frame: QWidget):
         super().__init__()
@@ -75,43 +79,46 @@ class RunScriptClass(QThread, RunScriptMeta):
             return
 
         self.frame.running = True
-
         self.btnSignal.emit(False)
+        self.frame.playtune('start.wav')
+        self.run_script_from_path(script_path)
+        self.frame.playtune('end.wav')
+
+    @logger.catch
+    def run_script_from_path(self, script_path: str):
         try:
-            self.running_text = '%s running..' % script_path.split('/')[-1].split('\\')[-1]
-            self.tnumrdSignal.emit(self.running_text)
+            running_text = '%s running..' % script_path.split('/')[-1].split('\\')[-1]
+            self.tnumrdSignal.emit(running_text)
             logger.info('%s running..' % script_path.split('/')[-1].split('\\')[-1])
 
             # 解析脚本，返回事件集合与扩展类对象
             logger.debug('Parse script..')
             try:
-                events = ScriptParser.parse(script_path)
+                head_object = ScriptParser.parse(script_path)
             except Exception as e:
                 logger.warning('Failed to parse script, maybe it is using legacy grammar')
                 try:
-                    events = LegacyParser.parse(script_path)
+                    head_object = LegacyParser.parse(script_path)
                 except Exception as e:
                     logger.error(e)
                     self.logSignal.emit('==============\nAn error occurred while parsing script')
                     self.logSignal.emit(str(e))
                     self.logSignal.emit('==============')
 
-            self.j = 0
+            j = 0
             nointerrupt = True
             logger.debug('Run script..')
-            self.frame.playtune('start.wav')
-            self.runtimes = self.frame.stimes.value()
-            while (self.j < self.runtimes or self.runtimes == 0) and nointerrupt:
-                logger.debug('===========%d==============' % self.j)
+
+            runtimes = self.frame.stimes.value()
+            while (j < runtimes or runtimes == 0) and nointerrupt:
+                logger.debug('===========%d==============' % j)
                 current_status = self.frame.tnumrd.text()
                 if current_status in ['broken', 'finished']:
                     self.frame.running = False
                     break
-                self.tnumrdSignal.emit('{0}... Looptimes [{1}/{2}]'.format(
-                    self.running_text, self.j + 1, self.runtimes))
-                nointerrupt = nointerrupt and self.run_script_once(events)
+                self.tnumrdSignal.emit(f'{running_text}... Looptimes [{j + 1}/{runtimes}]')
+                nointerrupt = nointerrupt and self.run_script_from_objects(head_object)
                 self.j += 1
-            self.frame.playtune('end.wav')
             if nointerrupt:
                 self.tnumrdSignal.emit('finished')
                 logger.info('Script run finish')
@@ -131,23 +138,46 @@ class RunScriptClass(QThread, RunScriptMeta):
             self.btnSignal.emit(True)
 
     # 执行集合中的ScriptEvent
-    def run_script_once(self, events):
-        steps = len(events)
-        i = 0
-        while i < steps:
+    @logger.catch
+    def run_script_from_objects(self, head_object: JsonObject, attach: List[str] = None):
+        current_object = head_object
+        while current_object is not None:
             self.wait_if_pause()
             if self.frame.is_broken_or_finish:
-                logger.info('Broken at [%d/%d]' % (i, steps))
                 return False
-            logger.trace(
-                '%s  [%d/%d %d/%d]' % (self.running_text, i + 1, steps, self.j + 1, self.runtimes))
-            self.logSignal.emit('{0} [{1}/{2}]'.format(
-                        events[i], i + 1, steps))
-            event = events[i]
+            if attach:
+                PluginManager.call_group(attach, current_object)
+            current_object = self.run_object(current_object)
+        return True
+
+    # Only return next object when 'goto' is indicated
+    @logger.catch
+    def run_object(self, json_object: JsonObject):
+        object_type: str = json_object.content.get('type', None)
+        call_group: List[str] = json_object.content.get('call', None)
+        if call_group:
+            PluginManager.call_group(call_group, json_object)
+        if object_type == 'event':
+            event = ScriptEvent(json_object.content)
+            self.logSignal.emit(str(json_object.content))
             logger.debug(event)
             event.execute(self)
-            i = i + 1
-        return True
+        elif object_type == 'sequence':
+            self.run_script_from_objects(json_object.content['events'], json_object.content['attach'])
+        elif object_type == 'if':
+            result = PluginManager.call(json_object.content['judge'], json_object)
+            if result:
+                return json_object.next_object
+            else:
+                return json_object.next_object_if_false
+        elif object_type == 'goto':
+            pass
+        elif object_type == 'subroutine':
+            self.run_script_from_path(json_object.content['path'])
+        else:
+            # Not supposed to happen
+            logger.error(f'Unexpected event type when running {json_object.content}')
+        return json_object.next_object
 
 
 @dataclass
@@ -166,35 +196,65 @@ class RunScriptCMDClass(QThread, RunScriptMeta):
         RunScriptMeta.sleep(self, msecs)
 
     def run(self) -> None:
-        try:
-            for path in self.script_path:
-                logger.info('Script path:%s' % path)
-                logger.debug('Parse script..')
+        self.run_script_from_path(self.script_path)
+
+    @logger.catch
+    def run_script_from_path(self, script_path):
+        for path in script_path:
+            logger.info('Script path:%s' % path)
+            logger.debug('Parse script..')
+            try:
+                head_object = ScriptParser.parse(path)
+            except Exception as e:
+                logger.warning('Failed to parse script, maybe it is using legacy grammar')
                 try:
-                    events = ScriptParser.parse(path)
+                    head_object = LegacyParser.parse(path)
                 except Exception as e:
-                    logger.warning('Failed to parse script, maybe it is using legacy grammar')
-                    try:
-                        events = LegacyParser.parse(path)
-                    except Exception as e:
-                        logger.error(e)
-                j = 0
-                while j < self.run_times or self.run_times == 0:
-                    logger.info('===========%d==============' % j)
-                    steps = len(events)
-                    i = 0
-                    while i < steps:
-                        event = events[i]
-                        if self.flag.flag:
-                            break
-                        event.execute(self)
-                        logger.debug(event)
-                        i = i + 1
-                    if self.flag.flag:
-                        logger.info('Stop Running thread')
-                        break
-                    j += 1
-                logger.info('%s run finish' % path)
-        except Exception as e:
-            logger.error(e)
-            raise e
+                    logger.error(e)
+            j = 0
+            while j < self.run_times or self.run_times == 0:
+                logger.info('===========%d==============' % j)
+                self.run_script_from_objects(head_object)
+                if self.flag.flag:
+                    logger.info('Stop Running thread')
+                    break
+                j += 1
+            logger.info('%s run finish' % path)
+
+    @logger.catch
+    def run_script_from_objects(self, head_object: JsonObject, attach: List[str] = None):
+        current_object = head_object
+        while current_object is not None:
+            if self.flag.flag:
+                break
+            if attach:
+                PluginManager.call_group(attach, current_object)
+            current_object = self.run_object(current_object)
+
+    @logger.catch
+    def run_object(self, json_object: JsonObject):
+        object_type: str = json_object.content.get('type', None)
+        call_group: List[str] = json_object.content.get('call', None)
+        if call_group:
+            PluginManager.call_group(call_group, json_object)
+        if object_type == 'event':
+            event = ScriptEvent(json_object.content)
+            logger.debug(event)
+            event.execute(self)
+        elif object_type == 'sequence':
+            self.run_script_from_objects(json_object.content['events'], json_object.content['attach'])
+        elif object_type == 'if':
+            result = PluginManager.call(json_object.content['judge'], json_object)
+            if result:
+                return json_object.next_object
+            else:
+                return json_object.next_object_if_false
+        elif object_type in ['goto', 'custom']:
+            pass
+        elif object_type == 'subroutine':
+            self.run_script_from_path(json_object.content['path'])
+        else:
+            # Not supposed to happen
+            logger.error(f'Unexpected event type when running {json_object.content}')
+        return json_object.next_object
+

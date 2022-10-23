@@ -15,6 +15,7 @@ import argparse
 from Event import ScriptEvent, ScreenWidth as SW, ScreenHeight as SH
 from loguru import logger
 
+from Plugin.Manager import PluginManager
 from Util.RunScriptClass import RunScriptCMDClass, StopFlag
 
 
@@ -76,6 +77,7 @@ def single_run(script_path, run_times):
     Recorder.setuphook(commandline=True)
     Recorder.set_callback(on_keyboard_event)
 
+    PluginManager.reload()
     eventloop = QApplication()
 
     thread.finished.connect(eventloop.exit)
