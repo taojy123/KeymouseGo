@@ -251,6 +251,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                     tx, ty = event.action
                     event.action = ['{0}%'.format(tx), '{0}%'.format(ty)]
                 event_dict = event.__dict__
+                event_dict['type'] = 'event'
                 PluginManager.call_record(event_dict)
                 self.record.append(event_dict)
                 self.actioncount = self.actioncount + 1
