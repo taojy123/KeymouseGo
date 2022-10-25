@@ -12,8 +12,10 @@ class Event(metaclass=ABCMeta):
     def __str__(self):
         if self.event_type == 'EK':
             return 'key {0} {1} after {2}ms'.format(self.action[1], self.message[4:], self.delay)
-        else:
+        elif self.event_type == 'EM':
             return '{0} at {2} after {1}ms'.format(self.message, self.delay, self.action)
+        else:
+            return self.__dict__
 
     # 延时
     def sleep(self, thd):

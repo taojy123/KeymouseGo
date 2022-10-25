@@ -118,7 +118,7 @@ class RunScriptClass(QThread, RunScriptMeta):
                     break
                 self.tnumrdSignal.emit(f'{running_text}... Looptimes [{j + 1}/{runtimes}]')
                 nointerrupt = nointerrupt and self.run_script_from_objects(head_object)
-                self.j += 1
+                j += 1
             if nointerrupt:
                 self.tnumrdSignal.emit('finished')
                 logger.info('Script run finish')
@@ -159,8 +159,8 @@ class RunScriptClass(QThread, RunScriptMeta):
             PluginManager.call_group(call_group, json_object)
         if object_type == 'event':
             event = ScriptEvent(json_object.content)
-            self.logSignal.emit(str(json_object.content))
-            logger.debug(event)
+            self.logSignal.emit(str(event))
+            logger.debug(str(event))
             event.execute(self)
         elif object_type == 'sequence':
             self.run_script_from_objects(json_object.content['events'], json_object.content['attach'])
@@ -239,7 +239,7 @@ class RunScriptCMDClass(QThread, RunScriptMeta):
             PluginManager.call_group(call_group, json_object)
         if object_type == 'event':
             event = ScriptEvent(json_object.content)
-            logger.debug(event)
+            logger.debug(str(event))
             event.execute(self)
         elif object_type == 'sequence':
             self.run_script_from_objects(json_object.content['events'], json_object.content['attach'])
