@@ -71,6 +71,7 @@ def on_scroll(x, y, dx, dy):
 
 
 def get_keyboard_event(key, message):
+    #TODO: mabye can helo https://blog.csdn.net/haiyangdaozhang/article/details/109158793
     delay = get_delay(message)
     if delay < 0:
         return None
