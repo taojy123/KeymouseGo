@@ -4,6 +4,7 @@
 import os
 import sys
 import math
+
 from PySide2.QtWidgets import QApplication, QWidget, QSpinBox
 from PySide2.QtCore import Slot, QRect
 from PySide2 import QtCore
@@ -13,22 +14,14 @@ import Recorder
 import argparse
 from Event import ScriptEvent, ScreenWidth as SW, ScreenHeight as SH
 from loguru import logger
-from Util.Parser import LegacyParser
-from Util.RunScriptClass import RunScriptClass
 
-
-def add_lib_path(libpaths):
-    for libpath in libpaths:
-        if os.path.exists(libpath) and (libpath not in sys.path):
-            sys.path.append(libpath)
+from Plugin.Manager import PluginManager
+from Util.RunScriptClass import RunScriptCMDClass, StopFlag
 
 
 def to_abs_path(*args):
     return os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])),
                         *args)
-
-
-add_lib_path([os.path.join(to_abs_path('plugins'))])
 
 
 def resize_layout(ui, ratio_w, ratio_h):
@@ -66,35 +59,31 @@ def main():
 
 
 @logger.catch
-def single_run(script_path, run_times=1):
+def single_run(script_path, run_times):
+    flag = StopFlag(False)
+    thread = RunScriptCMDClass(script_path, run_times, flag)
+
+    stop_name = 'f9'
+
     @Slot(ScriptEvent)
     def on_keyboard_event(event):
         key_name = event.action[1].lower()
-        stop_name = 'f9'
         if key_name == stop_name:
             logger.debug('break exit!')
-            os._exit(0)
+            flag.flag = True
+            thread.resume()
         return True
 
     Recorder.setuphook(commandline=True)
     Recorder.set_callback(on_keyboard_event)
 
-    try:
-        for path in script_path:
-            logger.info('Script path:%s' % path)
-            events = LegacyParser.parse(path)
-            j = 0
-            while j < run_times or run_times == 0:
-                logger.info('===========%d==============' % j)
-                RunScriptClass.run_script_once(events)
-                j += 1
-            logger.info('%s run finish' % path)
-        logger.info('Scripts run finish!')
-    except Exception as e:
-        logger.error(e)
-        raise e
-    finally:
-        os._exit(0)
+    PluginManager.reload()
+    eventloop = QApplication()
+
+    thread.finished.connect(eventloop.exit)
+    thread.start()
+
+    sys.exit(eventloop.exec_())
 
 
 if __name__ == '__main__':

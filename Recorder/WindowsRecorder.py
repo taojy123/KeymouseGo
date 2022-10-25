@@ -76,8 +76,7 @@ def on_mouse_event(event):
         'delay': delay,
         'event_type': 'EM',
         'message': message,
-        'action': pos,
-        'addon': None
+        'action': pos
     })
     record_signals.event_signal.emit(sevent)
     return True
@@ -118,8 +117,7 @@ def on_keyboard_event(event):
         'delay': delay,
         'event_type': 'EK',
         'message': message,
-        'action': key_info,
-        'addon': None
+        'action': key_info
     })
     record_signals.event_signal.emit(sevent)
     return True

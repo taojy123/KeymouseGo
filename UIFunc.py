@@ -1,6 +1,6 @@
 # -*- encoding:utf-8 -*-
 import datetime
-import json
+import json5
 import os
 import sys
 import threading
@@ -16,6 +16,7 @@ from PySide2.QtMultimedia import QSoundEffect
 from loguru import logger
 
 from Event import ScriptEvent, flag_multiplemonitor
+from Plugin.Manager import PluginManager
 from UIView import Ui_UIView
 
 from KeymouseGo import to_abs_path
@@ -58,7 +59,7 @@ def get_script_list_from_dir():
     if not os.path.exists(to_abs_path('scripts')):
         os.mkdir(to_abs_path('scripts'))
     scripts = os.listdir(to_abs_path('scripts'))[::-1]
-    scripts = list(filter(lambda s: s.endswith('.txt'), scripts))
+    scripts = list(filter(lambda s: s.endswith('.txt') or s.endswith('.json5'), scripts))
 
 
 def update_script_map():
@@ -100,7 +101,11 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         if self.scripts:
             self.choice_script.setCurrentIndex(0)
 
+        PluginManager.reload()
+
+        self.choice_theme.addItems(['Default'])
         self.choice_theme.addItems(list_themes())
+        self.choice_theme.addItems(PluginManager.resources_paths)
         self.choice_start.addItems(HOT_KEYS)
         self.choice_stop.addItems(HOT_KEYS)
         self.choice_record.addItems(HOT_KEYS)
@@ -243,16 +248,17 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             # 录制事件
             if not(not self.recording or self.running or self.pauserecord):
                 if event.event_type == 'EM' and not flag_multiplemonitor:
-                    record = [event.delay, event.event_type, event.message]
                     tx, ty = event.action
-                    record.append(['{0}%'.format(tx), '{0}%'.format(ty)])
-                else:
-                    record = [event.delay, event.event_type, event.message, event.action]
-                self.record.append(record)
+                    event.action = ['{0}%'.format(tx), '{0}%'.format(ty)]
+                event_dict = event.__dict__
+                event_dict['type'] = 'event'
+                PluginManager.call_record(event_dict)
+                self.record.append(event_dict)
                 self.actioncount = self.actioncount + 1
                 text = '%d actions recorded' % self.actioncount
                 logger.debug('Recorded %s' % event)
                 self.tnumrd.setText(text)
+                self.textlog.append(str(event))
         logger.debug('Initialize at thread ' + str(threading.currentThread()))
         Recorder.setuphook()
         Recorder.set_callback(on_record_event)
@@ -288,7 +294,11 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.retranslateUi(self)
 
     def onchangetheme(self):
-        self.apply_stylesheet(self.app, theme=self.choice_theme.currentText())
+        theme = self.choice_theme.currentText()
+        if theme == 'Default':
+            self.apply_stylesheet(self.app, theme='default')
+        else:
+            self.apply_stylesheet(self.app, theme=theme)
         self.config.setValue("Config/Theme", self.choice_theme.currentText())
 
     def playtune(self, filename: str):
@@ -314,7 +324,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                         'LoopTimes=1\n'
                         'Precision=200\n'
                         'Language=zh-cn\n'
-                        'Theme=light_cyan_500.xml\n')
+                        'Theme=Default\n')
         return QSettings(to_abs_path('config.ini'), QSettings.IniFormat)
 
     def get_script_path(self):
@@ -328,9 +338,9 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
     def new_script_path(self):
         now = datetime.datetime.now()
-        script = '%s.txt' % now.strftime('%m%d_%H%M')
+        script = '%s.json5' % now.strftime('%m%d_%H%M')
         if script in self.scripts:
-            script = '%s.txt' % now.strftime('%m%d_%H%M%S')
+            script = '%s.json5' % now.strftime('%m%d_%H%M%S')
         self.scripts.insert(0, script)
         update_script_map()
         self.choice_script.clear()
@@ -375,12 +385,8 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         if self.recording:
             logger.info('Record stop')
             self.recording = False
-            output = json.dumps(self.record, indent=1, ensure_ascii=False)
-            output = output.replace('\r\n', '\n').replace('\r', '\n')
-            output = output.replace('\n   ', '').replace('\n  ', '')
-            output = output.replace('\n ]', ']')
             with open(self.new_script_path(), 'w', encoding='utf-8') as f:
-                f.write(output)
+                json5.dump({"scripts": self.record}, indent=2, ensure_ascii=False, fp=f)
             self.btrecord.setText(QCoreApplication.translate("UIView", 'Record', None))
             self.tnumrd.setText('finished')
             self.record = []
