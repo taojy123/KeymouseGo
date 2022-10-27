@@ -11,7 +11,7 @@ import Recorder
 from PySide2.QtGui import QTextCursor
 from qt_material import list_themes, QtStyleTools
 from PySide2.QtCore import *
-from PySide2.QtWidgets import QMainWindow, QApplication
+from PySide2.QtWidgets import QMainWindow, QApplication, QLabel
 from PySide2.QtMultimedia import QSoundEffect
 from loguru import logger
 
@@ -21,17 +21,18 @@ from UIView import Ui_UIView
 
 from KeymouseGo import to_abs_path
 from Util.RunScriptClass import RunScriptClass
+from Util.ClickedLabel import Label
 
 
 os.environ['QT_ENABLE_HIGHDPI_SCALING'] = "1"
 QCoreApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True)
 
-if platform.system() == 'Windows':
-    HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
-                'XButton1', 'XButton2', 'Middle']
-else:
-    HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
-                'Middle']
+# if platform.system() == 'Windows':
+#     HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
+#                 'XButton1', 'XButton2', 'Middle']
+# else:
+#     HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
+#                 'Middle']
 
 logger.remove()
 logger.add(sys.stdout, backtrace=True, diagnose=True,
@@ -106,20 +107,34 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.choice_theme.addItems(['Default'])
         self.choice_theme.addItems(list_themes())
         self.choice_theme.addItems(PluginManager.resources_paths)
-        self.choice_start.addItems(HOT_KEYS)
-        self.choice_stop.addItems(HOT_KEYS)
-        self.choice_record.addItems(HOT_KEYS)
-        self.choice_start.setCurrentIndex(int(self.config.value("Config/StartHotKeyIndex")))
-        self.choice_stop.setCurrentIndex(int(self.config.value("Config/StopHotKeyIndex")))
-        self.choice_record.setCurrentIndex(int(self.config.value("Config/RecordHotKeyIndex")))
+        
+        default_hot_keys = ["F6", "F7"]
+        label_hot_keys = [Label(text=hot_key) for hot_key in default_hot_keys]
+        for label_hot_key in label_hot_keys:
+            label_hot_key.setAlignment(Qt.AlignCenter)
+            self.horizontal_launch_or_pause.addWidget(label_hot_key)
+        
+        label_record_or_pause = Label(text="F7")
+        label_stop = Label(text="F8")
+        label_record_or_pause.setAlignment(Qt.AlignCenter)
+        label_stop.setAlignment(Qt.AlignCenter)
+        self.horizontal_record_or_pause.addWidget(label_record_or_pause)
+        self.horizontal_stop.addWidget(label_stop)
+
+        # self.choice_start.addItems(HOT_KEYS)
+        # self.choice_stop.addItems(HOT_KEYS)
+        # self.choice_record.addItems(HOT_KEYS)
+        # self.choice_start.setCurrentIndex(int(self.config.value("Config/StartHotKeyIndex")))
+        # self.choice_stop.setCurrentIndex(int(self.config.value("Config/StopHotKeyIndex")))
+        # self.choice_record.setCurrentIndex(int(self.config.value("Config/RecordHotKeyIndex")))
         self.stimes.setValue(int(self.config.value("Config/LoopTimes")))
         self.mouse_move_interval_ms.setValue(int(self.config.value("Config/Precision")))
         self.choice_theme.setCurrentText(self.config.value("Config/Theme"))
         if self.config.value('Config/Script') is not None and self.config.value('Config/Script') in self.scripts:
             self.choice_script.setCurrentText(self.config.value('Config/Script'))
-        self.choice_start.currentIndexChanged.connect(self.onconfigchange)
-        self.choice_stop.currentIndexChanged.connect(self.onconfigchange)
-        self.choice_record.currentIndexChanged.connect(self.onconfigchange)
+        # self.choice_start.currentIndexChanged.connect(self.onconfigchange)
+        # self.choice_stop.currentIndexChanged.connect(self.onconfigchange)
+        # self.choice_record.currentIndexChanged.connect(self.onconfigchange)
         self.stimes.valueChanged.connect(self.onconfigchange)
         self.mouse_move_interval_ms.valueChanged.connect(self.onconfigchange)
         self.mouse_move_interval_ms.valueChanged.connect(Recorder.set_interval)
@@ -155,96 +170,102 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.btrecord.clicked.connect(self.OnBtrecordButton)
         self.btpauserecord.clicked.connect(self.OnPauseRecordButton)
         self.bt_open_script_files.clicked.connect(self.OnBtOpenScriptFilesButton)
-        self.choice_record.installEventFilter(self)
+        # self.horizontal_record_or_pause.clicked.connent()
+        # self.horizontal_launch_or_pause.clicked.connect(test)
+        # self.horizontal_stop.clicked.connent()
+        # self.choice_record.installEventFilter(self)
         self.choice_language.installEventFilter(self)
-        self.choice_stop.installEventFilter(self)
+        # self.choice_stop.installEventFilter(self)
         self.choice_script.installEventFilter(self)
-        self.choice_start.installEventFilter(self)
+        # self.choice_start.installEventFilter(self)
+        # self.horizontal_launch_or_pause.installEventFilter(self)
+        # self.horizontal_record_or_pause.installEventFilter(self)
+        # self.horizontal_stop.installEventFilter(self)
         self.btrun.installEventFilter(self)
         self.btrecord.installEventFilter(self)
         self.btpauserecord.installEventFilter(self)
         self.bt_open_script_files.installEventFilter(self)
 
         # 热键响应逻辑
-        def hotkeymethod(key_name):
-            start_index = self.choice_start.currentIndex()
-            stop_index = self.choice_stop.currentIndex()
-            record_index = self.choice_record.currentIndex()
-            # Predict potential conflict
-            if start_index == stop_index:
-                stop_index = (stop_index + 1) % len(HOT_KEYS)
-                self.choice_stop.setCurrentIndex(stop_index)
-            if start_index == record_index:
-                record_index = (record_index + 1) % len(HOT_KEYS)
-                if record_index == stop_index:
-                    record_index = (record_index + 1) % len(HOT_KEYS)
-                self.choice_record.setCurrentIndex(record_index)
-            start_name = HOT_KEYS[start_index].lower()
-            stop_name = HOT_KEYS[stop_index].lower()
-            record_name = HOT_KEYS[record_index].lower()
+        # def hotkeymethod(key_name):
+        #     start_index = self.choice_start.currentIndex()
+        #     stop_index = self.choice_stop.currentIndex()
+        #     record_index = self.choice_record.currentIndex()
+        #     # Predict potential conflict
+        #     if start_index == stop_index:
+        #         stop_index = (stop_index + 1) % len(HOT_KEYS)
+        #         self.choice_stop.setCurrentIndex(stop_index)
+        #     if start_index == record_index:
+        #         record_index = (record_index + 1) % len(HOT_KEYS)
+        #         if record_index == stop_index:
+        #             record_index = (record_index + 1) % len(HOT_KEYS)
+        #         self.choice_record.setCurrentIndex(record_index)
+        #     start_name = HOT_KEYS[start_index].lower()
+        #     stop_name = HOT_KEYS[stop_index].lower()
+        #     record_name = HOT_KEYS[record_index].lower()
 
-            if key_name == start_name and not self.running and not self.recording:
-                logger.info('Script start')
-                self.textlog.clear()
-                self.runthread = RunScriptClass(self)
-                self.runthread.start()
-                self.is_broken_or_finish = False
-                logger.debug('{0} host start'.format(key_name))
-            elif key_name == start_name and self.running and not self.recording:
-                if self.paused:
-                    logger.info('Script resume')
-                    self.paused = False
-                    self.runthread.resume()
-                    logger.debug('{0} host resume'.format(key_name))
-                else:
-                    logger.info('Script pause')
-                    self.paused = True
-                    self.runthread.eventPause = True
-                    logger.debug('{0} host pause'.format(key_name))
-            elif key_name == stop_name and self.running and not self.recording:
-                logger.info('Script stop')
-                self.tnumrd.setText('broken')
-                self.is_broken_or_finish = True
-                if self.paused:
-                    self.paused = False
-                self.runthread.resume()
-                logger.debug('{0} host stop'.format(key_name))
-            elif key_name == stop_name and self.recording:
-                self.recordMethod()
-                logger.info('Record stop')
-                logger.debug('{0} host stop record'.format(key_name))
-            elif key_name == record_name and not self.running:
-                if not self.recording:
-                    self.recordMethod()
-                    # logger.info('Record start')
-                    logger.debug('{0} host start record'.format(key_name))
-                else:
-                    self.pauseRecordMethod()
-                    # logger.info('Record pause')
-                    logger.debug('{0} host pause record'.format(key_name))
-            return key_name in [start_name, stop_name, record_name]
+        #     if key_name == start_name and not self.running and not self.recording:
+        #         logger.info('Script start')
+        #         self.textlog.clear()
+        #         self.runthread = RunScriptClass(self)
+        #         self.runthread.start()
+        #         self.is_broken_or_finish = False
+        #         logger.debug('{0} host start'.format(key_name))
+        #     elif key_name == start_name and self.running and not self.recording:
+        #         if self.paused:
+        #             logger.info('Script resume')
+        #             self.paused = False
+        #             self.runthread.resume()
+        #             logger.debug('{0} host resume'.format(key_name))
+        #         else:
+        #             logger.info('Script pause')
+        #             self.paused = True
+        #             self.runthread.eventPause = True
+        #             logger.debug('{0} host pause'.format(key_name))
+        #     elif key_name == stop_name and self.running and not self.recording:
+        #         logger.info('Script stop')
+        #         self.tnumrd.setText('broken')
+        #         self.is_broken_or_finish = True
+        #         if self.paused:
+        #             self.paused = False
+        #         self.runthread.resume()
+        #         logger.debug('{0} host stop'.format(key_name))
+        #     elif key_name == stop_name and self.recording:
+        #         self.recordMethod()
+        #         logger.info('Record stop')
+        #         logger.debug('{0} host stop record'.format(key_name))
+        #     elif key_name == record_name and not self.running:
+        #         if not self.recording:
+        #             self.recordMethod()
+        #             # logger.info('Record start')
+        #             logger.debug('{0} host start record'.format(key_name))
+        #         else:
+        #             self.pauseRecordMethod()
+        #             # logger.info('Record pause')
+        #             logger.debug('{0} host pause record'.format(key_name))
+        #     return key_name in [start_name, stop_name, record_name]
 
         @Slot(ScriptEvent)
         def on_record_event(event: ScriptEvent):
             # 判断热键
-            if event.event_type == 'EM':
-                name = event.message
-                if 'mouse x1 down' == name and hotkeymethod('xbutton1'):
-                    return
-                elif 'mouse x2 down' == name and hotkeymethod('xbutton2'):
-                    return
-                elif 'mouse middle down' and hotkeymethod('middle'):
-                    return
-            else:
-                key_name = event.action[1]
-                if event.message == 'key down':
-                    # listen for start/stop script
-                    # start_name = 'f6'  # as default
-                    # stop_name = 'f9'  # as default
-                    hotkeymethod(key_name.lower())
-                # 不录制热键
-                if key_name in HOT_KEYS:
-                    return
+            # if event.event_type == 'EM':
+            #     name = event.message
+            #     if 'mouse x1 down' == name and hotkeymethod('xbutton1'):
+            #         return
+            #     elif 'mouse x2 down' == name and hotkeymethod('xbutton2'):
+            #         return
+            #     elif 'mouse middle down' and hotkeymethod('middle'):
+            #         return
+            # else:
+            #     key_name = event.action[1]
+            #     if event.message == 'key down':
+            #         # listen for start/stop script
+            #         # start_name = 'f6'  # as default
+            #         # stop_name = 'f9'  # as default
+            #         hotkeymethod(key_name.lower())
+            #     # 不录制热键
+            #     if key_name in HOT_KEYS:
+            #         return
             # 录制事件
             if not(not self.recording or self.running or self.pauserecord):
                 if event.event_type == 'EM' and not flag_multiplemonitor:
@@ -270,9 +291,9 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         return super(UIFunc, self).eventFilter(watched, event)
 
     def onconfigchange(self):
-        self.config.setValue("Config/StartHotKeyIndex", self.choice_start.currentIndex())
-        self.config.setValue("Config/StopHotKeyIndex", self.choice_stop.currentIndex())
-        self.config.setValue("Config/RecordHotKeyIndex", self.choice_record.currentIndex())
+        # self.config.setValue("Config/StartHotKeyIndex", self.choice_start.currentIndex())
+        # self.config.setValue("Config/StopHotKeyIndex", self.choice_stop.currentIndex())
+        # self.config.setValue("Config/RecordHotKeyIndex", self.choice_record.currentIndex())
         self.config.setValue("Config/LoopTimes", self.stimes.value())
         self.config.setValue("Config/Precision", self.mouse_move_interval_ms.value())
         self.config.setValue("Config/Theme", self.choice_theme.currentText())

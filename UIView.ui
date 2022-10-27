@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>652</width>
-    <height>444</height>
+    <width>651</width>
+    <height>446</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,16 +43,17 @@
      <property name="bottomMargin">
       <number>0</number>
      </property>
-     <item row="0" column="1">
-      <widget class="QComboBox" name="choice_start">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_language">
+       <property name="text">
+        <string>Language</string>
        </property>
-       <property name="currentText">
-        <string/>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_stop">
+       <property name="text">
+        <string>Terminate</string>
        </property>
       </widget>
      </item>
@@ -66,44 +67,10 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QComboBox" name="choice_stop">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_language">
-       <property name="text">
-        <string>Language</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="0">
       <widget class="QLabel" name="label_start_key">
        <property name="text">
         <string>Launch/Pause</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_stop">
-       <property name="text">
-        <string>Terminate</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QComboBox" name="choice_record">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
        </property>
       </widget>
      </item>
@@ -113,6 +80,15 @@
         <string>Record/Pause</string>
        </property>
       </widget>
+     </item>
+     <item row="0" column="1">
+      <layout class="QHBoxLayout" name="horizontal_launch_or_pause"/>
+     </item>
+     <item row="1" column="1">
+      <layout class="QHBoxLayout" name="horizontal_record_or_pause"/>
+     </item>
+     <item row="2" column="1">
+      <layout class="QHBoxLayout" name="horizontal_stop"/>
      </item>
     </layout>
    </widget>
@@ -370,7 +346,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>652</width>
+     <width>651</width>
      <height>26</height>
     </rect>
    </property>
