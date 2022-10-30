@@ -14,10 +14,8 @@ class Label(QLabel):
 
     def mouseDoubleClickEvent(self, event):
         super().mouseDoubleClickEvent(event)
-        print("==================================")
-        print(self.objectName())
-        print(self.parent())
-        print("==================================")
+        self.clear()
+        self.setText("clicked")
 
 
 

@@ -62,16 +62,19 @@ class Ui_UIView(object):
 
         self.horizontal_launch_or_pause = QHBoxLayout()
         self.horizontal_launch_or_pause.setObjectName(u"horizontal_launch_or_pause")
+        self.horizontal_launch_or_pause.setSizeConstraint(QLayout.SetMinimumSize)
 
         self.gridLayout_3.addLayout(self.horizontal_launch_or_pause, 0, 1, 1, 1)
 
         self.horizontal_record_or_pause = QHBoxLayout()
         self.horizontal_record_or_pause.setObjectName(u"horizontal_record_or_pause")
+        self.horizontal_record_or_pause.setSizeConstraint(QLayout.SetMinimumSize)
 
         self.gridLayout_3.addLayout(self.horizontal_record_or_pause, 1, 1, 1, 1)
 
         self.horizontal_stop = QHBoxLayout()
         self.horizontal_stop.setObjectName(u"horizontal_stop")
+        self.horizontal_stop.setSizeConstraint(QLayout.SetMinimumSize)
 
         self.gridLayout_3.addLayout(self.horizontal_stop, 2, 1, 1, 1)
 
@@ -106,7 +109,7 @@ class Ui_UIView(object):
 
         self.verticalLayoutWidget = QWidget(self.centralwidget)
         self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
-        self.verticalLayoutWidget.setGeometry(QRect(10, 210, 631, 181))
+        self.verticalLayoutWidget.setGeometry(QRect(10, 210, 631, 216))
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
