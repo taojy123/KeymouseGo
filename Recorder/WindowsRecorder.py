@@ -32,7 +32,7 @@ record_signals = globalv.RecordSignal()
 #     return wrapper
 
 
-def on_mouse_event(event):
+def get_mouse_event(event):
     # print('MessageName:',event.MessageName)  #事件名称
     # print('Message:',event.Message)          #windows消息常量
     # print('Time:',event.Time)                #事件发生的时间戳
@@ -82,7 +82,7 @@ def on_mouse_event(event):
     return True
 
 
-def on_keyboard_event(event):
+def get_keyboard_event(event):
     # TODO: mark
     # print('MessageName:',event.MessageName)          #同上，共同属性不再赘述
     # print('Message:',event.Message)
