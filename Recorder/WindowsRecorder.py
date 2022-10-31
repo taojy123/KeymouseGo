@@ -84,20 +84,20 @@ def get_mouse_event(event):
 
 def get_keyboard_event(event):
     # TODO: mark
-    # print('MessageName:',event.MessageName)          #同上，共同属性不再赘述
-    # print('Message:',event.Message)
-    # print('Time:',event.Time)
-    # print('Window:',event.Window)
-    # print('WindowName:',event.WindowName)
-    # print('Ascii:', event.Ascii, chr(event.Ascii))   #按键的ASCII码
-    # print('Key:', event.Key)                         #按键的名称
-    # print('KeyID:', event.KeyID)                     #按键的虚拟键值
-    # print('ScanCode:', event.ScanCode)               #按键扫描码
-    # print('Extended:', event.Extended)               #判断是否为增强键盘的扩展键
-    # print('Injected:', event.Injected)
-    # print('Alt', event.Alt)                          #是某同时按下Alt
-    # print('Transition', event.Transition)            #判断转换状态
-    # print('---')
+    print('MessageName:',event.MessageName)          #同上，共同属性不再赘述
+    print('Message:',event.Message)
+    print('Time:',event.Time)
+    print('Window:',event.Window)
+    print('WindowName:',event.WindowName)
+    print('Ascii:', event.Ascii, chr(event.Ascii))   #按键的ASCII码
+    print('Key:', event.Key)                         #按键的名称
+    print('KeyID:', event.KeyID)                     #按键的虚拟键值
+    print('ScanCode:', event.ScanCode)               #按键扫描码
+    print('Extended:', event.Extended)               #判断是否为增强键盘的扩展键
+    print('Injected:', event.Injected)
+    print('Alt', event.Alt)                          #是某同时按下Alt
+    print('Transition', event.Transition)            #判断转换状态
+    print('---')
 
     message = event.MessageName
     message = message.replace(' sys ', ' ')
@@ -130,7 +130,7 @@ def mouse_handler(msg, x, y, data, flags, time, hwnd, window_name):
             name = name + (' up' if data > 0 else ' down')
         elif name in ['mouse x down', 'mouse x up']:
             name = name.replace('x', datadic[data])
-        on_mouse_event(MyMouseEvent(name))
+        get_mouse_event(MyMouseEvent(name))
     except KeyError as e:
         logger.debug('Unknown mouse event, keyid {0}'.format(e))
     finally:
@@ -143,7 +143,7 @@ def setuphook(commandline=False):
     if not commandline:
         # 使用一般的HookMouse无法捕获鼠标侧键操作，因此采用cpyHook捕获鼠标操作
         cpyHook.cSetHook(HookConstants.WH_MOUSE_LL, mouse_handler)
-    hm.KeyAll = on_keyboard_event
+    hm.KeyAll = get_keyboard_event
     hm.HookKeyboard()
     # Wait Forever
     # pythoncom.PumpMessages()
