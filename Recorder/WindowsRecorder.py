@@ -24,6 +24,10 @@ MyMouseEvent = collections.namedtuple("MyMouseEvent", ["MessageName"])
 
 record_signals = globalv.RecordSignal()
 
+from pyWinhook.HookManager import KeyboardEvent
+
+keyboard_event: KeyboardEvent
+
 
 # def threadwrapper(func):
 #     def wrapper(*args):
@@ -83,24 +87,27 @@ def get_mouse_event(event):
 
 
 def get_keyboard_event(event):
-    # TODO: mark
-    print('MessageName:',event.MessageName)          #同上，共同属性不再赘述
-    print('Message:',event.Message)
-    print('Time:',event.Time)
-    print('Window:',event.Window)
-    print('WindowName:',event.WindowName)
-    print('Ascii:', event.Ascii, chr(event.Ascii))   #按键的ASCII码
-    print('Key:', event.Key)                         #按键的名称
-    print('KeyID:', event.KeyID)                     #按键的虚拟键值
-    print('ScanCode:', event.ScanCode)               #按键扫描码
-    print('Extended:', event.Extended)               #判断是否为增强键盘的扩展键
-    print('Injected:', event.Injected)
-    print('Alt', event.Alt)                          #是某同时按下Alt
-    print('Transition', event.Transition)            #判断转换状态
-    print('---')
+    # print('MessageName:',event.MessageName)          #同上，共同属性不再赘述
+    # print('Message:',event.Message)
+    # print('Time:',event.Time)
+    # print('Window:',event.Window)
+    # print('WindowName:',event.WindowName)
+    # print('Ascii:', event.Ascii, chr(event.Ascii))   #按键的ASCII码
+    # print('Key:', event.Key)                         #按键的名称
+    # print('KeyID:', event.KeyID)                     #按键的虚拟键值
+    # print('ScanCode:', event.ScanCode)               #按键扫描码
+    # print('Extended:', event.Extended)               #判断是否为增强键盘的扩展键
+    # print('Injected:', event.Injected)
+    # print('Alt', event.Alt)                          #是某同时按下Alt
+    # print('Transition', event.Transition)            #判断转换状态
+    # print('---')
 
     message = event.MessageName
     message = message.replace(' sys ', ' ')
+
+    if message == 'key down':
+        global keyboard_event
+        keyboard_event = event
 
     all_messages = ('key down', 'key up')
     if message not in all_messages:
@@ -135,6 +142,10 @@ def mouse_handler(msg, x, y, data, flags, time, hwnd, window_name):
         logger.debug('Unknown mouse event, keyid {0}'.format(e))
     finally:
         return True
+
+
+def register_hm():
+    return pyWinhook.HookManager()
 
 
 # @threadwrapper
