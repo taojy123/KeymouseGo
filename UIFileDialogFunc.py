@@ -19,7 +19,7 @@ class FileDialog(Ui_Dialog):
         self.dialog.setFixedSize(self.dialog.width(), self.dialog.height())
         self.choice.clicked.connect(self.choice_file)
         self.edit.clicked.connect(self.edit_file)
-        self.rename.clicked.connect(lambda: self.rename_file(self.filename))
+        self.rename.clicked.connect(lambda: self.rename_file(self.lineEdit.text()))
 
         self.main_window = QMainWindow()
         self.filename = scripts[scripts_map['current_index']]
