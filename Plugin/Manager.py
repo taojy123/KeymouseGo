@@ -36,7 +36,7 @@ class PluginManager:
                 entry: os.DirEntry
                 if entry.is_dir():
                     manifest = PluginManager.load_manifest(entry.path)
-                    if manifest['enabled']:
+                    if manifest and manifest['enabled']:
                         if entry.path not in sys.path:
                             sys.path.append(entry.path)
                         if manifest.get('entry', None) is not None and manifest.get('plugin_class', None) is not None:
