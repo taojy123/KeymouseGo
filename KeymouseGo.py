@@ -23,8 +23,7 @@ def add_lib_path(libpaths):
 
 
 def to_abs_path(*args):
-    return os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])),
-                        *args)
+    return os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), *args)
 
 
 add_lib_path([os.path.join(to_abs_path('plugins'))])
@@ -35,9 +34,9 @@ def resize_layout(ui, ratio_w, ratio_h):
 
     for q_widget in ui.findChildren(QWidget):
         q_widget.setGeometry(QRect(q_widget.x() * ratio_w,
-                                    q_widget.y() * ratio_h,
-                                    q_widget.width() * ratio_w,
-                                    q_widget.height() * ratio_h))
+                                   q_widget.y() * ratio_h,
+                                   q_widget.width() * ratio_w,
+                                   q_widget.height() * ratio_h))
         q_widget.setStyleSheet('font-size: ' + str(math.ceil(9 * min(ratio_h, ratio_w))) + 'px')
         if isinstance(q_widget, QSpinBox):
             q_widget.setStyleSheet('padding-left: 7px')
@@ -88,7 +87,7 @@ def single_run(script_path, run_times=1, speed=100, module_name='Extension'):
                 speed=speed)
             j = 0
             while j < extension.runtimes or extension.runtimes == 0:
-                logger.info('===========%d==============' % j)
+                logger.info('=========== %d ===========' % j)
                 try:
                     if extension.onbeforeeachloop(j):
                         UIFunc.RunScriptClass.run_script_once(events, extension)
