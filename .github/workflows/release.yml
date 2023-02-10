@@ -1,0 +1,87 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: release
+
+on:
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  contents: read
+
+env:
+  keymousego-version: _v5_1_1
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@main
+      - name: Set up Python 3.7
+        uses: actions/setup-python@main
+        with:
+          python-version: "3.7"
+      - name: Install dependencies
+        run: |
+          pip3 install -r requirements-windows.txt
+          pip3 install pyinstaller
+      - name: Bundle Packages
+        run: |
+          pyinstaller -Fw --add-data './assets;assets' KeymouseGo.py
+      - name: Copy artifact
+        run: |
+          mkdir artifact && mv dist/KeymouseGo.exe ./artifact/KeymouseGo${{ env.keymousego-version }}-win.exe
+      - name: Artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: windows
+          path: ${{ github.workspace }}/artifact/
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - name: Set up Python 3.7
+        uses: actions/setup-python@main
+        with:
+          python-version: "3.7"
+      - name: Install dependencies
+        run: |
+          pip3 install -r requirements-universal.txt
+          pip3 install pyinstaller
+      - name: Bundle Packages
+        run: |
+          pyinstaller -Fw --add-data './assets:assets' KeymouseGo.py
+      - name: Copy artifact
+        run: |
+          mkdir artifact && mv dist/KeymouseGo ./artifact/KeymouseGo${{ env.keymousego-version }}-linux
+      - name: Artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: linux
+          path: ${{ github.workspace }}/artifact/
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@main
+      - name: Set up Python 3.7
+        uses: actions/setup-python@main
+        with:
+          python-version: "3.7"
+      - name: Install dependencies
+        run: |
+          pip3 install -r requirements-universal.txt
+          pip3 install pyinstaller
+      - name: Bundle Packages
+        run: |
+          pyinstaller -Fw --add-data './assets:assets' KeymouseGo.py
+      - name: Copy artifact
+        run: |
+          mkdir artifact && mv dist/KeymouseGo ./artifact/KeymouseGo${{ env.keymousego-version }}-mac
+      - name: Artifact
+        uses: actions/upload-artifact@main
+        with:
+          name: macos
+          path: ${{ github.workspace }}/artifact/
