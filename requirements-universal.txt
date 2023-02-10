@@ -3,7 +3,7 @@
 pynput==1.7.6
 pyperclip==1.8.0
 pyautogui==0.9.53
-future==0.18.2
+future==0.18.3
 PySide2==5.15.2.1
 qt-material==2.11
 loguru==0.6.0
