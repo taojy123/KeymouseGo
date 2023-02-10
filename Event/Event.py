@@ -18,7 +18,7 @@ class Event(metaclass=ABCMeta):
 
     def summarystr(self):
         if self.event_type == 'EK':
-            return 'key {0} {1} after {1}ms'.format(self.action[1], self.message[4:], self.delay)
+            return 'key {0} {1} after {2}ms'.format(self.action[1], self.message[4:], self.delay)
         else:
             return '{0} after {1}ms'.format(self.message, self.delay)
 
