@@ -80,7 +80,7 @@ def single_run(script_path, run_times=1, speed=100, module_name='Extension'):
     try:
         for path in script_path:
             logger.info('Script path:%s' % path)
-            events, smodule_name = UIFunc.RunScriptClass.parsescript(path, speed=speed)
+            events, smodule_name, _ = UIFunc.RunScriptClass.parsescript(path, speed=speed)
             extension = UIFunc.RunScriptClass.getextension(
                 smodule_name if smodule_name is not None else module_name,
                 runtimes=run_times,
