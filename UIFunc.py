@@ -247,7 +247,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                     return
                 elif 'mouse x2 down' == name and hotkeymethod('xbutton2'):
                     return
-                elif 'mouse middle down' and hotkeymethod('middle'):
+                elif 'mouse middle down' == name and hotkeymethod('middle'):
                     return
             else:
                 key_name = event.action[1]
