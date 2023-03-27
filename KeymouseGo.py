@@ -1,19 +1,16 @@
-# cython: language_level=3
-# !/usr/bin/env python
-# Boa:App:BoaApp
 import os
 import sys
 import math
-from PySide2.QtWidgets import QApplication, QWidget, QSpinBox
-from PySide2.QtCore import Slot, QRect
-from PySide2 import QtCore
+from PySide6.QtWidgets import QApplication, QWidget, QSpinBox
+from PySide6.QtCore import Slot, QRect
+from PySide6 import QtCore
 
 import UIFunc
 import argparse
 from Event import ScriptEvent, ScreenWidth as SW, ScreenHeight as SH
 from loguru import logger
 
-from assets.plugins.ProcessException import *
+from assets.plugins.ProcessException import *  # noqa: F403
 
 
 def add_lib_path(libpaths):
@@ -37,7 +34,8 @@ def resize_layout(ui, ratio_w, ratio_h):
                                    q_widget.y() * ratio_h,
                                    q_widget.width() * ratio_w,
                                    q_widget.height() * ratio_h))
-        q_widget.setStyleSheet('font-size: ' + str(math.ceil(9 * min(ratio_h, ratio_w))) + 'px')
+        q_widget.setStyleSheet('font-size: ' + str(
+                                math.ceil(9 * min(ratio_h, ratio_w))) + 'px')
         if isinstance(q_widget, QSpinBox):
             q_widget.setStyleSheet('padding-left: 7px')
 
@@ -80,7 +78,8 @@ def single_run(script_path, run_times=1, speed=100, module_name='Extension'):
     try:
         for path in script_path:
             logger.info('Script path:%s' % path)
-            events, smodule_name, _ = UIFunc.RunScriptClass.parsescript(path, speed=speed)
+            events, smodule_name = UIFunc.RunScriptClass.parsescript(path, 
+                                                                     speed=speed)
             extension = UIFunc.RunScriptClass.getextension(
                 smodule_name if smodule_name is not None else module_name,
                 runtimes=run_times,

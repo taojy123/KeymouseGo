@@ -8,11 +8,10 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
+from PySide6.QtCore import *
+from PySide6.QtGui import *
+from PySide6.QtWidgets import *
 
-import assets_rc
 
 class Ui_UIView(object):
     def setupUi(self, UIView):
@@ -263,7 +262,7 @@ class Ui_UIView(object):
     # setupUi
 
     def retranslateUi(self, UIView):
-        UIView.setWindowTitle(QCoreApplication.translate("UIView", u"KeymomuseGo v5.1", None))
+        UIView.setWindowTitle(QCoreApplication.translate("UIView", u"KeymouseGo v5.1", None))
         self.groupBox.setTitle(QCoreApplication.translate("UIView", u"Hotkeys", None))
         self.label_stop.setText(QCoreApplication.translate("UIView", u"Terminate", None))
         self.label_language.setText(QCoreApplication.translate("UIView", u"Language", None))

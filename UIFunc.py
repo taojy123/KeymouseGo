@@ -11,11 +11,12 @@ import locale
 import Recorder
 from importlib.machinery import SourceFileLoader
 
-from PySide2.QtGui import QTextCursor
+from PySide6.QtGui import QTextCursor
 from qt_material import list_themes, QtStyleTools
-from PySide2.QtCore import *
-from PySide2.QtWidgets import QMainWindow, QApplication
-from PySide2.QtMultimedia import QSoundEffect
+from PySide6.QtCore import *
+from PySide6.QtCore import QEvent as pqe
+from PySide6.QtWidgets import QMainWindow, QApplication
+from PySide6.QtMultimedia import QSoundEffect
 from loguru import logger
 
 from Event import ScriptEvent, flag_multiplemonitor
@@ -282,7 +283,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         Recorder.set_interval(self.mouse_move_interval_ms.value())
 
     def eventFilter(self, watched, event):
-        if event.type() == event.KeyPress or event.type() == event.KeyRelease:
+        if event.type() == pqe.KeyPress or event.type() == pqe.KeyRelease:
             return True
         return super(UIFunc, self).eventFilter(watched, event)
 
