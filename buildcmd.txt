@@ -1,0 +1,1 @@
+ pyinstaller -Fw --add-data './assets;assets' KeymouseGo.py
