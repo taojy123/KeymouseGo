@@ -1,7 +1,7 @@
 import time
 
 from Event import ScriptEvent
-from PySide2.QtCore import Signal, QObject
+from PySide6.QtCore import Signal, QObject
 swapmousemap = {'mouse left down': 'mouse right down', 'mouse left up': 'mouse right up',
                 'mouse right down': 'mouse left down', 'mouse right up': 'mouse left up'}
 

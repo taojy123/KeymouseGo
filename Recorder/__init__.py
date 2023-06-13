@@ -1,5 +1,5 @@
 from platform import system
-from PySide2.QtCore import Slot
+from PySide6.QtCore import Slot
 import Recorder.globals
 
 if system() == 'Windows':
