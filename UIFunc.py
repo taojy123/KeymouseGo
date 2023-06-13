@@ -282,10 +282,10 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         Recorder.set_callback(on_record_event)
         Recorder.set_interval(self.mouse_move_interval_ms.value())
 
-    def eventFilter(self, watched, event):
-        et = event.type()
+    def eventFilter(self, watched, event: QEvent):
+        et: QEvent.Type = event.type()
         # print(event, et)
-        if et == 6 or et == 7:
+        if et == QEvent.KeyPress or et == QEvent.KeyRelease:
             return True
         return super(UIFunc, self).eventFilter(watched, event)
 

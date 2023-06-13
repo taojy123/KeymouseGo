@@ -1,7 +1,0 @@
-loguru==0.6.0
-playsound==1.3.0
-pyperclip==1.8.2
-PySide6==6.4.3
-pywin32==305
-pyWinhook==1.6.2
-qt_material==2.14
