@@ -182,7 +182,7 @@ My Email: taojy123@163.com
 
 # Contributors
 
-If you are a developer and interested in this project, you are welcomed to participating by opening pull request. 
+If you are a developer and interested in this project, you can check the progress in branch [**dev**](https://github.com/taojy123/KeymouseGo/tree/dev). and you are welcomed to participating by opening pull request to branch [**dev**](https://github.com/taojy123/KeymouseGo/tree/dev). 
 
 Thanks to contributor:
 
