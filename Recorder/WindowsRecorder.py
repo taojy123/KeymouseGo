@@ -24,6 +24,10 @@ MyMouseEvent = collections.namedtuple("MyMouseEvent", ["MessageName"])
 
 record_signals = globalv.RecordSignal()
 
+from pyWinhook.HookManager import KeyboardEvent
+
+keyboard_event: KeyboardEvent
+
 
 # def threadwrapper(func):
 #     def wrapper(*args):
@@ -32,7 +36,7 @@ record_signals = globalv.RecordSignal()
 #     return wrapper
 
 
-def on_mouse_event(event):
+def get_mouse_event(event):
     # print('MessageName:',event.MessageName)  #事件名称
     # print('Message:',event.Message)          #windows消息常量
     # print('Time:',event.Time)                #事件发生的时间戳
@@ -76,14 +80,13 @@ def on_mouse_event(event):
         'delay': delay,
         'event_type': 'EM',
         'message': message,
-        'action': pos,
-        'addon': None
+        'action': pos
     })
     record_signals.event_signal.emit(sevent)
     return True
 
 
-def on_keyboard_event(event):
+def get_keyboard_event(event):
     # print('MessageName:',event.MessageName)          #同上，共同属性不再赘述
     # print('Message:',event.Message)
     # print('Time:',event.Time)
@@ -102,6 +105,10 @@ def on_keyboard_event(event):
     message = event.MessageName
     message = message.replace(' sys ', ' ')
 
+    if message == 'key down':
+        global keyboard_event
+        keyboard_event = event
+
     all_messages = ('key down', 'key up')
     if message not in all_messages:
         return True
@@ -117,8 +124,7 @@ def on_keyboard_event(event):
         'delay': delay,
         'event_type': 'EK',
         'message': message,
-        'action': key_info,
-        'addon': None
+        'action': key_info
     })
     record_signals.event_signal.emit(sevent)
     return True
@@ -131,11 +137,15 @@ def mouse_handler(msg, x, y, data, flags, time, hwnd, window_name):
             name = name + (' up' if data > 0 else ' down')
         elif name in ['mouse x down', 'mouse x up']:
             name = name.replace('x', datadic[data])
-        on_mouse_event(MyMouseEvent(name))
+        get_mouse_event(MyMouseEvent(name))
     except KeyError as e:
         logger.debug('Unknown mouse event, keyid {0}'.format(e))
     finally:
         return True
+
+
+def register_hm():
+    return pyWinhook.HookManager()
 
 
 # @threadwrapper
@@ -144,7 +154,7 @@ def setuphook(commandline=False):
     if not commandline:
         # 使用一般的HookMouse无法捕获鼠标侧键操作，因此采用cpyHook捕获鼠标操作
         cpyHook.cSetHook(HookConstants.WH_MOUSE_LL, mouse_handler)
-    hm.KeyAll = on_keyboard_event
+    hm.KeyAll = get_keyboard_event
     hm.HookKeyboard()
     # Wait Forever
     # pythoncom.PumpMessages()
