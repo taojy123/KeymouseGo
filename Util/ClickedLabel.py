@@ -1,8 +1,8 @@
 
 from platform import system
-from PySide2.QtWidgets import QLabel, QVBoxLayout, QLineEdit
-from PySide2.QtCore import Signal, Qt
-from PySide2.QtWidgets import QDialog
+from PySide6.QtWidgets import QLabel, QVBoxLayout, QLineEdit
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtWidgets import QDialog
 
 
 def listener_keyboard():
