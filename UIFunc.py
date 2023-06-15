@@ -105,6 +105,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
         self.choice_theme.addItems(['Default'])
         self.choice_theme.addItems(list_themes())
+        self.choice_theme.addItems(PluginManager.resources_paths)
         self.choice_start.addItems(HOT_KEYS)
         self.choice_stop.addItems(HOT_KEYS)
         self.choice_record.addItems(HOT_KEYS)
