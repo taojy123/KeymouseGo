@@ -44,8 +44,7 @@ def get_mouse_event(x, y, message):
             'delay': delay,
             'event_type': 'EM',
             'message': message,
-            'action': tpos,
-            'addon': None
+            'action': tpos
         })
 
 
@@ -71,6 +70,7 @@ def on_scroll(x, y, dx, dy):
 
 
 def get_keyboard_event(key, message):
+    #TODO: mabye can helo https://blog.csdn.net/haiyangdaozhang/article/details/109158793
     delay = get_delay(message)
     if delay < 0:
         return None
@@ -89,8 +89,7 @@ def get_keyboard_event(key, message):
             'delay': delay,
             'event_type': 'EK',
             'message': message,
-            'action': (keycode, keyname, 0),
-            'addon': None
+            'action': (keycode, keyname, 0)
         })
         return event
 

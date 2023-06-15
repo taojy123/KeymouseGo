@@ -20,7 +20,7 @@ class FileDialog(Ui_Dialog):
         self.dialog.setFixedSize(self.dialog.width(), self.dialog.height())
         self.choice.clicked.connect(self.choice_file)
         self.edit.clicked.connect(self.edit_file)
-        self.rename.clicked.connect(self.rename_file)
+        self.rename.clicked.connect(lambda: self.rename_file(self.lineEdit.text()))
 
         self.main_window = QMainWindow()
         self.filename = scripts[scripts_map['current_index']]
@@ -35,7 +35,7 @@ class FileDialog(Ui_Dialog):
     
 
     def choice_file(self):
-        file = QFileDialog.getOpenFileName(self.main_window, "选择文件", dir=to_abs_path('scripts'), filter='*.txt')[0]
+        file = QFileDialog.getOpenFileName(self.main_window, "选择文件", dir=to_abs_path('scripts'), filter='*.txt *.json5')[0]
         file_name = re.split(r'\\|\/', file)[-1]
         if file_name != '':
             scripts_map['current_index'] = scripts_map[file_name]
@@ -58,14 +58,18 @@ class FileDialog(Ui_Dialog):
             self.lineEdit.setText('')
 
 
-    def rename_file(self):
+    def rename_file(self, filename):
         new_file_name = str(QInputDialog.getText(self.main_window, 
                                                  QCoreApplication.translate('Dialog', 'rename', None), 
                                                  QCoreApplication.translate('Dialog', 'PINFN', None))[0])
 
         if new_file_name != None and new_file_name.strip() != '':
-            if not new_file_name.endswith('.txt'):
-                new_file_name = new_file_name + '.txt'
+            if filename.endswith('.txt'):
+                if not new_file_name.endswith('.txt'):
+                    new_file_name = new_file_name + '.txt'
+            elif filename.endswith('.json5'):
+                if not new_file_name.endswith('.json5'):
+                    new_file_name = new_file_name + '.json5'
 
             try:
                 os.rename(os.path.join(self.path, self.lineEdit.text()), os.path.join(self.path, new_file_name))
