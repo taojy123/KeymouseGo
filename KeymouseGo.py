@@ -73,6 +73,7 @@ def single_run(script_path, run_times=1, speed=100, module_name='Extension'):
                 runtimes=run_times,
                 speed=speed)
             j = 0
+            extension.onbeginp()
             while j < extension.runtimes or extension.runtimes == 0:
                 logger.info('=========== %d ===========' % j)
                 try:
