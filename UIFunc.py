@@ -634,7 +634,7 @@ class RunScriptClass(QThread):
         # 识别标签或脚本语句
         for i in range(startindex, steps):
             if type(s[i]) == str:
-                labeldict[s[i]] = i - numoflabels
+                labeldict[s[i]] = i - numoflabels - startindex
                 numoflabels = numoflabels + 1
             else:
                 delay = s[i][0] / (speed / 100)
