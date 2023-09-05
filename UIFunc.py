@@ -656,7 +656,9 @@ class RunScriptClass(QThread):
     @classmethod
     def run_sub_script(cls, extension, scriptpath: str, subextension_name: str = 'Extension',
                         runtimes: int = 1, speed: int = 100, thd=None, labeldict=None):
-        newevents, module_name = RunScriptClass.parsescript(scriptpath, speed=speed)
+        newevents, module_name, label_dict = RunScriptClass.parsescript(scriptpath, speed=speed)
+        if labeldict is None:
+            labeldict = label_dict
         newextension = RunScriptClass.getextension(
             module_name if module_name is not None else subextension_name,
             runtimes=runtimes,
