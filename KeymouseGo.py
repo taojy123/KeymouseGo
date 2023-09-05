@@ -66,18 +66,19 @@ def single_run(script_path, run_times=1, speed=100, module_name='Extension'):
     try:
         for path in script_path:
             logger.info('Script path:%s' % path)
-            events, smodule_name = UIFunc.RunScriptClass.parsescript(path, 
+            events, smodule_name, labeldict = UIFunc.RunScriptClass.parsescript(path, 
                                                                      speed=speed)
             extension = UIFunc.RunScriptClass.getextension(
                 smodule_name if smodule_name is not None else module_name,
                 runtimes=run_times,
                 speed=speed)
             j = 0
+            extension.onbeginp()
             while j < extension.runtimes or extension.runtimes == 0:
                 logger.info('=========== %d ===========' % j)
                 try:
                     if extension.onbeforeeachloop(j):
-                        UIFunc.RunScriptClass.run_script_once(events, extension)
+                        UIFunc.RunScriptClass.run_script_once(events, extension, labeldict=labeldict)
                     extension.onaftereachloop(j)
                     j += 1
                 except BreakProcess:
