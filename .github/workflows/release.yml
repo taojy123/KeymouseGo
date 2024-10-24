@@ -30,7 +30,7 @@ jobs:
           pyinstaller -Fw --icon=Mondrian.ico --add-data './assets;assets' KeymouseGo.py
       - name: Copy artifact
         run: |
-          mkdir artifact && mv dist/cmd.exe ./artifact/cmd${{ env.keymousego-version }}-win.exe
+          mkdir artifact && mv dist/KeymouseGo.exe ./artifact/cmd${{ env.keymousego-version }}-win.exe
         #mkdir artifact && mv dist/KeymouseGo.exe ./artifact/KeymouseGo${{ env.keymousego-version }}-win.exe
       - name: Artifact
         uses: actions/upload-artifact@main
