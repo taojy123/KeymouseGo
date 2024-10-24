@@ -9,10 +9,10 @@ SW, SH = pyautogui.size()
 
 
 class UniversalEvent(Event):
-    # 改变坐标
-    # pos 为包含横纵坐标的元组
-    # 值为int型:绝对坐标
-    # 值为float型:相对坐标
+    # 改變坐標
+    # pos 為包含橫縱坐標的元組
+    # 值為int型:絕對坐標
+    # 值為float型:相對坐標
     def changepos(self, pos: tuple):
         if self.event_type == 'EM':
             x, y = pos
@@ -30,13 +30,13 @@ class UniversalEvent(Event):
 
         if self.event_type == 'EM':
             x, y = self.action
-            # 兼容旧版的绝对坐标
+            # 兼容舊版的絕對坐標
             if not isinstance(x, int) and not isinstance(y, int):
                 x = float(re.match('([0-1].[0-9]+)%', x).group(1))
                 y = float(re.match('([0-1].[0-9]+)%', y).group(1))
 
             if self.action == [-1, -1]:
-                # 约定 [-1, -1] 表示鼠标保持原位置不动
+                # 約定 [-1, -1] 表示鼠標保持原位置不動
                 pass
             else:
                 if not isinstance(x, int):
