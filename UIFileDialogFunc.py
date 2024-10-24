@@ -35,7 +35,7 @@ class FileDialog(Ui_Dialog):
     
 
     def choice_file(self):
-        file = QFileDialog.getOpenFileName(self.main_window, "选择文件", dir=to_abs_path('scripts'), filter='*.txt')[0]
+        file = QFileDialog.getOpenFileName(self.main_window, "選擇文件", dir=to_abs_path('scripts'), filter='*.txt')[0]
         file_name = re.split(r'\\|\/', file)[-1]
         if file_name != '':
             scripts_map['current_index'] = scripts_map[file_name]
