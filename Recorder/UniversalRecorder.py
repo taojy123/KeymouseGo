@@ -20,7 +20,7 @@ renamedic = {'cmd': 'win', 'shift_r': 'shiftright', 'alt_r': 'altright', 'ctrl_r
 def get_delay(message):
     delay = globalv.current_ts() - globalv.latest_time
 
-    # 录制鼠标轨迹的精度，数值越小越精准，但同时可能产生大量的冗余
+    # 錄制鼠標軌跡的精度，數值越小越精準，但同時可能產生大量的冗余
     mouse_move_interval_ms = globalv.mouse_interval_ms or 999999
 
     if message == 'mouse move' and delay < mouse_move_interval_ms:
