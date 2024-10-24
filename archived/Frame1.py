@@ -1,6 +1,6 @@
 # cython: language_level=3
 # Boa:Frame:Frame1
-# 老版本代码
+# 老版本代碼
 
 import os
 import time
@@ -35,8 +35,8 @@ HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12']
 conf = config.getconfig()
 i18n.load_path.append('i18n')
 i18n.set('locale', conf['language'])
-ID_MAP = {'zh-cn':0, 'en':1}
-RID_MAP = {0:'zh-cn', 1:'en'}
+ID_MAP = {'zh-tw':0, 'en':1}
+RID_MAP = {0:'zh-tw', 1:'en'}
 
 def GetMondrianStream():
     data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00 \x00\x00\x00 \x08\x06\x00\x00\x00szz\xf4\x00\x00\x00\x04sBIT\x08\x08\x08\x08|\x08d\x88\x00\x00\x00qIDATX\x85\xed\xd6;\n\x800\x10E\xd1{\xc5\x8d\xb9r\x97\x16\x0b\xad$\x8a\x82:\x16o\xda\x84pB2\x1f\x81Fa\x8c\x9c\x08\x04Z{\xcf\xa72\xbcv\xfa\xc5\x08 \x80r\x80\xfc\xa2\x0e\x1c\xe4\xba\xfaX\x1d\xd0\xde]S\x07\x02\xd8>\xe1wa-`\x9fQ\xe9\x86\x01\x04\x10\x00\\(Dk\x1b-\x04\xdc\x1d\x07\x14\x98;\x0bS\x7f\x7f\xf9\x13\x04\x10@\xf9X\xbe\x00\xc9 \x14K\xc1<={\x00\x00\x00\x00IEND\xaeB`\x82'
@@ -105,13 +105,13 @@ class Frame1(wx.Frame):
               size=self.FromDIP(wx.Size(56, 32)), style=0)
         self.btrun.Bind(wx.EVT_BUTTON, self.OnBtrunButton, id=wxID_FRAME1BTRUN)
 
-        # 暂停/继续 功能不适合用按钮的形式来做，所以暂时隐去
-        # self.btpause = wx.Button(id=wxID_FRAME1BTPAUSE, label='暂停',
+        # 暫停/繼續 功能不適合用按鈕的形式來做，所以暫時隱去
+        # self.btpause = wx.Button(id=wxID_FRAME1BTPAUSE, label='暫停',
         #       name='btpause', parent=self.panel1, pos=self.FromDIP(wx.Point(274, 141)),
         #       size=self.FromDIP(wx.Size(56, 32)), style=0)
         # self.btpause.Bind(wx.EVT_BUTTON, self.OnBtpauseButton, id=wxID_FRAME1BTPAUSE)
 
-        # 暂停录制
+        # 暫停錄制
         self.btpauserecord = wx.Button(id=wxID_FRAME1BTPAUSE, label=i18n.t('lang.pauserecord'),
                name='btpauserecording', parent=self.panel1, pos=self.FromDIP(wx.Point(213, 135)),
                size=self.FromDIP(wx.Size(86, 32)), style=0)
@@ -230,14 +230,14 @@ class Frame1(wx.Frame):
             parent=self.panel1, pos=self.FromDIP(wx.Point(120, 245)), size=self.FromDIP(wx.Size(150, 50)),
             )
 
-        self.choice_language = wx.Choice(choices=['简体中文', 'English'], id=wxID_LANGUAGECHOICE,
+        self.choice_language = wx.Choice(choices=['繁體中文', 'English'], id=wxID_LANGUAGECHOICE,
             parent=self.panel1, pos=self.FromDIP(wx.Point(281, 240)),
             size=self.FromDIP(wx.Size(70, 25)), style=0)
         self.choice_language.SetSelection(ID_MAP[conf['language']])
 
         # ===== if use SetProcessDpiAwareness, comment below =====
         # self.label_scale = wx.StaticText(id=wxID_FRAME1STATICTEXT5,
-        #       label='屏幕缩放', name='staticText5',
+        #       label='螢幕縮放', name='staticText5',
         #       parent=self.panel1, pos=self.FromDIP(wx.Point(16, 141)), size=self.FromDIP(wx.Size(56, 32)),
         #       style=0)
         # self.text_scale = wx.TextCtrl(id=wxID_FRAME1TEXTCTRL3, name='textCtrl3',
@@ -294,14 +294,14 @@ class Frame1(wx.Frame):
 
         def on_mouse_event(event):
 
-            # print('MessageName:',event.MessageName)  #事件名称
+            # print('MessageName:',event.MessageName)  #事件名稱
             # print('Message:',event.Message)          #windows消息常量 
-            # print('Time:',event.Time)                #事件发生的时间戳        
+            # print('Time:',event.Time)                #事件發生的時間戳        
             # print('Window:',event.Window)            #窗口句柄         
-            # print('WindowName:',event.WindowName)    #窗口标题
-            # print('Position:',event.Position)        #事件发生时相对于整个屏幕的坐标
-            # print('Wheel:',event.Wheel)              #鼠标滚轮
-            # print('Injected:',event.Injected)        #判断这个事件是否由程序方式生成，而不是正常的人为触发。
+            # print('WindowName:',event.WindowName)    #窗口標題
+            # print('Position:',event.Position)        #事件發生時相對於整個屏幕的坐標
+            # print('Wheel:',event.Wheel)              #鼠標滾輪
+            # print('Injected:',event.Injected)        #判斷這個事件是否由程序方式生成，而不是正常的人為觸發。
             # print('---')
 
             if not self.recording or self.running or self.pauserecord:
@@ -321,7 +321,7 @@ class Frame1(wx.Frame):
 
             delay = current_ts() - self.ttt
 
-            # 录制鼠标轨迹的精度，数值越小越精准，但同时可能产生大量的冗余
+            # 錄制鼠標軌跡的精度，數值越小越精準，但同時可能產生大量的冗余
             mouse_move_interval_ms = self.mouse_move_interval_ms.Value or 999999
 
             if message == 'mouse move' and delay < mouse_move_interval_ms:
@@ -348,19 +348,19 @@ class Frame1(wx.Frame):
 
         def on_keyboard_event(event):
 
-            # print('MessageName:',event.MessageName)          #同上，共同属性不再赘述
+            # print('MessageName:',event.MessageName)          #同上，共同屬性不再贅述
             # print('Message:',event.Message)
             # print('Time:',event.Time)
             # print('Window:',event.Window)
             # print('WindowName:',event.WindowName)
-            # print('Ascii:', event.Ascii, chr(event.Ascii))   #按键的ASCII码
-            # print('Key:', event.Key)                         #按键的名称
-            # print('KeyID:', event.KeyID)                     #按键的虚拟键值
-            # print('ScanCode:', event.ScanCode)               #按键扫描码
-            # print('Extended:', event.Extended)               #判断是否为增强键盘的扩展键
+            # print('Ascii:', event.Ascii, chr(event.Ascii))   #按鍵的ASCII碼
+            # print('Key:', event.Key)                         #按鍵的名稱
+            # print('KeyID:', event.KeyID)                     #按鍵的虛擬鍵值
+            # print('ScanCode:', event.ScanCode)               #按鍵掃描碼
+            # print('Extended:', event.Extended)               #判斷是否為增強鍵盤的擴展鍵
             # print('Injected:', event.Injected)
-            # print('Alt', event.Alt)                          #是某同时按下Alt
-            # print('Transition', event.Transition)            #判断转换状态
+            # print('Alt', event.Alt)                          #是某同時按下Alt
+            # print('Transition', event.Transition)            #判斷轉換狀態
             # print('---')
 
             message = event.MessageName
@@ -434,7 +434,7 @@ class Frame1(wx.Frame):
             if message not in all_messages:
                 return True
 
-            # 不录制热键
+            # 不錄制熱鍵
             hot_keys = [HOT_KEYS[self.choice_start.GetSelection()],
                         HOT_KEYS[self.choice_stop.GetSelection()],
                         HOT_KEYS[self.choice_record.GetSelection()]]
@@ -545,7 +545,7 @@ class Frame1(wx.Frame):
             status = self.tnumrd.GetLabel()
             if 'running' in status or 'recorded' in status:
                 return
-            self.btrecord.SetLabel(i18n.t('lang.finish'))  # 结束
+            self.btrecord.SetLabel(i18n.t('lang.finish'))  # 結束
             self.tnumrd.SetLabel('0 actions recorded')
             self.choice_script.SetSelection(-1)
             self.record = []
@@ -665,7 +665,7 @@ class RunScriptClass(threading.Thread):
                 print(e)
 
         for line in lines:
-            # 去注释
+            # 去注釋
             if '//' in line:
                 index = line.find('//')
                 line = line[:index]
@@ -673,7 +673,7 @@ class RunScriptClass(threading.Thread):
             line = line.strip()
             content += line
 
-        # 去最后一个元素的逗号（如有）
+        # 去最後一個元素的逗號（如有）
         content = content.replace('],\n]', ']\n]').replace('],]', ']]')
 
         print(content)
@@ -707,21 +707,21 @@ class RunScriptClass(threading.Thread):
 
             if event_type == 'EM':
                 x, y = action
-                # 兼容旧版的绝对坐标
+                # 兼容舊版的絕對坐標
                 if not isinstance(x, int) and not isinstance(y, int):
                     x = float(re.match('([0-1].[0-9]+)%', x).group(1))
                     y = float(re.match('([0-1].[0-9]+)%', y).group(1))
 
                 if action == [-1, -1]:
-                    # 约定 [-1, -1] 表示鼠标保持原位置不动
+                    # 約定 [-1, -1] 表示鼠標保持原位置不動
                     pass
                 else:
-                    # 挪动鼠标 普通做法
+                    # 挪動鼠標 普通做法
                     # ctypes.windll.user32.SetCursorPos(x, y)
                     # or
                     # win32api.SetCursorPos([x, y])
 
-                    # 更好的兼容 win10 屏幕缩放问题
+                    # 更好的兼容 win10 屏幕縮放問題
                     if isinstance(x, int) and isinstance(y, int):
                         nx = int(x * 65535 / SW)
                         ny = int(y * 65535 / SH)
@@ -758,7 +758,7 @@ class RunScriptClass(threading.Thread):
                 # if key_code >= 160 and key_code <= 165:
                 #     key_code = int(key_code/2) - 64
 
-                # 不执行热键
+                # 不執行熱鍵
                 hot_keys = [HOT_KEYS[thd.frame.choice_start.GetSelection()], HOT_KEYS[thd.frame.choice_stop.GetSelection()]]
                 if key_name in hot_keys:
                     continue
