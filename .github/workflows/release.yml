@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  keymousego-version: _v5_1_1
+  keymousego-version: _v5_1_1_Tw
 
 jobs:
   build-windows:
@@ -30,57 +30,58 @@ jobs:
           pyinstaller -Fw --icon=Mondrian.ico --add-data './assets;assets' KeymouseGo.py
       - name: Copy artifact
         run: |
-          mkdir artifact && mv dist/KeymouseGo.exe ./artifact/KeymouseGo${{ env.keymousego-version }}-win.exe
+          mkdir artifact && mv dist/cmd.exe ./artifact/cmd${{ env.keymousego-version }}-win.exe
+        #mkdir artifact && mv dist/KeymouseGo.exe ./artifact/KeymouseGo${{ env.keymousego-version }}-win.exe
       - name: Artifact
         uses: actions/upload-artifact@main
         with:
           name: windows
           path: ${{ github.workspace }}/artifact/
 
-  build-linux:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@main
-      - name: Set up Python 3.7
-        uses: actions/setup-python@main
-        with:
-          python-version: "3.7"
-      - name: Install dependencies
-        run: |
-          pip3 install -r requirements-universal.txt
-          pip3 install pyinstaller
-      - name: Bundle Packages
-        run: |
-          pyinstaller -Fw --add-data './assets:assets' KeymouseGo.py
-      - name: Copy artifact
-        run: |
-          mkdir artifact && mv dist/KeymouseGo ./artifact/KeymouseGo${{ env.keymousego-version }}-linux
-      - name: Artifact
-        uses: actions/upload-artifact@main
-        with:
-          name: linux
-          path: ${{ github.workspace }}/artifact/
+#  build-linux:
+#   runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@main
+#      - name: Set up Python 3.7
+#        uses: actions/setup-python@main
+#        with:
+#          python-version: "3.7"
+#      - name: Install dependencies
+#        run: |
+#          pip3 install -r requirements-universal.txt
+#          pip3 install pyinstaller
+#      - name: Bundle Packages
+#        run: |
+#          pyinstaller -Fw --add-data './assets:assets' KeymouseGo.py
+#      - name: Copy artifact
+#        run: |
+#          mkdir artifact && mv dist/KeymouseGo ./artifact/KeymouseGo${{ env.keymousego-version }}-linux
+#      - name: Artifact
+#        uses: actions/upload-artifact@main
+#        with:
+#          name: linux
+#          path: ${{ github.workspace }}/artifact/
 
-  build-macos:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@main
-      - name: Set up Python 3.7
-        uses: actions/setup-python@main
-        with:
-          python-version: "3.7"
-      - name: Install dependencies
-        run: |
-          pip3 install -r requirements-universal.txt
-          pip3 install pyinstaller
-      - name: Bundle Packages
-        run: |
-          pyinstaller -Fw --add-data './assets:assets' KeymouseGo.py
-      - name: Copy artifact
-        run: |
-          mkdir artifact && mv dist/KeymouseGo.app ./artifact/KeymouseGo${{ env.keymousego-version }}-mac
-      - name: Artifact
-        uses: actions/upload-artifact@main
-        with:
-          name: macos
-          path: ${{ github.workspace }}/artifact/
+#  build-macos:
+#    runs-on: macos-latest
+#    steps:
+#      - uses: actions/checkout@main
+#      - name: Set up Python 3.7
+#        uses: actions/setup-python@main
+#        with:
+#          python-version: "3.7"
+#      - name: Install dependencies
+#        run: |
+#          pip3 install -r requirements-universal.txt
+#          pip3 install pyinstaller
+#      - name: Bundle Packages
+#        run: |
+#          pyinstaller -Fw --add-data './assets:assets' KeymouseGo.py
+#      - name: Copy artifact
+#        run: |
+#          mkdir artifact && mv dist/KeymouseGo.app ./artifact/KeymouseGo${{ env.keymousego-version }}-mac
+#      - name: Artifact
+#        uses: actions/upload-artifact@main
+#        with:
+#          name: macos
+#          path: ${{ github.workspace }}/artifact/
