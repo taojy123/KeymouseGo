@@ -3,19 +3,19 @@ class ProcessException(Exception):
         self.args = args
 
 
-# 跳转到索引为index的脚本行
+# 跳轉到索引為index的腳本行
 class JumpProcess(ProcessException):
     def __init__(self, index):
         self.index = index
 
 
-# 终止当前执行
+# 終止當前執行
 class BreakProcess(ProcessException):
     def __init__(self):
         pass
 
 
-# 终止全部执行
+# 終止全部執行
 class EndProcess(ProcessException):
     def __init__(self):
         pass
