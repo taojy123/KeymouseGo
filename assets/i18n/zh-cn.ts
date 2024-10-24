@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="zh_CN">
+<TS version="2.1" language="zh_TW">
 <context>
     <name>Dialog</name>
     <message>
@@ -12,20 +12,20 @@
     <message>
         <location filename="UIFileDialogView.ui" line="33"/>
         <source>file name</source>
-        <translatorcomment>文件名称</translatorcomment>
-        <translation>文件名称</translation>
+        <translatorcomment>文件名稱</translatorcomment>
+        <translation>文件名稱</translation>
     </message>
     <message>
         <location filename="UIFileDialogView.ui" line="59"/>
         <source>choice</source>
-        <translatorcomment>选择文件</translatorcomment>
-        <translation>选择文件</translation>
+        <translatorcomment>選擇文件</translatorcomment>
+        <translation>選擇文件</translation>
     </message>
     <message>
         <location filename="UIFileDialogView.ui" line="66"/>
         <source>edit</source>
-        <translatorcomment>编辑文件</translatorcomment>
-        <translation>编辑文件</translation>
+        <translatorcomment>編輯文件</translatorcomment>
+        <translation>編輯文件</translation>
     </message>
     <message>
         <location filename="UIFileDialogView.ui" line="73"/>
@@ -40,8 +40,8 @@
     </message>
     <message>
         <source>PINFN</source>
-        <translatorcomment>请输入新文件名：</translatorcomment>
-        <translation>请输入新文件名：</translation>
+        <translatorcomment>請輸入新文件名：</translatorcomment>
+        <translation>請輸入新文件名：</translation>
     </message>
     <message>
         <source>Success</source>
@@ -51,7 +51,7 @@
     <message>
         <source>FNCBEOS</source>
         <translatorcomment>文件名不能未空或空格</translatorcomment>
-        <translation>文件名不能为空或空格</translation>
+        <translation>文件名不能為空或空格</translation>
     </message>
 </context>
 <context>
@@ -64,56 +64,56 @@
     <message>
         <location filename="UIView.ui" line="31"/>
         <source>Hotkeys</source>
-        <translatorcomment>热键</translatorcomment>
-        <translation>热键</translation>
+        <translatorcomment>熱鍵</translatorcomment>
+        <translation>熱鍵</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="69"/>
         <source>Terminate</source>
-        <translatorcomment>终止录制</translatorcomment>
-        <translation>终止录制</translation>
+        <translatorcomment>終止錄制</translatorcomment>
+        <translation>終止錄制</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="76"/>
         <source>Language</source>
-        <translatorcomment>语言</translatorcomment>
-        <translation>语言</translation>
+        <translatorcomment>語言</translatorcomment>
+        <translation>語言</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="106"/>
         <source>Record/Pause</source>
-        <translatorcomment>开始/暂停录制</translatorcomment>
-        <translation>开始/暂停录制</translation>
+        <translatorcomment>開始/暫停錄制</translatorcomment>
+        <translation>開始/暫停錄制</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="123"/>
         <source>Extension</source>
-        <translatorcomment>扩展插件</translatorcomment>
-        <translation>扩展插件</translation>
+        <translatorcomment>擴展插件</translatorcomment>
+        <translation>擴展插件</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="130"/>
         <source>Launch/Pause</source>
-        <translatorcomment>开始/暂停执行</translatorcomment>
-        <translation>开始/暂停执行</translation>
+        <translatorcomment>開始/暫停執行</translatorcomment>
+        <translation>開始/暫停執行</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="158"/>
         <source>Record</source>
-        <translatorcomment>开始录制</translatorcomment>
-        <translation>开始录制</translation>
+        <translatorcomment>開始錄制</translatorcomment>
+        <translation>開始錄制</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="171"/>
         <source>Launch</source>
-        <translatorcomment>启动</translatorcomment>
-        <translation>启动</translation>
+        <translatorcomment>啟動</translatorcomment>
+        <translation>啟動</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="187"/>
         <source>Pause Record</source>
-        <translatorcomment>暂停录制</translatorcomment>
-        <translation>暂停录制</translation>
+        <translatorcomment>暫停錄制</translatorcomment>
+        <translation>暫停錄制</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="206"/>
@@ -135,32 +135,32 @@
     <message>
         <location filename="UIView.ui" line="292"/>
         <source>Mouse precision</source>
-        <translatorcomment>鼠标精度</translatorcomment>
-        <translation>鼠标精度</translation>
+        <translatorcomment>鼠標精度</translatorcomment>
+        <translation>鼠標精度</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="299"/>
         <source>Running speed(%)</source>
-        <translatorcomment>执行速度(%)</translatorcomment>
-        <translation>执行速度(%)</translation>
+        <translatorcomment>執行速度(%)</translatorcomment>
+        <translation>執行速度(%)</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="306"/>
         <source>Run times</source>
-        <translatorcomment>执行次数</translatorcomment>
-        <translation>执行次数</translation>
+        <translatorcomment>執行次數</translatorcomment>
+        <translation>執行次數</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="313"/>
         <source>Theme</source>
-        <translatorcomment>主题</translatorcomment>
-        <translation>主题</translation>
+        <translatorcomment>主題</translatorcomment>
+        <translation>主題</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="320"/>
         <source>Script</source>
-        <translatorcomment>脚本</translatorcomment>
-        <translation>脚本</translation>
+        <translatorcomment>腳本</translatorcomment>
+        <translation>腳本</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="402"/>
@@ -169,18 +169,18 @@
     </message>
     <message>
         <source>Finish</source>
-        <translatorcomment>结束录制</translatorcomment>
-        <translation>结束录制</translation>
+        <translatorcomment>結束錄制</translatorcomment>
+        <translation>結束錄制</translation>
     </message>
     <message>
         <source>Continue</source>
-        <translatorcomment>继续录制</translatorcomment>
-        <translation>继续录制</translation>
+        <translatorcomment>繼續錄制</translatorcomment>
+        <translation>繼續錄制</translation>
     </message>
     <message>
         <source>Pause</source>
-        <translatorcomment>暂停录制</translatorcomment>
-        <translation>暂停录制</translation>
+        <translatorcomment>暫停錄制</translatorcomment>
+        <translation>暫停錄制</translation>
     </message>
 </context>
 </TS>
