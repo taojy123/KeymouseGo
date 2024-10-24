@@ -3,7 +3,7 @@ from abc import ABCMeta, abstractmethod
 
 
 class Event(metaclass=ABCMeta):
-    # 传入字典进行初始化
+    # 傳入字典進行初始化
     def __init__(self, content):
         self.delay = content['delay']
         self.event_type = content['event_type']
@@ -22,7 +22,7 @@ class Event(metaclass=ABCMeta):
         else:
             return '{0} after {1}ms'.format(self.message, self.delay)
 
-    # 延时
+    # 延時
     def sleep(self, thd=None):
         if thd:
             thd.sleep(self.delay)
