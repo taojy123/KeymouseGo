@@ -1,0 +1,18 @@
+zh-cn:
+  script: 腳本
+  record: 錄制
+  finish: 結束
+  pause: 暫停
+  pauserecord: 暫停錄制
+  continuerecord: 繼續錄制
+  continue: 繼續
+  launch: 啟動
+  launchhotkey: 啟動/暫停執行熱鍵
+  terminatehotkey: 終止熱鍵
+  recordhotkey: 開始/暫停錄制熱鍵
+  precision: 鼠標精度
+  speed: 執行速度(%)
+  tip: 執行次數(0為無限循環)
+  tip2: 數值越小鼠標軌跡越精準,為0則不記錄
+  range: 範圍(20%-500%)
+  language: 語言(需要重啟程序)
