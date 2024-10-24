@@ -89,11 +89,11 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.setFocusPolicy(Qt.NoFocus)
 
         self.trans = QTranslator(self)
-        self.choice_language.addItems(['简体中文', 'English'])
+        self.choice_language.addItems(['繁體中文', 'English'])
         self.choice_language.currentTextChanged.connect(self.onchangelang)
 
-        # 获取默认的地区设置
-        language = '简体中文' if locale.getdefaultlocale()[0] == 'zh_CN' else 'English'
+        # 獲取默認的地區設置
+        language = '繁體中文' if locale.getdefaultlocale()[0] == 'zh_TW' else 'English'
         self.choice_language.setCurrentText(language)
         self.onchangelang()
 
@@ -180,7 +180,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
         self.extension = None
 
-        # 热键响应逻辑
+        # 熱鍵響應邏輯
         def hotkeymethod(key_name):
             start_index = self.choice_start.currentIndex()
             stop_index = self.choice_stop.currentIndex()
@@ -241,7 +241,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
         @Slot(ScriptEvent)
         def on_record_event(event: ScriptEvent):
-            # 判断mouse热键
+            # 判斷mouse熱鍵
             if event.event_type == "EM":
                 name = event.message
                 if 'mouse x1 down' == name and hotkeymethod('xbutton1'):
@@ -257,10 +257,10 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                     # start_name = 'f6'  # as default
                     # stop_name = 'f9'  # as default
                     hotkeymethod(key_name.lower())
-                # 不录制热键
+                # 不錄制熱鍵
                 if key_name in HOT_KEYS:
                     return
-            # 录制事件
+            # 錄制事件
             if not (not self.recording or self.running or self.pauserecord):
                 if self.extension.onrecord(event, self.actioncount):
                     if event.event_type == 'EM' and not flag_multiplemonitor:
@@ -303,8 +303,8 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
     def onchangelang(self):
         global scripts_map
 
-        if self.choice_language.currentText() == '简体中文':
-            self.trans.load(get_assets_path('i18n', 'zh-cn'))
+        if self.choice_language.currentText() == '繁體中文':
+            self.trans.load(get_assets_path('i18n', 'zh-tw'))
             _app = QApplication.instance()
             _app.installTranslator(self.trans)
             self.retranslateUi(self)
@@ -342,7 +342,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                         'LoopTimes=1\n'
                         'Precision=200\n'
                         'ExecuteSpeed=100\n'
-                        'Language=zh-cn\n'
+                        'Language=zh-tw\n'
                         'Extension=Extension\n'
                         'Theme=light_cyan_500.xml\n')
         return QSettings(to_abs_path('config.ini'), QSettings.IniFormat)
@@ -396,7 +396,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.bt_open_script_files.setDisabled(False)
         self.btrecord.setDisabled(False)
         self.btrun.setDisabled(False)
-        # 重新设置的为点击按钮时, 所处的位置
+        # 重新設置的為點擊按鈕時, 所處的位置
         self.choice_script.clear()
         self.choice_script.addItems(scripts)
         self.choice_script.setCurrentIndex(scripts_map['current_index'])
@@ -461,7 +461,7 @@ class RunScriptClass(QThread):
         self.frame = frame
         self.eventPause = False
 
-        # 更新控件的槽函数
+        # 更新控件的槽函數
         self.logSignal.connect(frame.textlog.append)
         self.tnumrdSignal.connect(frame.tnumrd.setText)
         self.btnSignal.connect(frame.btrun.setEnabled)
@@ -512,7 +512,7 @@ class RunScriptClass(QThread):
             self.tnumrdSignal.emit(self.running_text)
             logger.info('%s running..' % script_path.split('/')[-1].split('\\')[-1])
 
-            # 解析脚本，返回事件集合与扩展类对象
+            # 解析腳本，返回事件集合與擴展類對象
             logger.debug('Parse script..')
             try:
                 events, module_name, labeldict = RunScriptClass.parsescript(script_path,
@@ -577,7 +577,7 @@ class RunScriptClass(QThread):
         finally:
             self.btnSignal.emit(True)
 
-    # 获取扩展实例
+    # 獲取擴展實例
     @classmethod
     @logger.catch
     def getextension(cls, module_name='Extension', runtimes=1, speed=100, thd=None, swap=None):
@@ -590,7 +590,7 @@ class RunScriptClass(QThread):
         logger.info('Load plugin class {0} in module {1}'.format(module_cls, module_name))
         return module_cls(runtimes, speed, thd, swap)
 
-    # 解析脚本内容，转换为ScriptEvent集合
+    # 解析腳本內容，轉換為ScriptEvent集合
     @classmethod
     def parsescript(cls, script_path, speed=100):
         content = ''
@@ -607,7 +607,7 @@ class RunScriptClass(QThread):
                 logger.error(e)
 
         for line in lines:
-            # 去注释
+            # 去注釋
             if '//' in line:
                 index = line.find('//')
                 line = line[:index]
@@ -615,7 +615,7 @@ class RunScriptClass(QThread):
             line = line.strip()
             content += line
 
-        # 去最后一个元素的逗号（如有）
+        # 去最後一個元素的逗號（如有）
         content = content.replace('],\n]', ']\n]').replace('],]', ']]')
 
         logger.debug('Script content')
@@ -631,7 +631,7 @@ class RunScriptClass(QThread):
             startindex = 1
         numoflabels = 0
         labeldict = {'Start': 0}
-        # 识别标签或脚本语句
+        # 識別標簽或腳本語句
         for i in range(startindex, steps):
             if type(s[i]) == str:
                 labeldict[s[i]] = i - numoflabels - startindex
@@ -690,7 +690,7 @@ class RunScriptClass(QThread):
         else:
             logger.info('Subscript run interrupted at loop %d' % k)
 
-    # 执行集合中的ScriptEvent
+    # 執行集合中的ScriptEvent
     @classmethod
     def run_script_once(cls, events, extension, thd=None, labeldict=None):
         steps = len(events)
