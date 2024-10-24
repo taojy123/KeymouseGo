@@ -12,12 +12,12 @@ else:
 setuphook = _Recorder.setuphook
 
 
-# 捕获到事件后调用函数
+# 捕獲到事件後調用函數
 def set_callback(callback):
     _Recorder.record_signals.event_signal.connect(callback)
 
 
-# 槽函数:改变鼠标精度
+# 槽函數:改變鼠標精度
 @Slot(int)
 def set_interval(value):
     globals.mouse_interval_ms = value
