@@ -1,11 +1,8 @@
-# cython: language_level=3
-# !/usr/bin/env python
-# Boa:App:BoaApp
 import os
 import sys
 import math
 from PySide6.QtWidgets import QApplication, QWidget, QSpinBox
-from PySide6.QtCore import Slot, QRect
+from PySide6.QtCore import Qt, Slot, QRect
 
 import UIFunc
 import Recorder
@@ -39,6 +36,7 @@ def resize_layout(ui, ratio_w, ratio_h):
 def main():
 
     app = QApplication(sys.argv)
+    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
     ui = UIFunc.UIFunc(app)
 
     ui.setFixedSize(ui.width(), ui.height())
