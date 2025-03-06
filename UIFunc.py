@@ -1,5 +1,6 @@
 # -*- encoding:utf-8 -*-
 import datetime
+
 import json5
 import os
 import sys
@@ -21,6 +22,7 @@ from UIView import Ui_UIView
 
 from KeymouseGo import to_abs_path
 from Util.RunScriptClass import RunScriptClass
+from Util.Global import State
 from Util.ClickedLabel import Label
 
 
@@ -68,8 +70,9 @@ def update_script_map():
     for (i, item) in enumerate(scripts):
         scripts_map[item] = i
 
-
 class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
+    updateStateSignal: Signal = Signal(State)
+
     def __init__(self, app):
         global scripts
 
@@ -80,6 +83,8 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.setupUi(self)
 
         self.app = app
+
+        self.state = State(State.IDLE)
 
         self.config = self.loadconfig()
 
@@ -103,6 +108,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
         PluginManager.reload()
 
+        # Config
         self.choice_theme.addItems(['Default'])
         self.choice_theme.addItems(list_themes())
         self.choice_theme.addItems(PluginManager.resources_paths)
@@ -134,21 +140,12 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             lambda: self.player.setVolume(
                 self.volumeSlider.value()/100.0))
 
-        self.running = False
-        self.recording = False
         self.record = []
-
-        # for pause-resume feature
-        self.paused = False
-
-        # Pause-Resume Record
-        self.pauserecord = False
 
         self.actioncount = 0
 
         # For better thread control
         self.runthread = None
-        self.is_broken_or_finish = True
 
         self.btrun.clicked.connect(self.OnBtrunButton)
         self.btrecord.clicked.connect(self.OnBtrecordButton)
@@ -161,7 +158,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.btpauserecord.installEventFilter(self)
         self.bt_open_script_files.installEventFilter(self)
 
-        # 热键响应逻辑
+        # 热键引发状态转移
         def hotkeymethod(key_name):
             start_index = self.choice_start.currentIndex()
             stop_index = self.choice_stop.currentIndex()
@@ -179,45 +176,42 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             stop_name = HOT_KEYS[stop_index].lower()
             record_name = HOT_KEYS[record_index].lower()
 
-            if key_name == start_name and not self.running and not self.recording:
-                logger.info('Script start')
-                self.textlog.clear()
-                self.runthread = RunScriptClass(self)
-                self.runthread.start()
-                self.is_broken_or_finish = False
-                logger.debug('{0} host start'.format(key_name))
-            elif key_name == start_name and self.running and not self.recording:
-                if self.paused:
+            if key_name == start_name:
+                if self.state == State.IDLE:
+                    logger.debug('{0} host start'.format(key_name))
+                    self.OnBtrunButton()
+                elif self.state == State.RUNNING:
+                    logger.info('Script pause')
+                    logger.debug('{0} host pause'.format(key_name))
+                    self.runthread.set_pause()
+                    self.update_state(State.PAUSE_RUNNING)
+                elif self.state == State.PAUSE_RUNNING:
                     logger.info('Script resume')
-                    self.paused = False
                     self.runthread.resume()
                     logger.debug('{0} host resume'.format(key_name))
-                else:
-                    logger.info('Script pause')
-                    self.paused = True
-                    self.runthread.eventPause = True
-                    logger.debug('{0} host pause'.format(key_name))
-            elif key_name == stop_name and self.running and not self.recording:
-                logger.info('Script stop')
-                self.tnumrd.setText('broken')
-                self.is_broken_or_finish = True
-                if self.paused:
-                    self.paused = False
-                self.runthread.resume()
-                logger.debug('{0} host stop'.format(key_name))
-            elif key_name == stop_name and self.recording:
-                self.recordMethod()
-                logger.info('Record stop')
-                logger.debug('{0} host stop record'.format(key_name))
-            elif key_name == record_name and not self.running:
-                if not self.recording:
+                    self.update_state(State.RUNNING)
+            elif key_name == stop_name:
+                if self.state == State.RUNNING or self.state == State.PAUSE_RUNNING:
+                    logger.info('Script stop')
+                    self.tnumrd.setText('broken')
+                    self.runthread.resume()
+                    logger.debug('{0} host stop'.format(key_name))
+                    self.update_state(State.IDLE)
+                elif self.state == State.RECORDING or self.state == State.PAUSE_RECORDING:
                     self.recordMethod()
-                    # logger.info('Record start')
-                    logger.debug('{0} host start record'.format(key_name))
-                else:
+                    logger.info('Record stop')
+                    logger.debug('{0} host stop record'.format(key_name))
+            elif key_name == record_name:
+                if self.state == State.RECORDING:
                     self.pauseRecordMethod()
-                    # logger.info('Record pause')
                     logger.debug('{0} host pause record'.format(key_name))
+                elif self.state == State.PAUSE_RECORDING:
+                    self.pauseRecordMethod()
+                    logger.debug('{0} host resume record'.format(key_name))
+                elif self.state == State.IDLE:
+                    self.recordMethod()
+                    logger.debug('{0} host start record'.format(key_name))
+
             return key_name in [start_name, stop_name, record_name]
 
         @Slot(ScriptEvent)
@@ -242,13 +236,13 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 if key_name in HOT_KEYS:
                     return
             # 录制事件
-            if not(not self.recording or self.running or self.pauserecord):
+            if self.state == State.RECORDING:
                 if event.event_type == 'EM' and not flag_multiplemonitor:
                     tx, ty = event.action
                     event.action = ['{0}%'.format(tx), '{0}%'.format(ty)]
                 event_dict = event.__dict__
                 event_dict['type'] = 'event'
-                PluginManager.call_record(event_dict)
+                # PluginManager.call_record(event_dict)
                 self.record.append(event_dict)
                 self.actioncount = self.actioncount + 1
                 text = '%d actions recorded' % self.actioncount
@@ -296,16 +290,18 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             self.apply_stylesheet(self.app, theme=theme)
         self.config.setValue("Config/Theme", self.choice_theme.currentText())
 
+    @Slot(str)
     def playtune(self, filename: str):
         self.player.setSource(QUrl.fromLocalFile(get_assets_path('sounds', filename)))
         self.player.play()
 
     def closeEvent(self, event):
         self.config.sync()
-        if self.running:
-            self.is_broken_or_finish = True
-            if self.paused:
-                self.paused = False
+        if self.state == State.PAUSE_RUNNING:
+            self.update_state(State.RUNNING)
+        elif self.state == State.PAUSE_RECORDING:
+            self.update_state(State.RECORDING)
+        if self.runthread:
             self.runthread.resume()
         event.accept()
 
@@ -344,15 +340,15 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         return self.get_script_path()
 
     def pauseRecordMethod(self):
-        if self.pauserecord:
+        if self.state == State.PAUSE_RECORDING:
             logger.info('Record resume')
-            self.pauserecord = False
             self.btpauserecord.setText(QCoreApplication.translate("UIView", 'Pause', None))
-        else:
+            self.update_state(State.RECORDING)
+        elif self.state == State.RECORDING:
             logger.info('Record pause')
-            self.pauserecord = True
             self.btpauserecord.setText(QCoreApplication.translate("UIView", 'Continue', None))
             self.tnumrd.setText('record paused')
+            self.update_state(State.PAUSE_RECORDING)
 
     def OnPauseRecordButton(self):
         self.pauseRecordMethod()
@@ -377,9 +373,8 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.choice_script.setCurrentIndex(scripts_map['current_index'])
 
     def recordMethod(self):
-        if self.recording:
+        if self.state == State.RECORDING or self.state == State.PAUSE_RECORDING:
             logger.info('Record stop')
-            self.recording = False
             with open(self.new_script_path(), 'w', encoding='utf-8') as f:
                 json5.dump({"scripts": self.record}, indent=2, ensure_ascii=False, fp=f)
             self.btrecord.setText(QCoreApplication.translate("UIView", 'Record', None))
@@ -388,13 +383,12 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             self.btpauserecord.setEnabled(False)
             self.btrun.setEnabled(True)
             self.actioncount = 0
-            self.pauserecord = False
             self.choice_script.setCurrentIndex(0)
             self.btpauserecord.setText(QCoreApplication.translate("UIView", 'Pause Record', None))
-        else:
+            self.update_state(State.IDLE)
+        elif self.state == State.IDLE:
             logger.info('Record start')
             self.textlog.clear()
-            self.recording = True
             status = self.tnumrd.text()
             if 'running' in status or 'recorded' in status:
                 return
@@ -403,16 +397,27 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             self.record = []
             self.btpauserecord.setEnabled(True)
             self.btrun.setEnabled(False)
+            self.update_state(State.RECORDING)
 
     def OnBtrecordButton(self):
-        if self.recording:
+        if self.state == State.RECORDING or self.state == State.PAUSE_RECORDING:
             self.record = self.record[:-2]
         self.recordMethod()
 
     def OnBtrunButton(self):
         logger.info('Script start')
-        logger.debug('Script start by btn')
         self.textlog.clear()
+        self.update_state(State.RUNNING)
+        if self.runthread:
+            self.updateStateSignal.disconnect()
         self.runthread = RunScriptClass(self)
         self.runthread.start()
-        self.is_broken_or_finish = False
+
+    def update_state(self, state):
+        self.state = state
+        if state != State.SETTING_HOT_KEYS or state != State.RECORDING or state != State.PAUSE_RECORDING:
+            self.updateStateSignal.emit(self.state)
+
+    @Slot(bool)
+    def handle_runscript_status(self, succeed):
+        self.update_state(State.IDLE)

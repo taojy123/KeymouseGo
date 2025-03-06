@@ -3,10 +3,11 @@ import traceback
 from dataclasses import dataclass
 from typing import List
 
-from PySide6.QtCore import QThread, Signal, QMutex, QWaitCondition, QDeadlineTimer
+from PySide6.QtCore import QThread, Signal, QMutex, QWaitCondition, QDeadlineTimer, Qt, Slot
 from PySide6.QtWidgets import QWidget
 from loguru import logger
 
+from Util.Global import State
 from Event import ScriptEvent
 from Plugin.Manager import PluginManager
 from Util.Parser import LegacyParser, ScriptParser, JsonObject
@@ -36,18 +37,25 @@ class RunScriptClass(QThread, RunScriptMeta):
     logSignal: Signal = Signal(str)
     tnumrdSignal: Signal = Signal(str)
     btnSignal: Signal = Signal(bool)
+    statusSignal: Signal = Signal(bool)
+    playtuneSignal: Signal = Signal(str)
 
     def __init__(self, frame: QWidget):
         super().__init__()
         logger.debug('Thread created at thread' + str(threading.currentThread()))
-        self.frame = frame
         self.eventPause = False
+        self.state = State.RUNNING
+        self.script_path = frame.get_script_path()
+        self.runtimes = frame.stimes.value()
 
         # 更新控件的槽函数
         self.logSignal.connect(frame.textlog.append)
         self.tnumrdSignal.connect(frame.tnumrd.setText)
         self.btnSignal.connect(frame.btrun.setEnabled)
         self.btnSignal.connect(frame.btrecord.setEnabled)
+        frame.updateStateSignal.connect(self.update_state, Qt.DirectConnection)
+        self.statusSignal.connect(frame.handle_runscript_status)
+        self.playtuneSignal.connect(frame.playtune)
 
     def sleep(self, msecs: int):
         RunScriptMeta.sleep(self, msecs)
@@ -55,6 +63,13 @@ class RunScriptClass(QThread, RunScriptMeta):
     def resume(self):
         self.eventPause = False
         super().resume()
+
+    def set_pause(self):
+        self.eventPause = True
+
+    @Slot(State)
+    def update_state(self, state):
+        self.state = state
 
     def wait_if_pause(self):
         if self.eventPause:
@@ -64,25 +79,18 @@ class RunScriptClass(QThread, RunScriptMeta):
 
     @logger.catch
     def run(self):
-        logger.debug('Run script at thread' + str(threading.currentThread()))
-        status = self.frame.tnumrd.text()
-        if self.frame.running or self.frame.recording:
-            return
+        logger.debug('Run script at thread' + str(threading.current_thread()))
 
-        if 'running' in status or 'recorded' in status:
-            return
-
-        script_path = self.frame.get_script_path()
-        if not script_path:
-            self.tnumrdSignal.emit('script not found, please self.record first!')
+        if not self.script_path:
+            self.tnumrdSignal.emit('script not found, please record first!')
             logger.warning('Script not found, please record first!')
             return
 
-        self.frame.running = True
         self.btnSignal.emit(False)
-        self.frame.playtune('start.wav')
-        self.run_script_from_path(script_path)
-        self.frame.playtune('end.wav')
+        self.playtuneSignal.emit('start.wav')
+        self.run_script_from_path(self.script_path)
+        self.statusSignal.emit(True)
+        self.playtuneSignal.emit('end.wav')
 
     @logger.catch
     def run_script_from_path(self, script_path: str):
@@ -109,14 +117,11 @@ class RunScriptClass(QThread, RunScriptMeta):
             nointerrupt = True
             logger.debug('Run script..')
 
-            runtimes = self.frame.stimes.value()
-            while (j < runtimes or runtimes == 0) and nointerrupt:
+            while (j < self.runtimes or self.runtimes == 0) and nointerrupt:
                 logger.debug('===========%d==============' % j)
-                current_status = self.frame.tnumrd.text()
-                if current_status in ['broken', 'finished']:
-                    self.frame.running = False
+                if self.state == State.IDLE:
                     break
-                self.tnumrdSignal.emit(f'{running_text}... Looptimes [{j + 1}/{runtimes}]')
+                self.tnumrdSignal.emit(f'{running_text}... Looptimes [{j + 1}/{self.runtimes}]')
                 nointerrupt = nointerrupt and self.run_script_from_objects(head_object)
                 j += 1
             if nointerrupt:
@@ -124,7 +129,6 @@ class RunScriptClass(QThread, RunScriptMeta):
                 logger.info('Script run finish')
             else:
                 logger.info('Script run interrupted')
-            self.frame.running = False
 
         except Exception as e:
             logger.error('Run error: {0}'.format(e))
@@ -133,7 +137,6 @@ class RunScriptClass(QThread, RunScriptMeta):
             self.logSignal.emit(str(e))
             self.logSignal.emit('==============')
             self.logSignal.emit('failed')
-            self.frame.running = False
         finally:
             self.btnSignal.emit(True)
 
@@ -143,7 +146,7 @@ class RunScriptClass(QThread, RunScriptMeta):
         current_object = head_object
         while current_object is not None:
             self.wait_if_pause()
-            if self.frame.is_broken_or_finish:
+            if self.state == State.IDLE:
                 return False
             if attach:
                 PluginManager.call_group(attach, current_object)
@@ -182,7 +185,7 @@ class RunScriptClass(QThread, RunScriptMeta):
 
 @dataclass
 class StopFlag:
-    flag: bool
+    value: bool
 
 
 class RunScriptCMDClass(QThread, RunScriptMeta):
@@ -215,7 +218,7 @@ class RunScriptCMDClass(QThread, RunScriptMeta):
             while j < self.run_times or self.run_times == 0:
                 logger.info('===========%d==============' % j)
                 self.run_script_from_objects(head_object)
-                if self.flag.flag:
+                if self.flag.value:
                     logger.info('Stop Running thread')
                     break
                 j += 1
@@ -225,7 +228,7 @@ class RunScriptCMDClass(QThread, RunScriptMeta):
     def run_script_from_objects(self, head_object: JsonObject, attach: List[str] = None):
         current_object = head_object
         while current_object is not None:
-            if self.flag.flag:
+            if self.flag.value:
                 break
             if attach:
                 PluginManager.call_group(attach, current_object)

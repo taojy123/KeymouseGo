@@ -15,7 +15,7 @@ def to_abs_path(*args):
 
 class PluginManager:
     functions: Dict[str, Callable] = {}
-    record_functions: List[Callable] = []
+    # record_functions: List[Callable] = []
     plugins: List[PluginInterface] = []
     resources_paths: List[str] = []
 
@@ -33,6 +33,8 @@ class PluginManager:
     @staticmethod
     @logger.catch
     def discover_plugin():
+        if not os.path.exists(to_abs_path('plugins')):
+            os.mkdir(to_abs_path('plugins'))
         with os.scandir(to_abs_path('plugins')) as it:
             for entry in it:
                 entry: os.DirEntry
@@ -58,13 +60,13 @@ class PluginManager:
     def register_plugin():
         for plugin_ins in PluginManager.plugins:
             funcs = plugin_ins.register_functions()
-            funcs_rec = plugin_ins.register_record_functions()
+            # funcs_rec = plugin_ins.register_record_functions()
             if funcs:
                 PluginManager.functions.update(funcs)
-            if funcs_rec:
-                PluginManager.record_functions.extend(funcs_rec)
+            # if funcs_rec:
+            #     PluginManager.record_functions.extend(funcs_rec)
         logger.info(f'Registered functions: {PluginManager.functions.keys()}')
-        logger.info(f'Registered record functions: {PluginManager.record_functions}')
+        # logger.info(f'Registered record functions: {PluginManager.record_functions}')
         logger.info(f'Additional Resources: {PluginManager.resources_paths}')
 
     @staticmethod
@@ -82,10 +84,10 @@ class PluginManager:
         for function_name in function_group:
             PluginManager.call(function_name, json_object)
 
-    @staticmethod
-    def call_record(event: Dict[str, Any]):
-        for functions in PluginManager.record_functions:
-            functions(event)
+    # @staticmethod
+    # def call_record(event: Dict[str, Any]):
+    #     for functions in PluginManager.record_functions:
+    #         functions(event)
 
     @staticmethod
     def reload():

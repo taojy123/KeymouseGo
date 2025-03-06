@@ -66,6 +66,8 @@ This program is written in `Python` and packed as executable file. You can downl
 4. pyinstaller -F -w --add-data "./assets:assets" KeymouseGo.py
 ```
 
+The executable program would appear at folder `your_poject_location/dist`.
+
 # Usage
 
 ## Basic operation

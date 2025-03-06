@@ -56,7 +56,7 @@ def single_run(script_path, run_times):
         key_name = event.action[1].lower()
         if key_name == stop_name:
             logger.debug('break exit!')
-            flag.flag = True
+            flag.value = True
             thread.resume()
         return True
 

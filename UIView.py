@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'UIView.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.4.3
+## Created by: Qt User Interface Compiler version 6.7.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -26,9 +26,9 @@ class Ui_UIView(object):
     def setupUi(self, UIView):
         if not UIView.objectName():
             UIView.setObjectName(u"UIView")
-        UIView.resize(651, 446)
+        UIView.resize(651, 482)
         icon = QIcon()
-        icon.addFile(u":/pic/Mondrian.png", QSize(), QIcon.Normal, QIcon.Off)
+        icon.addFile(u":/pic/Mondrian.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         UIView.setWindowIcon(icon)
         self.centralwidget = QWidget(UIView)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -50,7 +50,7 @@ class Ui_UIView(object):
 
         self.choice_language = QComboBox(self.groupBox)
         self.choice_language.setObjectName(u"choice_language")
-        sizePolicy = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.choice_language.sizePolicy().hasHeightForWidth())
@@ -120,7 +120,7 @@ class Ui_UIView(object):
 
         self.verticalLayoutWidget = QWidget(self.centralwidget)
         self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
-        self.verticalLayoutWidget.setGeometry(QRect(10, 210, 631, 216))
+        self.verticalLayoutWidget.setGeometry(QRect(10, 210, 631, 218))
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -190,7 +190,7 @@ class Ui_UIView(object):
 
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
-        self.gridLayout.setSizeConstraint(QLayout.SetMinimumSize)
+        self.gridLayout.setSizeConstraint(QLayout.SetDefaultConstraint)
         self.choice_script = QComboBox(self.groupBox_2)
         self.choice_script.setObjectName(u"choice_script")
         sizePolicy.setHeightForWidth(self.choice_script.sizePolicy().hasHeightForWidth())
@@ -232,7 +232,7 @@ class Ui_UIView(object):
         UIView.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(UIView)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 651, 23))
+        self.menubar.setGeometry(QRect(0, 0, 651, 24))
         UIView.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(UIView)
         self.statusbar.setObjectName(u"statusbar")
@@ -244,7 +244,7 @@ class Ui_UIView(object):
     # setupUi
 
     def retranslateUi(self, UIView):
-        UIView.setWindowTitle(QCoreApplication.translate("UIView", u"KeymouseGo v5.1", None))
+        UIView.setWindowTitle(QCoreApplication.translate("UIView", u"KeymouseGo v5.2", None))
         self.groupBox.setTitle(QCoreApplication.translate("UIView", u"Hotkeys", None))
         self.label_language.setText(QCoreApplication.translate("UIView", u"Language", None))
         self.label_stop.setText(QCoreApplication.translate("UIView", u"Terminate", None))

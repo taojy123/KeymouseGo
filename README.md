@@ -59,6 +59,8 @@
 4. pyinstaller -F -w --add-data "./assets:assets" KeymouseGo.py
 ```
 
+打包完成后，可执行文件在项目路径的`dist`文件夹内。
+
 # 使用方法
 
 ## 基本操作
