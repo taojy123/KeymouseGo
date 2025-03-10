@@ -1,5 +1,6 @@
 # -*- encoding:utf-8 -*-
 import datetime
+from typing import List
 
 import json5
 import os
@@ -12,7 +13,7 @@ import Recorder
 from PySide6.QtGui import QTextCursor
 from qt_material import list_themes, QtStyleTools
 from PySide6.QtCore import *
-from PySide6.QtWidgets import QMainWindow, QApplication
+from PySide6.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PySide6.QtMultimedia import QSoundEffect
 from loguru import logger
 
@@ -112,12 +113,6 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.choice_theme.addItems(['Default'])
         self.choice_theme.addItems(list_themes())
         self.choice_theme.addItems(PluginManager.resources_paths)
-        self.choice_start.addItems(HOT_KEYS)
-        self.choice_stop.addItems(HOT_KEYS)
-        self.choice_record.addItems(HOT_KEYS)
-        self.choice_start.setCurrentIndex(int(self.config.value("Config/StartHotKeyIndex")))
-        self.choice_stop.setCurrentIndex(int(self.config.value("Config/StopHotKeyIndex")))
-        self.choice_record.setCurrentIndex(int(self.config.value("Config/RecordHotKeyIndex")))
         self.stimes.setValue(int(self.config.value("Config/LoopTimes")))
         self.mouse_move_interval_ms.setValue(int(self.config.value("Config/Precision")))
         self.choice_theme.setCurrentText(self.config.value("Config/Theme"))
@@ -128,6 +123,9 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.mouse_move_interval_ms.valueChanged.connect(Recorder.set_interval)
         self.choice_theme.currentTextChanged.connect(self.onchangetheme)
         self.choice_script.currentTextChanged.connect(self.onconfigchange)
+        self.hotkey_stop.setText(self.config.value("Config/StopHotKey"))
+        self.hotkey_start.setText(self.config.value("Config/StartHotKey"))
+        self.hotkey_record.setText(self.config.value("Config/RecordHotKey"))
 
         self.onchangetheme()
 
@@ -158,23 +156,36 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.btpauserecord.installEventFilter(self)
         self.bt_open_script_files.installEventFilter(self)
 
+        # 组合键缓冲池，[ctrl,shift,alt,cmd/start/win]可用作组合键，但不能单独用作启动热键
+        self.keys_pool: List[str] = []
+        self.hotkey_set_btn = None
+        self.hotkey_stop.clicked.connect(lambda: self.OnHotkeyButton(self.hotkey_stop))
+        self.hotkey_start.clicked.connect(lambda: self.OnHotkeyButton(self.hotkey_start))
+        self.hotkey_record.clicked.connect(lambda: self.OnHotkeyButton(self.hotkey_record))
+
         # 热键引发状态转移
-        def hotkeymethod(key_name):
-            start_index = self.choice_start.currentIndex()
-            stop_index = self.choice_stop.currentIndex()
-            record_index = self.choice_record.currentIndex()
-            # Predict potential conflict
-            if start_index == stop_index:
-                stop_index = (stop_index + 1) % len(HOT_KEYS)
-                self.choice_stop.setCurrentIndex(stop_index)
-            if start_index == record_index:
-                record_index = (record_index + 1) % len(HOT_KEYS)
-                if record_index == stop_index:
-                    record_index = (record_index + 1) % len(HOT_KEYS)
-                self.choice_record.setCurrentIndex(record_index)
-            start_name = HOT_KEYS[start_index].lower()
-            stop_name = HOT_KEYS[stop_index].lower()
-            record_name = HOT_KEYS[record_index].lower()
+        def check_hotkeys(key_name):
+            if key_name in Recorder.globals.key_combination_trigger:
+                if self.state == State.SETTING_HOT_KEYS:
+                    self.hotkey_set_btn.setText('+'.join(self.keys_pool))
+                return False
+            key_name = '+'.join([*self.keys_pool, key_name])
+
+            if self.state == State.SETTING_HOT_KEYS:
+                for btn in [self.hotkey_start, self.hotkey_record, self.hotkey_stop]:
+                    if btn is not self.hotkey_set_btn and btn.text() != '' and btn.text() == key_name:
+                        QMessageBox.critical(self, "Error", '该快捷键已占用')
+                        self.keys_pool.clear()
+                        self.hotkey_set_btn.setText('')
+                        self.update_state(State.IDLE)
+                        return False
+                self.hotkey_set_btn.setText(key_name)
+                self.update_state(State.IDLE)
+                return False
+
+            start_name = self.hotkey_start.text()
+            stop_name = self.hotkey_stop.text()
+            record_name = self.hotkey_record.text()
 
             if key_name == start_name:
                 if self.state == State.IDLE:
@@ -211,7 +222,6 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 elif self.state == State.IDLE:
                     self.recordMethod()
                     logger.debug('{0} host start record'.format(key_name))
-
             return key_name in [start_name, stop_name, record_name]
 
         @Slot(ScriptEvent)
@@ -219,19 +229,25 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             # 判断mouse热键
             if event.event_type == "EM":
                 name = event.message
-                if 'mouse x1 down' == name and hotkeymethod('xbutton1'):
+                if 'mouse x1 down' == name and check_hotkeys('xbutton1'):
                     return
-                elif 'mouse x2 down' == name and hotkeymethod('xbutton2'):
+                elif 'mouse x2 down' == name and check_hotkeys('xbutton2'):
                     return
-                elif 'mouse middle down' == name and hotkeymethod('middle'):
+                elif 'mouse middle down' == name and check_hotkeys('middle'):
                     return
             else:
                 key_name = event.action[1]
                 if event.message == 'key down':
+                    if key_name in Recorder.globals.key_combination_trigger and len(self.keys_pool) < 3 and key_name not in self.keys_pool:
+                        self.keys_pool.append(key_name.lower())
                     # listen for start/stop script
                     # start_name = 'f6'  # as default
                     # stop_name = 'f9'  # as default
-                    hotkeymethod(key_name.lower())
+                    check_hotkeys(key_name.lower())
+                elif event.message == 'key up':
+                    if key_name in Recorder.globals.key_combination_trigger and key_name in self.keys_pool:
+                        self.keys_pool.remove(key_name.lower())
+                        check_hotkeys(key_name.lower())
                 # 不录制热键
                 if key_name in HOT_KEYS:
                     return
@@ -266,6 +282,9 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.config.setValue("Config/Precision", self.mouse_move_interval_ms.value())
         self.config.setValue("Config/Theme", self.choice_theme.currentText())
         self.config.setValue("Config/Script", self.choice_script.currentText())
+        self.config.setValue("Config/StartHotKey", self.hotkey_start.text())
+        self.config.setValue("Config/StopHotKey", self.hotkey_stop.text())
+        self.config.setValue("Config/RecordHotKey", self.hotkey_record.text())
 
     def onchangelang(self):
         global scripts_map
@@ -309,9 +328,9 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         if not os.path.exists(to_abs_path('config.ini')):
             with open(to_abs_path('config.ini'), 'w', encoding='utf-8') as f:
                 f.write('[Config]\n'
-                        'StartHotKeyIndex=3\n'
-                        'StopHotKeyIndex=6\n'
-                        'RecordHotKeyIndex=7\n'
+                        'StartHotKey=f6\n'
+                        'StopHotKey=f9\n'
+                        'RecordHotKey=f10\n'
                         'LoopTimes=1\n'
                         'Precision=200\n'
                         'Language=zh-cn\n'
@@ -363,10 +382,16 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.bt_open_script_files.setDisabled(True)
         self.btrecord.setDisabled(True)
         self.btrun.setDisabled(True)
+        self.hotkey_start.setDisabled(True)
+        self.hotkey_stop.setDisabled(True)
+        self.hotkey_record.setDisabled(True)
         file_dialog.show()
         self.bt_open_script_files.setDisabled(False)
         self.btrecord.setDisabled(False)
         self.btrun.setDisabled(False)
+        self.hotkey_start.setEnabled(True)
+        self.hotkey_stop.setEnabled(True)
+        self.hotkey_record.setEnabled(True)
         # 重新设置的为点击按钮时, 所处的位置
         self.choice_script.clear()
         self.choice_script.addItems(scripts)
@@ -380,8 +405,6 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             self.btrecord.setText(QCoreApplication.translate("UIView", 'Record', None))
             self.tnumrd.setText('finished')
             self.record = []
-            self.btpauserecord.setEnabled(False)
-            self.btrun.setEnabled(True)
             self.actioncount = 0
             self.choice_script.setCurrentIndex(0)
             self.btpauserecord.setText(QCoreApplication.translate("UIView", 'Pause Record', None))
@@ -395,8 +418,6 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             self.btrecord.setText(QCoreApplication.translate("UIView", 'Finish', None))
             self.tnumrd.setText('0 actions recorded')
             self.record = []
-            self.btpauserecord.setEnabled(True)
-            self.btrun.setEnabled(False)
             self.update_state(State.RECORDING)
 
     def OnBtrecordButton(self):
@@ -417,6 +438,31 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.state = state
         if state != State.SETTING_HOT_KEYS or state != State.RECORDING or state != State.PAUSE_RECORDING:
             self.updateStateSignal.emit(self.state)
+        if state == State.IDLE:
+            self.hotkey_start.setEnabled(True)
+            self.hotkey_stop.setEnabled(True)
+            self.hotkey_record.setEnabled(True)
+            self.btrun.setEnabled(True)
+            self.btrecord.setEnabled(True)
+            self.btpauserecord.setEnabled(False)
+        elif state == State.RUNNING or state == State.PAUSE_RUNNING or state == State.SETTING_HOT_KEYS:
+            self.hotkey_start.setEnabled(False)
+            self.hotkey_stop.setEnabled(False)
+            self.hotkey_record.setEnabled(False)
+            self.btrun.setEnabled(False)
+            self.btrecord.setEnabled(False)
+            self.btpauserecord.setEnabled(False)
+        elif state == State.RECORDING or state == State.PAUSE_RECORDING:
+            self.hotkey_start.setEnabled(False)
+            self.hotkey_stop.setEnabled(False)
+            self.hotkey_record.setEnabled(False)
+            self.btrun.setEnabled(False)
+            self.btrecord.setEnabled(True)
+            self.btpauserecord.setEnabled(True)
+
+    def OnHotkeyButton(self, btn_obj: QObject):
+        self.hotkey_set_btn = btn_obj
+        self.update_state(State.SETTING_HOT_KEYS)
 
     @Slot(bool)
     def handle_runscript_status(self, succeed):

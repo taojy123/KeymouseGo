@@ -68,26 +68,20 @@ class Ui_UIView(object):
 
         self.gridLayout_3.addWidget(self.label_record, 1, 0, 1, 1)
 
-        self.choice_start = QComboBox(self.groupBox)
-        self.choice_start.setObjectName(u"choice_start")
-        sizePolicy.setHeightForWidth(self.choice_start.sizePolicy().hasHeightForWidth())
-        self.choice_start.setSizePolicy(sizePolicy)
+        self.hotkey_start = QPushButton(self.groupBox)
+        self.hotkey_start.setObjectName(u"hotkey_start")
 
-        self.gridLayout_3.addWidget(self.choice_start, 0, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.hotkey_start, 0, 1, 1, 1)
 
-        self.choice_record = QComboBox(self.groupBox)
-        self.choice_record.setObjectName(u"choice_record")
-        sizePolicy.setHeightForWidth(self.choice_record.sizePolicy().hasHeightForWidth())
-        self.choice_record.setSizePolicy(sizePolicy)
+        self.hotkey_record = QPushButton(self.groupBox)
+        self.hotkey_record.setObjectName(u"hotkey_record")
 
-        self.gridLayout_3.addWidget(self.choice_record, 1, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.hotkey_record, 1, 1, 1, 1)
 
-        self.choice_stop = QComboBox(self.groupBox)
-        self.choice_stop.setObjectName(u"choice_stop")
-        sizePolicy.setHeightForWidth(self.choice_stop.sizePolicy().hasHeightForWidth())
-        self.choice_stop.setSizePolicy(sizePolicy)
+        self.hotkey_stop = QPushButton(self.groupBox)
+        self.hotkey_stop.setObjectName(u"hotkey_stop")
 
-        self.gridLayout_3.addWidget(self.choice_stop, 2, 1, 1, 1)
+        self.gridLayout_3.addWidget(self.hotkey_stop, 2, 1, 1, 1)
 
         self.horizontalLayoutWidget = QWidget(self.centralwidget)
         self.horizontalLayoutWidget.setObjectName(u"horizontalLayoutWidget")
@@ -250,6 +244,9 @@ class Ui_UIView(object):
         self.label_stop.setText(QCoreApplication.translate("UIView", u"Terminate", None))
         self.label_start_key.setText(QCoreApplication.translate("UIView", u"Launch/Pause", None))
         self.label_record.setText(QCoreApplication.translate("UIView", u"Record/Pause", None))
+        self.hotkey_start.setText("")
+        self.hotkey_record.setText("")
+        self.hotkey_stop.setText("")
         self.btrecord.setText(QCoreApplication.translate("UIView", u"Record", None))
         self.btrun.setText(QCoreApplication.translate("UIView", u"Launch", None))
         self.btpauserecord.setText(QCoreApplication.translate("UIView", u"Pause Record", None))

@@ -11,7 +11,6 @@ else:
 
 setuphook = _Recorder.setuphook
 
-
 # 捕获到事件后调用函数
 def set_callback(callback):
     _Recorder.record_signals.event_signal.connect(callback)

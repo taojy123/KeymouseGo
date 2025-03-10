@@ -4,7 +4,7 @@ from Event import ScriptEvent
 from PySide6.QtCore import Signal, QObject
 swapmousemap = {'mouse left down': 'mouse right down', 'mouse left up': 'mouse right up',
                 'mouse right down': 'mouse left down', 'mouse right up': 'mouse left up'}
-
+key_combination_trigger = ['win', 'shiftright', 'shift', 'ctrlright', 'ctrl', 'altright', 'alt']
 latest_time = -1
 mouse_interval_ms = 200
 
