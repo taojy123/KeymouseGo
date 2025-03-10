@@ -127,6 +127,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.hotkey_start.setText(self.config.value("Config/StartHotKey"))
         self.hotkey_record.setText(self.config.value("Config/RecordHotKey"))
 
+
         self.onchangetheme()
 
         self.textlog.textChanged.connect(lambda: self.textlog.moveCursor(QTextCursor.End))
@@ -181,6 +182,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                         return False
                 self.hotkey_set_btn.setText(key_name)
                 self.update_state(State.IDLE)
+                self.onconfigchange()
                 return False
 
             start_name = self.hotkey_start.text()
