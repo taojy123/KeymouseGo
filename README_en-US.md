@@ -40,7 +40,7 @@ Usage:
     - [Command line mode](#command-line-mode)
   - [Tips](#tips)
   - [Grammar of scripts](#grammar-of-scripts)
-  - [Extensions](#extensions)
+  - [Advanced Operations](#advanced-operations)
 - [About me](#about-me)
 - [Contributors](#contributors)
 
@@ -95,18 +95,6 @@ Run specific script for 3 times
 > ./KeymouseGo scripts/0314_1452.txt --runtimes 3
 ```
 
-Run specific script at the speed of 200%
-```
-> ./KeymouseGo scripts/0314_1452.txt -sp 200
-> ./KeymouseGo scripts/0314_1452.txt --speed 200
-```
-
-Run specific script with extension `MyExtension`
-```
-> ./KeymouseGo scripts/0314_1452.txt -m MyExtension
-> ./KeymouseGo scripts/0314_1452.txt --module MyExtension
-```
-
 ## Tips
 
 1. The program will endlessly run the script if run times is set to `0`
@@ -125,50 +113,47 @@ Run specific script with extension `MyExtension`
 
 8. Due to the limitation of execution speed, the running speed cannot be set too high.
 
-In some system environment, there may be circumstances that the mouse events cannot be fully recorded. To settle this, you can run this program as administrator/root.
+9. In some system environment, there may be circumstances that the mouse events cannot be fully recorded. To settle this, you can run this program as administrator/root.
 
-For mac users, make sure that application must be white listed under Enable access for assistive devices. You may also need to whitelist terminal application if running from terminal. If the app crashes, you may try to give write permission for directory `~/.qt_material`.
+10. For mac users, make sure that application must be white listed under Enable access for assistive devices. You may also need to whitelist terminal application if running from terminal. If the app crashes, you may try to give write permission for directory `~/.qt_material`.
 ```bash
 chmod -R 770 ~/.qt_material
 ```
 
+11. For Linux/Mac users, if you have problems recording or executing event after running this program as root, you may refer to [documentation of pynput](https://pynput.readthedocs.io/en/latest/limitations.html)
+
 ## Grammar of scripts
 > Assume that the resolution of screen is `1920 * 1080`
 
+The script is saved in `json5` format, in which each line represents an event
+```json5
+{
+  scripts: [
+    // Press mouse right button at the relative coordinates `(0.05208, 0.1852)`(i.e. absolute coordinates `(100,200)`) after 3000ms
+    {type: "event", event_type: "EM", delay: 3000, action_type: "mouse right down", action: ["0.05208%", "0.1852%"]},
+    // Release mouse right button at the coordinates after 50ms
+    // The mouse event will execute on the position that the cursor is currently in when the coordinate is set to [-1, -1]
+    {type: "event", event_type: "EM", delay: 50, action_type: "mouse right up", action: [-1, -1]},
+    // Press key 'f' after 1000ms
+    {type: "event", event_type: "EK", delay: 1000, action_type: "key down", action: [70, 'F', 0]},
+    // Release key 'f' after 50ms
+    {type: "event", event_type: "EK", delay: 50, action_type: "key up", action: [70, 'F', 0]},
+    // Press mouse left button at the relative coordinates `(0.2604, 0.4630)`(i.e. absolute coordinates `(500,500)`) after 100ms
+    {type: "event", event_type: "EM", delay: 100, action_type: "mouse left down", action: ["0.2604%", "0.4630%"]},
+    // Move mouse to the relative coordinates `(0.2604, 0.4630)`(i.e. absolute coordinates `(500,500)`) after 100ms
+    {type: "event", event_type: "EM", delay: 100, action_type: "mouse move", action: ["0.2604%", "0.5556%"]},
+    // Release mouse left button at the relative coordinates `(0.3125, 0.5556)`(i.e. absolute coordinates `(600,600)`) after 100ms
+    {type: "event", event_type: "EM", delay: 100, action_type: "mouse left up", action: ["0.3125%", "0.5556%"]},
+    // Input 'Hello world' at current coordinate after 100ms
+    {type: "event", event_type: "EX", delay: 100, action_type: "input", action: "你好 world"}
+  ]
+}
 ```
-[
- [3000, "EM", "mouse right down", ["0.05208%", "0.1852%"]],    // Press mouse right button at the relative coordinates `(0.05208, 0.1852)`(i.e. absolute coordinates `(100,200)`) after 3000ms
- [50,   "EM", "mouse right up",   ["0.05208%", "0.1852%"]],    // Release mouse right button at the coordinates after 50ms
- [1000, "EK", "key down",         [70, "F", 0]],                                   // Press key 'f' after 1000ms
- [50,   "EK", "key up",           [70, "F", 0]],                                   // Release key 'f' after 50ms
- [100,  "EM", "mouse left down",  ["0.2604%", "0.4630%"]],      // Press mouse left button at the relative coordinates `(0.2604, 0.4630)`(i.e. absolute coordinates `(500,500)`) after 100ms
- [100,  "EM", "mouse move",       ["0.2604%", "0.5556%"]],       // Move mouse to the relative coordinates `(0.2604, 0.4630)`(i.e. absolute coordinates `(500,500)`) after 100ms
- [100,  "EM", "mouse left up",  ["0.3125%", "0.5556%"]],                   // Release mouse left button at the relative coordinates `(0.3125, 0.5556)`(i.e. absolute coordinates `(600,600)`) after 100ms
- [100,  "EX", "input",            "Hello world"],                                   // Input 'Hello world' at current coordinate after 100ms
-]
-```
-
-The script is saved in `json` format, in which each line represents a operation
-+ The first element of each line is time interval(ms), indicating the interval to previous operation
-+ The second element of each line is operation type. `EM` represents mouse, `EK` represents keyboard, `EX` represents extended operation
-+ The third element of each line is detailed operation type, including
-  + `mouse left down` :press mouse left button `mouse left up` release mouse left button
-  + `mouse right down` press mouse right button`mouse right up` release mouse right button
-  + `mouse middle down` press mouse middle button `mouse middle up` release mouse middle button
-  + `mouse wheel up` mouse wheel slide up `mouse wheel down` mouse wheel slide down
-  + `key down` press key `key up` release key
-  + `mouse move` move mouse to `input` input text
-+ The fourth element of each line is action type
-  + If operation type is `EM`, it is consisted of coordinates of mouse.(Both relative coordinates and absolute coordinates are supported)
-  + If operation type is `EK`, it is consisted of coordinates of (key number, key name, extension flag)
-  + If detailed operation type is `Input`, it is the text to input
-+ In each line, comment can be added after `//`
 + It is recommended to back up script before editing. And make sure to follow the format while editing, otherwise it may result in failure of execution.
-+ The mouse event will execute on the position that the cursor is currently in when the coordinate is set to [-1, -1]
 
-## Extensions
+## Advanced Operations
 
-The usage of exetensions is illustrated in [wiki](https://github.com/taojy123/KeymouseGo/wiki/Document#extension)
+Please check [wiki](https://github.com/taojy123/KeymouseGo/wiki/Document#grammar)
 
 # About me
 
