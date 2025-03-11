@@ -175,7 +175,6 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             if self.state == State.SETTING_HOT_KEYS:
                 for btn in [self.hotkey_start, self.hotkey_record, self.hotkey_stop]:
                     if btn is not self.hotkey_set_btn and btn.text() != '' and btn.text() == key_name:
-                        QMessageBox.critical(self, "Error", '该快捷键已占用')
                         self.keys_pool.clear()
                         self.hotkey_set_btn.setText('')
                         self.update_state(State.IDLE)
@@ -267,7 +266,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 logger.debug('Recorded %s' % event)
                 self.tnumrd.setText(text)
                 self.textlog.append(str(event))
-        logger.debug('Initialize at thread ' + str(threading.currentThread()))
+        logger.debug('Initialize at thread ' + str(QThread.currentThread()))
         Recorder.setuphook()
         Recorder.set_callback(on_record_event)
         Recorder.set_interval(self.mouse_move_interval_ms.value())
