@@ -5,24 +5,18 @@ from PySide6.QtWidgets import QApplication, QWidget, QSpinBox
 from PySide6.QtCore import Qt, Slot, QRect
 
 import UIFunc
+import Recorder
 import argparse
 from Event import ScriptEvent
 from loguru import logger
 
-from assets.plugins.ProcessException import *  # noqa: F403
-
-
-def add_lib_path(libpaths):
-    for libpath in libpaths:
-        if os.path.exists(libpath) and (libpath not in sys.path):
-            sys.path.append(libpath)
+from Plugin.Manager import PluginManager
+from Util.RunScriptClass import RunScriptCMDClass, StopFlag
 
 
 def to_abs_path(*args):
-    return os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])), *args)
-
-
-add_lib_path([os.path.join(to_abs_path('plugins'))])
+    return os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])),
+                        *args)
 
 
 def resize_layout(ui, ratio_w, ratio_h):
@@ -51,52 +45,31 @@ def main():
 
 
 @logger.catch
-def single_run(script_path, run_times=1, speed=100, module_name='Extension'):
+def single_run(script_path, run_times):
+    flag = StopFlag(False)
+    thread = RunScriptCMDClass(script_path, run_times, flag)
+
+    stop_name = 'f9'
+
     @Slot(ScriptEvent)
     def on_keyboard_event(event):
         key_name = event.action[1].lower()
-        stop_name = 'f9'
         if key_name == stop_name:
             logger.debug('break exit!')
-            os._exit(0)
+            flag.value = True
+            thread.resume()
         return True
 
-    UIFunc.Recorder.setuphook(commandline=True)
-    UIFunc.Recorder.set_callback(on_keyboard_event)
+    Recorder.setuphook(commandline=True)
+    Recorder.set_callback(on_keyboard_event)
 
-    try:
-        for path in script_path:
-            logger.info('Script path:%s' % path)
-            events, smodule_name, labeldict = UIFunc.RunScriptClass.parsescript(path, 
-                                                                     speed=speed)
-            extension = UIFunc.RunScriptClass.getextension(
-                smodule_name if smodule_name is not None else module_name,
-                runtimes=run_times,
-                speed=speed)
-            j = 0
-            extension.onbeginp()
-            while j < extension.runtimes or extension.runtimes == 0:
-                logger.info('=========== %d ===========' % j)
-                try:
-                    if extension.onbeforeeachloop(j):
-                        UIFunc.RunScriptClass.run_script_once(events, extension, labeldict=labeldict)
-                    extension.onaftereachloop(j)
-                    j += 1
-                except BreakProcess:
-                    logger.debug('Break')
-                    j += 1
-                    continue
-                except EndProcess:
-                    logger.debug('End')
-                    break
-            extension.onendp()
-            logger.info('%s run finish' % path)
-        logger.info('Scripts run finish!')
-    except Exception as e:
-        logger.error(e)
-        raise e
-    finally:
-        os._exit(0)
+    PluginManager.reload()
+    eventloop = QApplication()
+
+    thread.finished.connect(eventloop.exit)
+    thread.start()
+
+    sys.exit(eventloop.exec_())
 
 
 if __name__ == '__main__':
@@ -113,25 +86,10 @@ if __name__ == '__main__':
                             type=int,
                             default=1
                             )
-        parser.add_argument('-sp', '--speed',
-                            help='Run speed for the script, input in percentage form',
-                            type=int,
-                            default=100
-                            )
-        parser.add_argument('-m', '--module',
-                            help='Extension for the program',
-                            type=str,
-                            default='Extension'
-                            )
         args = vars(parser.parse_args())
         logger.debug(args)
-        if args['speed'] <= 0:
-            logger.warning('Unsupported speed')
-        else:
-            single_run(args['scripts'],
-                       run_times=args['runtimes'],
-                       speed=args['speed'],
-                       module_name=args['module']
-                       )
+        single_run(args['scripts'],
+                   run_times=args['runtimes']
+                   )
     else:
         main()

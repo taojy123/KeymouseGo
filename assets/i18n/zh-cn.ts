@@ -71,7 +71,7 @@
         <location filename="UIView.ui" line="69"/>
         <source>Terminate</source>
         <translatorcomment>终止录制</translatorcomment>
-        <translation>终止录制</translation>
+        <translation>终止录制/执行</translation>
     </message>
     <message>
         <location filename="UIView.ui" line="76"/>

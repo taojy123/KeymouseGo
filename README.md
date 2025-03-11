@@ -32,7 +32,6 @@
   + [基本操作](#基本操作)
   + [提示](#提示)
   + [脚本语法说明](#脚本语法说明)
-  + [自定义扩展](#自定义扩展)
 + [关于作者](#关于作者)
 + [开源贡献者](#开源贡献者)
 + [更新说明](#更新说明)
@@ -58,6 +57,8 @@
 3. pip3 install pyinstaller
 4. pyinstaller -F -w --add-data "./assets:assets" KeymouseGo.py
 ```
+
+打包完成后，可执行文件在项目路径的`dist`文件夹内。
 
 # 使用方法
 
@@ -86,18 +87,6 @@
 > ./KeymouseGo scripts/0314_1452.txt --runtimes 3
 ```
 
-以200%的速度运行指定脚本:
-```
-> ./KeymouseGo scripts/0314_1452.txt -sp 200
-> ./KeymouseGo scripts/0314_1452.txt --speed 200
-```
-
-加载自定义扩展`MyExtension`运行指定脚本:
-```
-> ./KeymouseGo scripts/0314_1452.txt -m MyExtension
-> ./KeymouseGo scripts/0314_1452.txt --module MyExtension
-```
-
 ## 提示
 
 1、可设置脚本重复执行的次数，如果为 `0` 即为无限循环。
@@ -116,51 +105,47 @@
 
 8、由于程序速度受限，当输入的鼠标速度大于一定值时脚本将无法以预期的输入速度执行
 
-部分系统环境中，可能出现无法录制完整的鼠标事件的情况，请以管理员身份/root身份运行此工具即可正常使用。
+9、部分系统环境中，可能出现无法录制完整的鼠标事件的情况，请以管理员身份/root身份运行此工具即可正常使用。
 
-使用Mac的用户，需要确保程序在辅助功能白名单，如果使用打包的exec文件，则还需要确保终端也在辅助功能白名单。 如果app程序闪退，请尝试给予`~/.qt_material`目录下文件的写权限:
+10、使用Mac的用户，需要确保程序在辅助功能白名单，如果使用打包的exec文件，则还需要确保终端也在辅助功能白名单。 如果app程序闪退，请尝试给予`~/.qt_material`目录下文件的写权限:
 ```bash
 chmod -R 770 ~/.qt_material
 ```
 
+11、对于Linux/Mac用户，如果在以管理员身份运行后仍然存在无法录制或执行的问题，可以参考[pynput的文档](https://pynput.readthedocs.io/en/latest/limitations.html)
+
 ## 脚本语法说明
 > 演示屏幕分辨率为`1920 * 1080`
 
+脚本为 `json5` 格式，每个最内层的jsonobject代表一个事件
+```json5
+{
+  scripts: [
+    // 开始运行 `3000ms` 后，在屏幕相对坐标 `(0.05208, 0.1852)`即 `(100,200)` 处 `按下鼠标右键`；
+    {type: "event", event_type: "EM", delay: 3000, action_type: "mouse right down", action: ["0.05208%", "0.1852%"]},
+    // 等待 `50ms` 后在相同位置 `抬起鼠标右键`；
+    // 横纵坐标为[-1, -1]时，表示在鼠标当前所在位置执行操作。
+    {type: "event", event_type: "EM", delay: 50, action_type: "mouse right up", action: [-1, -1]},
+    // 等待 `1000ms` 后 `按下f键`；
+    {type: "event", event_type: "EK", delay: 1000, action_type: "key down", action: [70, 'F', 0]},
+    // 等待 `50ms` 后 `抬起f键`；
+    {type: "event", event_type: "EK", delay: 50, action_type: "key up", action: [70, 'F', 0]},
+    // 等待 `100ms` 后，在屏幕相对坐标 `(0.2604, 0.4630)`即 `(500, 500)` 处 `按下鼠标左键`；
+    {type: "event", event_type: "EM", delay: 100, action_type: "mouse left down", action: ["0.2604%", "0.4630%"]},
+    // 等待 `100ms` 后，鼠标移动至相对坐标 `(0.2604, 0.5556)`即 `(500, 600)` 位置；
+    {type: "event", event_type: "EM", delay: 100, action_type: "mouse move", action: ["0.2604%", "0.5556%"]},
+    // 等待 `100ms` 后，在屏幕相对坐标 `(0.3125, 0.5556)`即 `(600, 600)` 处 `抬起鼠标左键`；
+    {type: "event", event_type: "EM", delay: 100, action_type: "mouse left up", action: ["0.3125%", "0.5556%"]},
+    // 等待 `100ms` 后，在当前位置输入 `你好 world` 文字。
+    {type: "event", event_type: "EX", delay: 100, action_type: "input", action: "你好 world"}
+  ]
+}
 ```
-[
- [3000, "EM", "mouse right down", ["0.05208%", "0.1852%"]],    // 开始运行 `3000ms` 后，在屏幕相对坐标 `(0.05208, 0.1852)`即 `(100,200)` 处 `按下鼠标右键`；
- [50,   "EM", "mouse right up",   ["0.05208%", "0.1852%"]],    // 等待 `50ms` 后在相同位置 `抬起鼠标右键`；
- [1000, "EK", "key down",         [70, "F", 0]],                                   // 等待 `1000ms` 后 `按下f键`；
- [50,   "EK", "key up",           [70, "F", 0]],                                   // 等待 `50ms` 后 `抬起f键`；
- [100,  "EM", "mouse left down",  ["0.2604%", "0.4630%"]],      // 等待 `100ms` 后，在屏幕相对坐标 `(0.2604, 0.4630)`即 `(500, 500)` 处 `按下鼠标左键`；
- [100,  "EM", "mouse move",       ["0.2604%", "0.5556%"]],       // 等待 `100ms` 后，鼠标移动至相对坐标 `(0.2604, 0.5556)`即 `(500, 600)` 位置；
- [100,  "EM", "mouse left up",  ["0.3125%", "0.5556%"]],                   // 等待 `100ms` 后，在屏幕相对坐标 `(0.3125, 0.5556)`即 `(600, 600)` 处 `抬起鼠标左键`；
- [100,  "EX", "input",            "你好 world"],                                   // 等待 `100ms` 后，在当前位置输入 `你好 world` 文字。
-]
-```
-
-脚本为 `json` 格式，每一行代表一次动作：
-+ 每行的第 1 个元素表示时间间隔，指的是本次动作与上一次动作之间相隔的时间，单位为毫秒。
-+ 每行的第 2 个元素表示鼠标动作或是键盘动作：`EM` 为鼠标，`EK` 为键盘，`EX` 为其他拓展动作。
-+ 每行的第 3 个元素表示动作的类型：
-  + `mouse left down` 为鼠标左键按下，`mouse left up` 为鼠标左键抬起，
-  + `mouse right down` 为鼠标右键按下，`mouse right up` 为鼠标右键抬起，
-  + `mouse middle down` 为鼠标中键按下， `mouse middle up` 为鼠标中键抬起，
-  + `mouse wheel up` 为鼠标滚轮上滑， `mouse wheel down` 为鼠标滚轮下滑，
-  + `key down` 为键盘按键按下，`key up` 为键盘按键抬起，
-  + `mouse move` 为鼠标滑过，`input` 输入文字。
-+ 每行的第 4 个元素表示具体的动作参数
-  + 当为鼠标动作时，由两个子元素构成，分别为鼠标所在的屏幕位置的横纵坐标，
-  + 当为键盘动作时，由三个子元素构成，分别是（按键编号, 按键名, 拓展标记)，
-  + 当为输入文字动作时，为要输入的文字内容。
-+ 每行 `//` 后的部分为注释内容。
-+ 修改时请严格遵守格式，否则可能导致脚本无法运行，建议修改前先备份一下。
-+ 横纵坐标为[-1, -1]时，表示在鼠标当前所在位置执行操作。
 
 
-## 自定义扩展
+## 高级功能
 
-功能的使用详见[wiki](https://github.com/taojy123/KeymouseGo/wiki/文档#扩展)
+功能的使用详见[wiki](https://github.com/taojy123/KeymouseGo/wiki/文档#脚本语法)
 
 
 # 关于作者
