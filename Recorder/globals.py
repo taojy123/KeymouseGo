@@ -15,3 +15,4 @@ def current_ts():
 
 class RecordSignal(QObject):
     event_signal = Signal(ScriptEvent)
+    cursor_pos_change = Signal(tuple)

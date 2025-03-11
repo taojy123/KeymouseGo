@@ -52,6 +52,7 @@ def on_move(x, y):
     event = get_mouse_event(x, y, 'mouse move')
     if event:
         record_signals.event_signal.emit(event)
+        record_signals.cursor_pos_change.emit((x, y))
 
 
 def on_click(x, y, button, pressed):
@@ -70,7 +71,7 @@ def on_scroll(x, y, dx, dy):
 
 
 def get_keyboard_event(key, message):
-    #TODO: mabye can helo https://blog.csdn.net/haiyangdaozhang/article/details/109158793
+    #TODO: maybe can helo https://blog.csdn.net/haiyangdaozhang/article/details/109158793
     delay = get_delay(message)
     if delay < 0:
         return None

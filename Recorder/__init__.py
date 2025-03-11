@@ -15,6 +15,12 @@ setuphook = _Recorder.setuphook
 def set_callback(callback):
     _Recorder.record_signals.event_signal.connect(callback)
 
+def set_cursor_pose_change(callback):
+    _Recorder.record_signals.cursor_pos_change.connect(callback)
+
+def dispose():
+    _Recorder.record_signals.event_signal.disconnect()
+
 
 # 槽函数:改变鼠标精度
 @Slot(int)

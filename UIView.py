@@ -26,7 +26,7 @@ class Ui_UIView(object):
     def setupUi(self, UIView):
         if not UIView.objectName():
             UIView.setObjectName(u"UIView")
-        UIView.resize(651, 482)
+        UIView.resize(651, 477)
         icon = QIcon()
         icon.addFile(u":/pic/Mondrian.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         UIView.setWindowIcon(icon)
@@ -114,14 +114,26 @@ class Ui_UIView(object):
 
         self.verticalLayoutWidget = QWidget(self.centralwidget)
         self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
-        self.verticalLayoutWidget.setGeometry(QRect(10, 210, 631, 218))
+        self.verticalLayoutWidget.setGeometry(QRect(10, 210, 631, 220))
         self.verticalLayout = QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.tnumrd = QLabel(self.verticalLayoutWidget)
         self.tnumrd.setObjectName(u"tnumrd")
 
-        self.verticalLayout.addWidget(self.tnumrd)
+        self.horizontalLayout_2.addWidget(self.tnumrd)
+
+        self.label_cursor_pos = QLabel(self.verticalLayoutWidget)
+        self.label_cursor_pos.setObjectName(u"label_cursor_pos")
+        self.label_cursor_pos.setLayoutDirection(Qt.RightToLeft)
+        self.label_cursor_pos.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+
+        self.horizontalLayout_2.addWidget(self.label_cursor_pos)
+
+
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
 
         self.textlog = QTextEdit(self.verticalLayoutWidget)
         self.textlog.setObjectName(u"textlog")
@@ -251,6 +263,7 @@ class Ui_UIView(object):
         self.btrun.setText(QCoreApplication.translate("UIView", u"Launch", None))
         self.btpauserecord.setText(QCoreApplication.translate("UIView", u"Pause Record", None))
         self.tnumrd.setText(QCoreApplication.translate("UIView", u"Ready...", None))
+        self.label_cursor_pos.setText(QCoreApplication.translate("UIView", u"Cursor Position:", None))
         self.label_volume.setText(QCoreApplication.translate("UIView", u"Volume", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("UIView", u"Config", None))
         self.label_execute_interval.setText(QCoreApplication.translate("UIView", u"Mouse precision", None))

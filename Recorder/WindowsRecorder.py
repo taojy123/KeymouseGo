@@ -83,6 +83,7 @@ def get_mouse_event(event):
         'action': pos
     })
     record_signals.event_signal.emit(sevent)
+    record_signals.cursor_pos_change.emit(pos)
     return True
 
 

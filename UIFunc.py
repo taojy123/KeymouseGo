@@ -269,6 +269,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         logger.debug('Initialize at thread ' + str(QThread.currentThread()))
         Recorder.setuphook()
         Recorder.set_callback(on_record_event)
+        Recorder.set_cursor_pose_change(self.cursor_pos_change)
         Recorder.set_interval(self.mouse_move_interval_ms.value())
 
     def eventFilter(self, watched, event: QEvent):
@@ -317,6 +318,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
     def closeEvent(self, event):
         self.config.sync()
+        Recorder.dispose()
         if self.state == State.PAUSE_RUNNING:
             self.update_state(State.RUNNING)
         elif self.state == State.PAUSE_RECORDING:
@@ -468,3 +470,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
     @Slot(bool)
     def handle_runscript_status(self, succeed):
         self.update_state(State.IDLE)
+
+    @Slot(tuple)
+    def cursor_pos_change(self, pos):
+        self.label_cursor_pos.setText(f'Cursor pos: {pos}')
