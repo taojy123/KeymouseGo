@@ -77,9 +77,8 @@ class RunScriptClass(QThread, RunScriptMeta):
         else:
             self.resume()
 
-    @logger.catch
     def run(self):
-        logger.debug('Run script at thread' + str(threading.current_thread()))
+        logger.debug('Run script at thread' + str(QThread.currentThread()))
 
         if not self.script_path:
             self.tnumrdSignal.emit('script not found, please record first!')
@@ -88,7 +87,11 @@ class RunScriptClass(QThread, RunScriptMeta):
 
         self.btnSignal.emit(False)
         self.playtuneSignal.emit('start.wav')
-        self.run_script_from_path(self.script_path)
+        try:
+            self.run_script_from_path(self.script_path)
+        except Exception as e:
+            logger.error(e)
+            self.logSignal.emit('An error occurred during execution! Please check logs!')
         self.statusSignal.emit(True)
         self.playtuneSignal.emit('end.wav')
 
@@ -136,7 +139,7 @@ class RunScriptClass(QThread, RunScriptMeta):
             self.logSignal.emit('==============\nAn error occurred during runtime')
             self.logSignal.emit(str(e))
             self.logSignal.emit('==============')
-            self.logSignal.emit('failed')
+            self.logSignal.emit('script run failed, please check your log file')
         finally:
             self.btnSignal.emit(True)
 
@@ -173,10 +176,11 @@ class RunScriptClass(QThread, RunScriptMeta):
                 return json_object.next_object
             else:
                 return json_object.next_object_if_false
-        elif object_type == 'goto':
+        elif object_type == 'goto' or object_type == 'custom':
             pass
         elif object_type == 'subroutine':
-            self.run_script_from_path(json_object.content['path'])
+            for path in json_object.content['path']:
+                self.run_script_from_path(path)
         else:
             # Not supposed to happen
             logger.error(f'Unexpected event type when running {json_object.content}')

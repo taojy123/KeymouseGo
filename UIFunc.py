@@ -112,7 +112,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         # Config
         self.choice_theme.addItems(['Default'])
         self.choice_theme.addItems(list_themes())
-        self.choice_theme.addItems(PluginManager.resources_paths)
+        # self.choice_theme.addItems(PluginManager.resources_paths)
         self.stimes.setValue(int(self.config.value("Config/LoopTimes")))
         self.mouse_move_interval_ms.setValue(int(self.config.value("Config/Precision")))
         self.choice_theme.setCurrentText(self.config.value("Config/Theme"))

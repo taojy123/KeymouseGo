@@ -44,15 +44,20 @@ class ScriptParser(Parser):
         label_maps: Dict[str, JsonObject] = {}
         pending_dict: Dict[JsonObject, str] = {}  # 如果对象要跳转到未收入的label，则暂存该对象等待遍历完成后(labelmaps完全更新)再添加内容
 
-        head_object = ScriptParser.link_objects(objects, None, label_maps, pending_dict)
-        if len(pending_dict) > 0:
-            for json_object, target_label in pending_dict.items():
-                target_object = label_maps.get(target_label, None)
-                if target_object:
-                    json_object.next_object = target_object
-                else:
-                    logger.error(f'Could not find label {target_label}')
-        return head_object
+        try:
+            head_object = ScriptParser.link_objects(objects, None, label_maps, pending_dict)
+            if len(pending_dict) > 0:
+                for json_object, target_label in pending_dict.items():
+                    target_object = label_maps.get(target_label, None)
+                    if target_object:
+                        json_object.next_object = target_object
+                    else:
+                        logger.error(f'Could not find label {target_label}')
+            return head_object
+        except Exception as e:
+            logger.error(e)
+            logger.error('无法解析脚本，请检查是否存在语法问题')
+            return None
 
     @staticmethod
     @logger.catch
@@ -111,6 +116,8 @@ class LegacyParser(Parser):
                     content = json5.load(f)
             except Exception as e:
                 logger.error(e)
+                logger.error('无法解析脚本，请检查是否存在语法问题')
+                return None
 
         logger.debug('Script content')
         logger.debug(content)
