@@ -229,7 +229,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         def on_record_event(event: ScriptEvent):
             # 判断mouse热键
             if event.event_type == "EM":
-                name = event.message
+                name = event.action_type
                 if 'mouse x1 down' == name and check_hotkeys('xbutton1'):
                     return
                 elif 'mouse x2 down' == name and check_hotkeys('xbutton2'):
@@ -238,14 +238,14 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                     return
             else:
                 key_name = event.action[1]
-                if event.message == 'key down':
+                if event.action_type == 'key down':
                     if key_name in Recorder.globals.key_combination_trigger and len(self.keys_pool) < 3 and key_name not in self.keys_pool:
                         self.keys_pool.append(key_name.lower())
                     # listen for start/stop script
                     # start_name = 'f6'  # as default
                     # stop_name = 'f9'  # as default
                     check_hotkeys(key_name.lower())
-                elif event.message == 'key up':
+                elif event.action_type == 'key up':
                     if key_name in Recorder.globals.key_combination_trigger and key_name in self.keys_pool:
                         self.keys_pool.remove(key_name.lower())
                         check_hotkeys(key_name.lower())

@@ -45,39 +45,39 @@ class UniversalEvent(Event):
                     y = int(y * SH)
                 pyautogui.moveTo(x, y)
 
-            if self.message == 'mouse left down':
+            if self.action_type == 'mouse left down':
                 pyautogui.mouseDown(button='left')
-            elif self.message == 'mouse left up':
+            elif self.action_type == 'mouse left up':
                 pyautogui.mouseUp(button='left')
-            elif self.message == 'mouse right down':
+            elif self.action_type == 'mouse right down':
                 pyautogui.mouseDown(button='right')
-            elif self.message == 'mouse right up':
+            elif self.action_type == 'mouse right up':
                 pyautogui.mouseUp(button='right')
-            elif self.message == 'mouse middle down':
+            elif self.action_type == 'mouse middle down':
                 pyautogui.mouseDown(button='middle')
-            elif self.message == 'mouse middle up':
+            elif self.action_type == 'mouse middle up':
                 pyautogui.mouseUp(button='middle')
-            elif self.message == 'mouse wheel up':
+            elif self.action_type == 'mouse wheel up':
                 pyautogui.scroll(1)
-            elif self.message == 'mouse wheel down':
+            elif self.action_type == 'mouse wheel down':
                 pyautogui.scroll(-1)
-            elif self.message == 'mouse move':
+            elif self.action_type == 'mouse move':
                 pass
             else:
-                logger.warning('Unknown mouse event:%s' % self.message)
+                logger.warning('Unknown mouse event:%s' % self.action_type)
 
         elif self.event_type == 'EK':
             key_code, key_name, extended = self.action
 
-            if self.message == 'key down':
+            if self.action_type == 'key down':
                 pyautogui.keyDown(key_name)
-            elif self.message == 'key up':
+            elif self.action_type == 'key up':
                 pyautogui.keyUp(key_name)
             else:
-                logger.warning('Unknown keyboard event:', self.message)
+                logger.warning('Unknown keyboard event:', self.action_type)
 
         elif self.event_type == 'EX':
-            if self.message == 'input':
+            if self.action_type == 'input':
                 text = self.action
                 # pyperclip.copy(text)
 
@@ -88,5 +88,5 @@ class UniversalEvent(Event):
                 # keyboardctl.release('v')
                 # keyboardctl.release('ctrl')
             else:
-                logger.warning('Unknown extra event:%s' % self.message)
+                logger.warning('Unknown extra event:%s' % self.action_type)
 

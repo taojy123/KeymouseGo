@@ -64,26 +64,26 @@ class WindowsEvent(Event):
                     ny = int(y * 65535)
                     win32api.mouse_event(win32con.MOUSEEVENTF_ABSOLUTE | win32con.MOUSEEVENTF_MOVE, nx, ny, 0, 0)
 
-            if self.message == 'mouse left down':
+            if self.action_type == 'mouse left down':
                 win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
-            elif self.message == 'mouse left up':
+            elif self.action_type == 'mouse left up':
                 win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
-            elif self.message == 'mouse right down':
+            elif self.action_type == 'mouse right down':
                 win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0)
-            elif self.message == 'mouse right up':
+            elif self.action_type == 'mouse right up':
                 win32api.mouse_event(win32con.MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0)
-            elif self.message == 'mouse middle down':
+            elif self.action_type == 'mouse middle down':
                 win32api.mouse_event(win32con.MOUSEEVENTF_MIDDLEDOWN, 0, 0, 0, 0)
-            elif self.message == 'mouse middle up':
+            elif self.action_type == 'mouse middle up':
                 win32api.mouse_event(win32con.MOUSEEVENTF_MIDDLEUP, 0, 0, 0, 0)
-            elif self.message == 'mouse wheel up':
+            elif self.action_type == 'mouse wheel up':
                 win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, win32con.WHEEL_DELTA, 0)
-            elif self.message == 'mouse wheel down':
+            elif self.action_type == 'mouse wheel down':
                 win32api.mouse_event(win32con.MOUSEEVENTF_WHEEL, 0, 0, -win32con.WHEEL_DELTA, 0)
-            elif self.message == 'mouse move':
+            elif self.action_type == 'mouse move':
                 pass
             else:
-                logger.warning('Unknown mouse event:%s' % self.message)
+                logger.warning('Unknown mouse event:%s' % self.action_type)
 
         elif self.event_type == 'EK':
             key_code, key_name, extended = self.action
@@ -100,16 +100,16 @@ class WindowsEvent(Event):
             if extended:
                 base = win32con.KEYEVENTF_EXTENDEDKEY
 
-            if self.message == 'key down':
+            if self.action_type == 'key down':
                 win32api.keybd_event(key_code, 0, base, 0)
-            elif self.message == 'key up':
+            elif self.action_type == 'key up':
                 win32api.keybd_event(key_code, 0, base | win32con.KEYEVENTF_KEYUP, 0)
             else:
-                logger.warning('Unknown keyboard event:', self.message)
+                logger.warning('Unknown keyboard event:', self.action_type)
 
         elif self.event_type == 'EX':
 
-            if self.message == 'input':
+            if self.action_type == 'input':
                 text = self.action
                 pyperclip.copy(text)
                 # Ctrl+V
@@ -118,4 +118,4 @@ class WindowsEvent(Event):
                 win32api.keybd_event(86, 0, win32con.KEYEVENTF_KEYUP, 0)
                 win32api.keybd_event(162, 0, win32con.KEYEVENTF_KEYUP, 0)
             else:
-                logger.warning('Unknown extra event:%s' % self.message)
+                logger.warning('Unknown extra event:%s' % self.action_type)

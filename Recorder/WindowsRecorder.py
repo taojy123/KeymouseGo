@@ -46,16 +46,16 @@ def get_mouse_event(event):
     # print('Wheel:',event.Wheel)              #鼠标滚轮
     # print('Injected:',event.Injected)        #判断这个事件是否由程序方式生成，而不是正常的人为触发。
     # print('---')
-    message = event.MessageName
-    if message == 'mouse wheel':
-        message += ' up' if event.Wheel == 1 else ' down'
-    elif message in globalv.swapmousemap and swapmousebuttons:
-        message = globalv.swapmousemap[message]
+    action_type = event.MessageName
+    if action_type == 'mouse wheel':
+        action_type += ' up' if event.Wheel == 1 else ' down'
+    elif action_type in globalv.swapmousemap and swapmousebuttons:
+        action_type = globalv.swapmousemap[action_type]
     all_messages = ('mouse left down', 'mouse left up', 'mouse right down', 'mouse right up', 'mouse move',
                     'mouse middle down', 'mouse middle up', 'mouse wheel up', 'mouse wheel down',
                     'mouse x1 down', 'mouse x1 up', 'mouse x2 down', 'mouse x2 up'
                     )
-    if message not in all_messages:
+    if action_type not in all_messages:
         return True
 
     pos = win32api.GetCursorPos()
@@ -65,7 +65,7 @@ def get_mouse_event(event):
     # 录制鼠标轨迹的精度，数值越小越精准，但同时可能产生大量的冗余
     mouse_move_interval_ms = globalv.mouse_interval_ms or 999999
 
-    if message == 'mouse move' and delay < mouse_move_interval_ms:
+    if action_type == 'mouse move' and delay < mouse_move_interval_ms:
         return True
 
     if globalv.latest_time < 0:
@@ -79,7 +79,7 @@ def get_mouse_event(event):
     sevent = globalv.ScriptEvent({
         'delay': delay,
         'event_type': 'EM',
-        'message': message,
+        'action_type': action_type,
         'action': pos
     })
     record_signals.event_signal.emit(sevent)
@@ -103,15 +103,15 @@ def get_keyboard_event(event):
     # print('Transition', event.Transition)            #判断转换状态
     # print('---')
 
-    message = event.MessageName
-    message = message.replace(' sys ', ' ')
+    action_type = event.MessageName
+    action_type = action_type.replace(' sys ', ' ')
 
-    if message == 'key down':
+    if action_type == 'key down':
         global keyboard_event
         keyboard_event = event
 
     all_messages = ('key down', 'key up')
-    if message not in all_messages:
+    if action_type not in all_messages:
         return True
 
     key_info = (event.KeyID, event.Key, event.Extended)
@@ -124,7 +124,7 @@ def get_keyboard_event(event):
     sevent = globalv.ScriptEvent({
         'delay': delay,
         'event_type': 'EK',
-        'message': message,
+        'action_type': action_type,
         'action': key_info
     })
     record_signals.event_signal.emit(sevent)
