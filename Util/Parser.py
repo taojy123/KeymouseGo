@@ -29,12 +29,14 @@ class ScriptParser(Parser):
             with open(script_path, 'r', encoding='utf8') as f:
                 content: Dict = json5.load(f)
         except Exception as e:
-            logger.warning(e)
+            # logger.warning(e)
             try:
                 with open(script_path, 'r', encoding='gbk') as f:
                     content: Dict = json5.load(f)
             except Exception as e:
                 logger.error(e)
+                logger.error('无法解析脚本，请检查是否存在语法问题')
+                return None
 
         logger.debug('Script content')
         logger.debug(content)
@@ -110,7 +112,7 @@ class LegacyParser(Parser):
             with open(script_path, 'r', encoding='utf8') as f:
                 content = json5.load(f)
         except Exception as e:
-            logger.warning(e)
+            # logger.warning(e)
             try:
                 with open(script_path, 'r', encoding='gbk') as f:
                     content = json5.load(f)
