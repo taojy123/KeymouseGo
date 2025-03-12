@@ -4,8 +4,10 @@ import Recorder.globals
 
 if system() == 'Windows':
     import Recorder.WindowsRecorder as _Recorder
+    _Recorder.globalv.key_combination_trigger = ['lwin', 'lshift', 'rshift', 'lcontrol', 'rcontrol', 'lmenu', 'rmenu']
 elif system() in ['Linux', 'Darwin']:
     import Recorder.UniversalRecorder as _Recorder
+    _Recorder.globalv.key_combination_trigger = ['win', 'shiftright', 'shift', 'ctrlright', 'ctrl', 'altright', 'alt']
 else:
     raise OSError("Unsupported platform '{}'".format(system()))
 

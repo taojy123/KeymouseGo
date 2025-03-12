@@ -72,6 +72,7 @@ def get_mouse_event(event):
         delay = 0
     globalv.latest_time = globalv.current_ts()
 
+    record_signals.cursor_pos_change.emit(pos)
     if not flag_multiplemonitor:
         x, y = pos
         pos = (x / SW, y / SH)
@@ -83,7 +84,6 @@ def get_mouse_event(event):
         'action': pos
     })
     record_signals.event_signal.emit(sevent)
-    record_signals.cursor_pos_change.emit(pos)
     return True
 
 
