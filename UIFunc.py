@@ -237,18 +237,18 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 elif 'mouse middle down' == name and check_hotkeys('middle'):
                     return
             else:
-                key_name = event.action[1]
+                key_name = event.action[1].lower()
                 if event.action_type == 'key down':
                     if key_name in Recorder.globals.key_combination_trigger and len(self.keys_pool) < 3 and key_name not in self.keys_pool:
-                        self.keys_pool.append(key_name.lower())
+                        self.keys_pool.append(key_name)
                     # listen for start/stop script
                     # start_name = 'f6'  # as default
                     # stop_name = 'f9'  # as default
-                    check_hotkeys(key_name.lower())
+                    check_hotkeys(key_name)
                 elif event.action_type == 'key up':
                     if key_name in Recorder.globals.key_combination_trigger and key_name in self.keys_pool:
-                        self.keys_pool.remove(key_name.lower())
-                        check_hotkeys(key_name.lower())
+                        self.keys_pool.remove(key_name)
+                        check_hotkeys(key_name)
                 # 不录制热键
                 if key_name in HOT_KEYS:
                     return
