@@ -28,12 +28,12 @@ from Util.ClickedLabel import Label
 
 
 os.environ['QT_ENABLE_HIGHDPI_SCALING'] = "1"
-if platform.system() == 'Windows':
-    HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
-                'XButton1', 'XButton2', 'Middle']
-else:
-    HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
-                'Middle']
+# if platform.system() == 'Windows':
+#     HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
+#                 'XButton1', 'XButton2', 'Middle']
+# else:
+#     HOT_KEYS = ['F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
+#                 'Middle']
 
 logger.remove()
 if sys.stdout is not None:
@@ -250,8 +250,9 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                         self.keys_pool.remove(key_name)
                         check_hotkeys(key_name)
                 # 不录制热键
-                if key_name in HOT_KEYS:
-                    return
+                for btn in [self.hotkey_start, self.hotkey_record, self.hotkey_stop]:
+                    if key_name in btn.text():
+                        return
             # 录制事件
             if self.state == State.RECORDING:
                 if event.event_type == 'EM' and not flag_multiplemonitor:

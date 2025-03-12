@@ -152,7 +152,12 @@ class RunScriptClass(QThread, RunScriptMeta):
             if self.state == State.IDLE:
                 return False
             if attach:
-                PluginManager.call_group(attach, current_object)
+                try:
+                    PluginManager.call_group(attach, current_object)
+                except Exception as e:
+                    logger.error(e)
+                    self.logSignal.emit(f'An error occurred while calling {attach}, please check log file')
+                    self.logSignal.emit(f'调用{attach}时发生错误，请检查程序日志')
             current_object = self.run_object(current_object)
         return True
 
