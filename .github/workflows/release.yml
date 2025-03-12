@@ -51,7 +51,7 @@ jobs:
           pip3 install pyinstaller
       - name: Bundle Packages
         run: |
-          pyinstaller -Fw --add-data './assets:assets' KeymouseGo.py
+          pyinstaller -Fw --add-data './assets:assets' --hidden-import "pynput.keyboard._xorg" --hidden-import "pynput.mouse._xorg" KeymouseGo.py
       - name: Copy artifact
         run: |
           mkdir artifact && mv dist/KeymouseGo ./artifact/KeymouseGo${{ env.keymousego-version }}-linux
@@ -75,7 +75,7 @@ jobs:
           pip3 install pyinstaller
       - name: Bundle Packages
         run: |
-          pyinstaller -Fw --add-data './assets:assets' KeymouseGo.py
+          pyinstaller -Fw --add-data './assets:assets' --hidden-import "pynput.keyboard._xorg" --hidden-import "pynput.mouse._xorg" KeymouseGo.py
       - name: Copy artifact
         run: |
           mkdir artifact && mv dist/KeymouseGo ./artifact/KeymouseGo${{ env.keymousego-version }}-linux-aarch64
