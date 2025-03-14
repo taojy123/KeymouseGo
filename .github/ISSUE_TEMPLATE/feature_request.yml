@@ -1,0 +1,24 @@
+name: Feature request
+description: Suggest an idea for this project
+title: '[feature request]:'
+
+body:
+  - type: checkboxes
+    id: issue_check
+    attributes:
+      label: 我已查看以往的issue并且没有找到类似的问题
+      options:
+        - label: I have checked the previous issues and there is no simular problems.
+          required: true
+  - type: textarea
+    id: describe
+    attributes:
+      label: 请描述你的需求
+      description: Describe your request.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: 你想到的解决方案
+      description: the solution you'd like

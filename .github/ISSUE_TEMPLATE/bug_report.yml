@@ -1,0 +1,37 @@
+name: Bug report
+description: Create a report to help us improve
+title: '[bug report]:'
+
+body:
+  - type: checkboxes
+    id: issue_check
+    attributes:
+      label: 我已查看以往的issue并且没有找到类似的问题
+      options:
+        - label: I have checked the previous issues and there is no simular problems.
+          required: true
+  - type: textarea
+    id: describe
+    attributes:
+      label: 描述你遇到的bug以及如何复现
+      description: Describe the problem you confronted and how to reproduce it.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: 截图
+      description: screenshot
+  - type: input
+    id: environment
+    attributes:
+      label: 你使用的操作系统版本
+      description: The os you are using.
+      placeholder: e.g. Windows 11 24h2
+    validations:
+      required: true
+  - type: textarea
+    id: appendix
+    attributes:
+      label: 其它与问题相关的信息
+      description: Add any other context about the problem here.
