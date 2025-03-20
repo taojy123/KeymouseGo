@@ -23,6 +23,14 @@ body:
       label: 截图
       description: screenshot
   - type: input
+    id: version
+    attributes:
+      label: 你使用的软件版本
+      description: The version of program you are using.
+      placeholder: e.g. 5.2
+    validations:
+      required: true
+  - type: input
     id: environment
     attributes:
       label: 你使用的操作系统版本
