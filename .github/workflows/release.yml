@@ -10,7 +10,8 @@ permissions:
   contents: read
 
 env:
-  keymousego-version: _v5_2
+  keymousego-version: _v5_2_1
+  tag_name: v5.2.1
 
 jobs:
   build-windows:
@@ -36,6 +37,13 @@ jobs:
         with:
           name: windows
           path: ${{ github.workspace }}/artifact/
+#      - name: Create Release
+#        uses: softprops/action-gh-release@v2
+#        with:
+#          draft: true
+#          name: KeymouseGo${{ env.keymousego-version }}
+#          tag_name: ${{ env.tag_name }}
+#          files: ./artifact/KeymouseGo${{ env.keymousego-version }}-win.exe
 
   build-linux:
     runs-on: ubuntu-latest
@@ -51,7 +59,7 @@ jobs:
           pip3 install pyinstaller
       - name: Bundle Packages
         run: |
-          pyinstaller -Fw --add-data './assets:assets' --hidden-import "pynput.keyboard._xorg" --hidden-import "pynput.mouse._xorg" KeymouseGo.py
+          pyinstaller -Fw --add-data './assets:assets' --hidden-import "pynput.keyboard._xorg" --hidden-import "pynput.mouse._xorg" --hidden-import "pynput.keyboard._uinput" --hidden-import "pynput.mouse._uinput" KeymouseGo.py
       - name: Copy artifact
         run: |
           mkdir artifact && mv dist/KeymouseGo ./artifact/KeymouseGo${{ env.keymousego-version }}-linux
@@ -60,6 +68,13 @@ jobs:
         with:
           name: linux
           path: ${{ github.workspace }}/artifact/
+#      - name: Create Release
+#        uses: softprops/action-gh-release@v2
+#        with:
+#          draft: true
+#          name: KeymouseGo${{ env.keymousego-version }}
+#          tag_name: ${{ env.tag_name }}
+#          files: ./artifact/KeymouseGo${{ env.keymousego-version }}-linux
 
   build-linux-arm64:
     runs-on: ubuntu-24.04-arm
@@ -75,7 +90,7 @@ jobs:
           pip3 install pyinstaller
       - name: Bundle Packages
         run: |
-          pyinstaller -Fw --add-data './assets:assets' --hidden-import "pynput.keyboard._xorg" --hidden-import "pynput.mouse._xorg" KeymouseGo.py
+          pyinstaller -Fw --add-data './assets:assets' --hidden-import "pynput.keyboard._xorg" --hidden-import "pynput.mouse._xorg" --hidden-import "pynput.keyboard._uinput" --hidden-import "pynput.mouse._uinput" KeymouseGo.py
       - name: Copy artifact
         run: |
           mkdir artifact && mv dist/KeymouseGo ./artifact/KeymouseGo${{ env.keymousego-version }}-linux-aarch64
@@ -84,6 +99,13 @@ jobs:
         with:
           name: linux-aarch64
           path: ${{ github.workspace }}/artifact/
+#      - name: Create Release
+#        uses: softprops/action-gh-release@v2
+#        with:
+#          draft: true
+#          name: KeymouseGo${{ env.keymousego-version }}
+#          tag_name: ${{ env.tag_name }}
+#          files: ./artifact/KeymouseGo${{ env.keymousego-version }}-linux
 
   build-macos:
     runs-on: macos-latest
@@ -99,7 +121,7 @@ jobs:
           pip3 install pyinstaller
       - name: Bundle Packages
         run: |
-          pyinstaller -Fw --add-data './assets:assets' KeymouseGo.py
+          pyinstaller -Fw --add-data './assets:assets' --hidden-import "pynput.keyboard._darwin" --hidden-import "pynput.mouse._darwin" KeymouseGo.py
       - name: Copy artifact
         run: |
           mkdir artifact && mv dist/KeymouseGo.app ./artifact/KeymouseGo${{ env.keymousego-version }}-mac
@@ -108,3 +130,10 @@ jobs:
         with:
           name: macos
           path: ${{ github.workspace }}/artifact/
+#      - name: Create Release
+#        uses: softprops/action-gh-release@v2
+#        with:
+#          draft: true
+#          name: KeymouseGo${{ env.keymousego-version }}
+#          tag_name: ${{ env.tag_name }}
+#          files: ./artifact/KeymouseGo${{ env.keymousego-version }}-mac
