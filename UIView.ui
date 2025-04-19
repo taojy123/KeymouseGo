@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>KeymouseGo v5.2</string>
+   <string>KeymouseGo v5.2.1</string>
   </property>
   <property name="windowIcon">
    <iconset resource="assets.qrc">
