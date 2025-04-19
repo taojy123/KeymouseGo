@@ -251,7 +251,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                         check_hotkeys(key_name)
                 # 不录制热键
                 for btn in [self.hotkey_start, self.hotkey_record, self.hotkey_stop]:
-                    if key_name in btn.text():
+                    if key_name == btn.text():
                         return
             # 录制事件
             if self.state == State.RECORDING:
