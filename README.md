@@ -161,13 +161,9 @@ chmod -R 770 ~/.qt_material
 
 # 开源贡献者
 
+[![Contributors](https://contrib.rocks/image?repo=taojy123/keymousego)](https://github.com/taojy123/keymousego/graphs/contributors)
+
 如果您是开发爱好者，并对本项目感兴趣，欢迎参与项目的共同建设，您可以通过本项目的[**dev**](https://github.com/taojy123/KeymouseGo/tree/dev)分支查看目前的进度，并且可以向本项目的[**dev**](https://github.com/taojy123/KeymouseGo/tree/dev)分支提交 Pull request 来贡献代码。
-
-在此，特别感谢积极贡献者：
-
-<a href="https://github.com/Monomux"><img src="https://avatars.githubusercontent.com/u/70839036?s=80&v=4" height="80"></a>
-<a href="https://github.com/ZutJoe"><img src="https://avatars.githubusercontent.com/u/54732130?s=80&v=4" height="80"></a>
-
 
 感谢 JetBrains 免费提供开发工具
 
