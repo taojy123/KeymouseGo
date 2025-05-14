@@ -303,6 +303,9 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             _app.installTranslator(self.trans)
             self.retranslateUi(self)
         self.retranslateUi(self)
+        self.hotkey_stop.setText(self.config.value("Config/StopHotKey"))
+        self.hotkey_start.setText(self.config.value("Config/StartHotKey"))
+        self.hotkey_record.setText(self.config.value("Config/RecordHotKey"))
 
     def onchangetheme(self):
         theme = self.choice_theme.currentText()
