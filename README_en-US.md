@@ -50,20 +50,18 @@ This program is written in `Python` and packed as executable file. You can downl
 
 ### Bundle with source code
 
-+ Windows
 ```
 1. Install Python 3
-2. pip install -r requirements-windows.txt
-3. pip install pyinstaller
-4. pyinstaller -F -w --add-data "./assets;assets" KeymouseGo.py
-```
-
-+ Linux or Mac
-```
-1. Install Python 3
-2. pip3 install -r requirements-universal.txt
-3. pip3 install pyinstaller
-4. pyinstaller -F -w --add-data "./assets:assets" KeymouseGo.py
+2. Install requirement with pip3
+- (Windows) pip install -r requirements-windows.txt
+- (Linux/MacOS) pip3 install -r requirements-universal.txt
+3. Install pyinstaller
+-  pip install pyinstaller
+4. Bundle with pyinstaller
+- (Windows) pyinstaller -F -w --add-data "./assets;assets" KeymouseGo.py
+- (Linux X11) pyinstaller -F -w --add-data "./assets:assets" --hidden-import "pynput.keyboard._xorg" --hidden-import "pynput.mouse._xorg" KeymouseGo.py
+- (Linux Wayland) pyinstaller -F -w --add-data "./assets:assets"  --hidden-import "pynput.keyboard._uinput" --hidden-import "pynput.mouse._uinput" KeymouseGo.py
+- (MacOS) pyinstaller -F -w --add-data "./assets:assets" --hidden-import "pynput.keyboard._darwin" --hidden-import "pynput.mouse._darwin" KeymouseGo.py
 ```
 
 The executable program would appear at folder `your_poject_location/dist`.

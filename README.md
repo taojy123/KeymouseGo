@@ -41,20 +41,18 @@
 
 ### 源码打包可执行文件
 
-+ Windows
 ```
 1. 安装 Python3
-2. pip install -r requirements-windows.txt
-3. pip install pyinstaller
-4. pyinstaller -F -w --add-data "./assets;assets" KeymouseGo.py
-```
-
-+ Linux或Mac
-```
-1. 安装 Python3
-2. pip3 install -r requirements-universal.txt
-3. pip3 install pyinstaller
-4. pyinstaller -F -w --add-data "./assets:assets" KeymouseGo.py
+2. pip安装依赖
+- (Windows) pip install -r requirements-windows.txt
+- (Linux/MacOS) pip3 install -r requirements-universal.txt
+3. pip安装pyinstaller
+-  pip install pyinstaller
+4. pyinstaller打包
+- (Windows) pyinstaller -F -w --add-data "./assets;assets" KeymouseGo.py
+- (Linux X11) pyinstaller -F -w --add-data "./assets:assets" --hidden-import "pynput.keyboard._xorg" --hidden-import "pynput.mouse._xorg" KeymouseGo.py
+- (Linux Wayland) pyinstaller -F -w --add-data "./assets:assets"  --hidden-import "pynput.keyboard._uinput" --hidden-import "pynput.mouse._uinput" KeymouseGo.py
+- (MacOS) pyinstaller -F -w --add-data "./assets:assets" --hidden-import "pynput.keyboard._darwin" --hidden-import "pynput.mouse._darwin" KeymouseGo.py
 ```
 
 打包完成后，可执行文件在项目路径的`dist`文件夹内。
