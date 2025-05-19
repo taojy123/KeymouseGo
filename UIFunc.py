@@ -127,16 +127,55 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.hotkey_start.setText(self.config.value("Config/StartHotKey"))
         self.hotkey_record.setText(self.config.value("Config/RecordHotKey"))
         start_time_config = self.config.value("Config/StartTime", "不定时")
+        if start_time_config == "不定时":
+            self.checkbox_no_timing_start.setChecked(True)
+        else:
+            hour, minute, _ = start_time_config.split(":")
+            self.combo_start_hour.setCurrentText(hour)
+            self.combo_start_min.setCurrentText(minute)
+            self.combo_start_hour.currentTextChanged.connect(self.onconfigchange)
+            self.combo_start_min.currentTextChanged.connect(self.onconfigchange)
         stop_time_config = self.config.value("Config/StopTime", "不定时")
-        self.input_start_time.setCurrentText(start_time_config)
-        self.input_stop_time.setCurrentText(stop_time_config)
-        self.input_start_time.currentTextChanged.connect(self.onconfigchange)
-        self.input_stop_time.currentTextChanged.connect(self.onconfigchange)
+        if stop_time_config == "不定时":
+            self.checkbox_no_timing_stop.setChecked(True)
+        else:
+            hour, minute, _ = stop_time_config.split(":")
+            self.combo_stop_hour.setCurrentText(hour)
+            self.combo_stop_min.setCurrentText(minute)
+            self.combo_stop_hour.currentTextChanged.connect(self.onconfigchange)
+            self.combo_stop_min.currentTextChanged.connect(self.onconfigchange)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.check_time)
         self.timer.start(1000)  # 每秒检查一次时间
         self.last_start_triggered = None  # 记录最后一次启动触发时间（格式："HH:MM"）
         self.last_stop_triggered = None   # 记录最后一次停止触发时间
+
+        self.checkbox_no_timing_start.stateChanged.connect(
+            lambda: self._toggle_time_controls(
+                self.checkbox_no_timing_start,
+                self.combo_start_hour,
+                self.combo_start_min
+            )
+        )
+        self.checkbox_no_timing_stop.stateChanged.connect(
+            lambda: self._toggle_time_controls(
+                self.checkbox_no_timing_stop,
+                self.combo_stop_hour,
+                self.combo_stop_min
+            )
+        )
+
+        # 初始化时根据配置设置控件状态
+        self._toggle_time_controls(
+            self.checkbox_no_timing_start,
+            self.combo_start_hour,
+            self.combo_start_min
+        )
+        self._toggle_time_controls(
+            self.checkbox_no_timing_stop,
+            self.combo_stop_hour,
+            self.combo_stop_min
+        )
 
         self.onchangetheme()
 
@@ -298,8 +337,16 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.config.setValue("Config/StartHotKey", self.hotkey_start.text())
         self.config.setValue("Config/StopHotKey", self.hotkey_stop.text())
         self.config.setValue("Config/RecordHotKey", self.hotkey_record.text())
-        self.config.setValue("Config/StartTime", self.input_start_time.currentText())
-        self.config.setValue("Config/StopTime", self.input_stop_time.currentText())
+        if self.checkbox_no_timing_start.isChecked():
+            start_time = "不定时"
+        else:
+            start_time = f"{self.combo_start_hour.currentText()}:{self.combo_start_min.currentText()}:00"
+        self.config.setValue("Config/StartTime", start_time)
+        if self.checkbox_no_timing_stop.isChecked():
+            stop_time = "不定时"
+        else:
+            stop_time = f"{self.combo_stop_hour.currentText()}:{self.combo_stop_min.currentText()}:00"
+        self.config.setValue("Config/StopTime", stop_time)
 
     def onchangelang(self):
         global scripts_map
@@ -493,8 +540,15 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
     
     def check_time(self):
         current_time = datetime.datetime.now().strftime("%H:%M")  # 仅比较小时和分钟
-        start_time = self.input_start_time.currentText()[:5]  # 截取前5位（HH:MM）
-        stop_time = self.input_stop_time.currentText()[:5]
+        if self.checkbox_no_timing_start.isChecked():
+            start_time = "不定时"
+        else:
+            start_time = f"{self.combo_start_hour.currentText()}:{self.combo_start_min.currentText()}"
+
+        if self.checkbox_no_timing_stop.isChecked():
+            stop_time = "不定时"
+        else:
+            stop_time = f"{self.combo_stop_hour.currentText()}:{self.combo_stop_min.currentText()}"
 
         if start_time != "不定时" and current_time == start_time and self.state == State.IDLE and self.last_start_triggered != current_time:
             self.OnBtrunButton()
@@ -506,3 +560,11 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                 self.runthread.resume()
             self.update_state(State.IDLE)
             self.last_stop_triggered = current_time
+
+    def _toggle_time_controls(self, checkbox, combo_hour, combo_min):
+        if checkbox.isChecked():
+            combo_hour.setEnabled(False)
+            combo_min.setEnabled(False)
+        else:
+            combo_hour.setEnabled(True)
+            combo_min.setEnabled(True)
