@@ -244,6 +244,34 @@ class Ui_UIView(object):
         self.statusbar.setObjectName(u"statusbar")
         UIView.setStatusBar(self.statusbar)
 
+        self.label_start_time = QLabel(self.groupBox)
+        self.label_start_time.setObjectName(u"label_start_time")
+        self.label_start_time.setText("定时开始时间:")
+        self.gridLayout_3.addWidget(self.label_start_time, 4, 0, 1, 1)
+
+        self.input_start_time = QComboBox(self.groupBox)
+        self.input_start_time.setObjectName(u"input_start_time")
+        self.input_start_time.addItem("不定时")
+        for hour in range(24):
+            for minute in range(0, 60, 1):  # 每15分钟一个选项
+                time_str = f"{hour:02d}:{minute:02d}:00"
+                self.input_start_time.addItem(time_str)
+        self.gridLayout_3.addWidget(self.input_start_time, 4, 1, 1, 1)
+
+        self.label_stop_time = QLabel(self.groupBox)
+        self.label_stop_time.setObjectName(u"label_stop_time")
+        self.label_stop_time.setText("定时停止时间:")
+        self.gridLayout_3.addWidget(self.label_stop_time, 5, 0, 1, 1)
+
+        self.input_stop_time = QComboBox(self.groupBox)
+        self.input_stop_time.setObjectName(u"input_stop_time")
+        self.input_stop_time.addItem("不定时")
+        for hour in range(24):
+            for minute in range(0, 60, 1):  # 每15分钟一个选项
+                time_str = f"{hour:02d}:{minute:02d}:00"
+                self.input_stop_time.addItem(time_str)
+        self.gridLayout_3.addWidget(self.input_stop_time, 5, 1, 1, 1)
+
         self.retranslateUi(UIView)
 
         QMetaObject.connectSlotsByName(UIView)

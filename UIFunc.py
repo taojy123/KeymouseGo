@@ -126,7 +126,17 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.hotkey_stop.setText(self.config.value("Config/StopHotKey"))
         self.hotkey_start.setText(self.config.value("Config/StartHotKey"))
         self.hotkey_record.setText(self.config.value("Config/RecordHotKey"))
-
+        start_time_config = self.config.value("Config/StartTime", "不定时")
+        stop_time_config = self.config.value("Config/StopTime", "不定时")
+        self.input_start_time.setCurrentText(start_time_config)
+        self.input_stop_time.setCurrentText(stop_time_config)
+        self.input_start_time.currentTextChanged.connect(self.onconfigchange)
+        self.input_stop_time.currentTextChanged.connect(self.onconfigchange)
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.check_time)
+        self.timer.start(1000)  # 每秒检查一次时间
+        self.last_start_triggered = None  # 记录最后一次启动触发时间（格式："HH:MM"）
+        self.last_stop_triggered = None   # 记录最后一次停止触发时间
 
         self.onchangetheme()
 
@@ -288,6 +298,8 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.config.setValue("Config/StartHotKey", self.hotkey_start.text())
         self.config.setValue("Config/StopHotKey", self.hotkey_stop.text())
         self.config.setValue("Config/RecordHotKey", self.hotkey_record.text())
+        self.config.setValue("Config/StartTime", self.input_start_time.currentText())
+        self.config.setValue("Config/StopTime", self.input_stop_time.currentText())
 
     def onchangelang(self):
         global scripts_map
@@ -478,3 +490,19 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
     @Slot(tuple)
     def cursor_pos_change(self, pos):
         self.label_cursor_pos.setText(f'Cursor pos: {pos}')
+    
+    def check_time(self):
+        current_time = datetime.datetime.now().strftime("%H:%M")  # 仅比较小时和分钟
+        start_time = self.input_start_time.currentText()[:5]  # 截取前5位（HH:MM）
+        stop_time = self.input_stop_time.currentText()[:5]
+
+        if start_time != "不定时" and current_time == start_time and self.state == State.IDLE and self.last_start_triggered != current_time:
+            self.OnBtrunButton()
+            self.last_start_triggered = current_time
+
+        if stop_time != "不定时" and current_time == stop_time and (self.state == State.RUNNING or self.state == State.PAUSE_RUNNING) and self.last_stop_triggered != current_time:
+            self.tnumrd.setText('broken')
+            if self.runthread:
+                self.runthread.resume()
+            self.update_state(State.IDLE)
+            self.last_stop_triggered = current_time

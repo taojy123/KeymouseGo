@@ -34,6 +34,8 @@ def setdefaultconf(config):
     config.set('Config', 'Precision', '200')
     config.set('Config', 'ExecuteSpeed', '100')
     config.set('Config', 'Language', 'zh-cn')
+    config.set('Config', 'StartTime', '不定时')
+    config.set('Config', 'StopTime', '不定时')
 
 def getconfig():
     if not os.path.exists('../config.ini'):
@@ -52,4 +54,6 @@ def saveconfig(newConf):
     conf.set('Config', 'Precision', str(newConf['precision']))
     conf.set('Config', 'ExecuteSpeed', str(newConf['executespeed']))
     conf.set('Config', 'Language', str(newConf['language']))
+    conf.set('Config', 'StartTime', newConf.get('start_time', '不定时'))
+    conf.set('Config', 'StopTime', newConf.get('stop_time', '不定时'))
     conf.write(open('../config.ini', 'w'))
