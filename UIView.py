@@ -19,7 +19,7 @@ from PySide6.QtWidgets import (QApplication, QComboBox, QFormLayout, QGridLayout
     QGroupBox, QHBoxLayout, QLabel, QLayout,
     QMainWindow, QMenuBar, QPushButton, QSizePolicy,
     QSlider, QSpinBox, QStatusBar, QTextEdit,
-    QVBoxLayout, QWidget)
+    QVBoxLayout, QWidget, QCheckBox)
 import assets_rc
 
 class Ui_UIView(object):
@@ -243,6 +243,53 @@ class Ui_UIView(object):
         self.statusbar = QStatusBar(UIView)
         self.statusbar.setObjectName(u"statusbar")
         UIView.setStatusBar(self.statusbar)
+
+        # 定时开始时间的小时和分钟选择
+        self.label_start_time = QLabel(self.groupBox)
+        self.label_start_time.setText("定时开始时间:")
+        self.combo_start_hour = QComboBox(self.groupBox)
+        self.combo_start_min = QComboBox(self.groupBox)
+        for hour in range(24):
+            self.combo_start_hour.addItem(f"{hour:02d}")
+        for minute in range(0, 60, 1):
+            self.combo_start_min.addItem(f"{minute:02d}")
+        self.combo_start_hour.setCurrentText("00")
+        self.combo_start_min.setCurrentText("00")
+
+        # 定时停止时间的小时和分钟选择
+        self.label_stop_time = QLabel(self.groupBox)
+        self.label_stop_time.setText("定时停止时间:")
+        self.combo_stop_hour = QComboBox(self.groupBox)
+        self.combo_stop_min = QComboBox(self.groupBox)
+        for hour in range(24):
+            self.combo_stop_hour.addItem(f"{hour:02d}")
+        for minute in range(0, 60, 1):
+            self.combo_stop_min.addItem(f"{minute:02d}")
+        self.combo_stop_hour.setCurrentText("00")
+        self.combo_stop_min.setCurrentText("00")
+
+        # 添加“不定时”复选框
+        self.checkbox_no_timing_start = QCheckBox("不定时", self.groupBox)
+        self.checkbox_no_timing_stop = QCheckBox("不定时", self.groupBox)
+
+        # 开始时间布局
+        hbox_start = QHBoxLayout()
+        hbox_start.addWidget(self.combo_start_hour)
+        hbox_start.addWidget(QLabel(":"))
+        hbox_start.addWidget(self.combo_start_min)
+        hbox_start.addWidget(self.checkbox_no_timing_start)
+
+        # 停止时间布局
+        hbox_stop = QHBoxLayout()
+        hbox_stop.addWidget(self.combo_stop_hour)
+        hbox_stop.addWidget(QLabel(":"))
+        hbox_stop.addWidget(self.combo_stop_min)
+        hbox_stop.addWidget(self.checkbox_no_timing_stop)
+
+        self.gridLayout_3.addWidget(self.label_start_time, 4, 0)
+        self.gridLayout_3.addLayout(hbox_start, 4, 1)
+        self.gridLayout_3.addWidget(self.label_stop_time, 5, 0)
+        self.gridLayout_3.addLayout(hbox_stop, 5, 1)
 
         self.retranslateUi(UIView)
 
