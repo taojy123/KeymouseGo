@@ -12,6 +12,11 @@
     <img alt="language" src="https://img.shields.io/badge/python-%3E%3D%203.7-green">
     <img alt="stars" src="https://img.shields.io/github/stars/taojy123/KeymouseGo?style=social">
 </div>
+<div>
+    <a href="https://deepwiki.com/taojy123/KeymouseGo">
+        <img src="https://devin.ai/assets/deepwiki-badge.png" alt="Ask DeepWiki.com" height="20"/>
+    </a>
+</div>
 <br>
 
 [简体中文](README.md) | [English](README_en-US.md)
