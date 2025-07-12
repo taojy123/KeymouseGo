@@ -177,6 +177,9 @@ My Email: taojy123@163.com
 
 If you are a developer and interested in this project, you can check the progress in branch [**dev**](https://github.com/taojy123/KeymouseGo/tree/dev). and you are welcomed to participating by opening pull request to branch [**dev**](https://github.com/taojy123/KeymouseGo/tree/dev).
 
+注：如果您需要修改应用界面，请修改UIView.ui文件并通过pyuic生成UIVIew.py,控件的初始化等操作请添加到UIFunc.py内。
+Note: If you want to modify the application UI, please modify `UIView.ui` and generate `UIView.py` via `pyuic`. Then add the widget initialization operation in `UIFunc.py`.
+
 Thanks to free develop tool provided by JetBrains
 
 <a href="https://www.jetbrains.com/?from=KeymouseGo"><img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/jetbrains-variant-2.png" height="80"></a>

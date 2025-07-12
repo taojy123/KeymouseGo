@@ -167,6 +167,8 @@ chmod -R 770 ~/.qt_material
 
 如果您是开发爱好者，并对本项目感兴趣，欢迎参与项目的共同建设，您可以通过本项目的[**dev**](https://github.com/taojy123/KeymouseGo/tree/dev)分支查看目前的进度，并且可以向本项目的[**dev**](https://github.com/taojy123/KeymouseGo/tree/dev)分支提交 Pull request 来贡献代码。
 
+注：如果您需要修改应用界面，请修改UIView.ui文件并通过pyuic生成UIVIew.py,控件的初始化等操作请添加到UIFunc.py内。
+
 感谢 JetBrains 免费提供开发工具
 
 <a href="https://www.jetbrains.com/?from=KeymouseGo"><img src="https://raw.githubusercontent.com/taojy123/KeymouseGo/master/jetbrains-variant-2.png" height="80"></a>
