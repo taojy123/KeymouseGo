@@ -92,7 +92,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.setFocusPolicy(Qt.NoFocus)
 
         self.trans = QTranslator(self)
-        self.choice_language.addItems(['简体中文', 'English'])
+        self.choice_language.addItems(['简体中文', 'English', '繁體中文'])
         self.choice_language.currentTextChanged.connect(self.onchangelang)
 
         # 获取默认的地区设置
@@ -299,6 +299,11 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
             self.retranslateUi(self)
         elif self.choice_language.currentText() == 'English':
             self.trans.load(get_assets_path('i18n', 'en'))
+            _app = QApplication.instance()
+            _app.installTranslator(self.trans)
+            self.retranslateUi(self)
+        elif self.choice_language.currentText() == '繁體中文':
+            self.trans.load(get_assets_path('i18n', 'zh-tw'))
             _app = QApplication.instance()
             _app.installTranslator(self.trans)
             self.retranslateUi(self)
