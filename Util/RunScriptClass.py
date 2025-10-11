@@ -47,6 +47,7 @@ class RunScriptClass(QThread, RunScriptMeta):
         self.state = State.RUNNING
         self.script_path = frame.get_script_path()
         self.runtimes = frame.stimes.value()
+        self.interval = frame.interval.value()
 
         # 更新控件的槽函数
         self.logSignal.connect(frame.textlog.append)
@@ -122,6 +123,8 @@ class RunScriptClass(QThread, RunScriptMeta):
 
             while (j < self.runtimes or self.runtimes == 0) and nointerrupt:
                 logger.debug('===========%d==============' % j)
+                if j > 0 and self.interval > 0:
+                    self.sleep(self.interval)
                 if self.state == State.IDLE:
                     break
                 self.tnumrdSignal.emit(f'{running_text}... Looptimes [{j + 1}/{self.runtimes}]')

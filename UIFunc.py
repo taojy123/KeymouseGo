@@ -114,11 +114,13 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.choice_theme.addItems(list_themes())
         # self.choice_theme.addItems(PluginManager.resources_paths)
         self.stimes.setValue(int(self.config.value("Config/LoopTimes")))
+        self.interval.setValue(int(self.config.value("Config/Interval")))
         self.mouse_move_interval_ms.setValue(int(self.config.value("Config/Precision")))
         self.choice_theme.setCurrentText(self.config.value("Config/Theme"))
         if self.config.value('Config/Script') is not None and self.config.value('Config/Script') in self.scripts:
             self.choice_script.setCurrentText(self.config.value('Config/Script'))
         self.stimes.valueChanged.connect(self.onconfigchange)
+        self.interval.valueChanged.connect(self.onconfigchange)
         self.mouse_move_interval_ms.valueChanged.connect(self.onconfigchange)
         self.mouse_move_interval_ms.valueChanged.connect(Recorder.set_interval)
         self.choice_theme.currentTextChanged.connect(self.onchangetheme)
@@ -331,6 +333,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
     def onconfigchange(self):
         self.config.setValue("Config/LoopTimes", self.stimes.value())
+        self.config.setValue("Config/Interval", self.interval.value())
         self.config.setValue("Config/Precision", self.mouse_move_interval_ms.value())
         self.config.setValue("Config/Theme", self.choice_theme.currentText())
         self.config.setValue("Config/Script", self.choice_script.currentText())
@@ -403,6 +406,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                         'StopHotKey=f9\n'
                         'RecordHotKey=f10\n'
                         'LoopTimes=1\n'
+                        'Interval=0\n'
                         'Precision=200\n'
                         'Language=zh-cn\n'
                         'Theme=Default\n')

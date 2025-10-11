@@ -167,23 +167,6 @@ class Ui_UIView(object):
         self.gridLayout_4 = QGridLayout(self.groupBox_2)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
         self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
-        self.choice_theme = QComboBox(self.groupBox_2)
-        self.choice_theme.setObjectName(u"choice_theme")
-        sizePolicy.setHeightForWidth(self.choice_theme.sizePolicy().hasHeightForWidth())
-        self.choice_theme.setSizePolicy(sizePolicy)
-
-        self.gridLayout_4.addWidget(self.choice_theme, 3, 1, 1, 1)
-
-        self.label_execute_interval = QLabel(self.groupBox_2)
-        self.label_execute_interval.setObjectName(u"label_execute_interval")
-
-        self.gridLayout_4.addWidget(self.label_execute_interval, 2, 0, 1, 1)
-
-        self.label_theme = QLabel(self.groupBox_2)
-        self.label_theme.setObjectName(u"label_theme")
-
-        self.gridLayout_4.addWidget(self.label_theme, 3, 0, 1, 1)
-
         self.mouse_move_interval_ms = QSpinBox(self.groupBox_2)
         self.mouse_move_interval_ms.setObjectName(u"mouse_move_interval_ms")
         sizePolicy.setHeightForWidth(self.mouse_move_interval_ms.sizePolicy().hasHeightForWidth())
@@ -192,7 +175,7 @@ class Ui_UIView(object):
         self.mouse_move_interval_ms.setMaximum(1000)
         self.mouse_move_interval_ms.setValue(100)
 
-        self.gridLayout_4.addWidget(self.mouse_move_interval_ms, 2, 1, 1, 1)
+        self.gridLayout_4.addWidget(self.mouse_move_interval_ms, 3, 1, 1, 1)
 
         self.gridLayout = QGridLayout()
         self.gridLayout.setObjectName(u"gridLayout")
@@ -216,10 +199,15 @@ class Ui_UIView(object):
 
         self.gridLayout_4.addLayout(self.gridLayout, 0, 1, 1, 1)
 
-        self.label_script = QLabel(self.groupBox_2)
-        self.label_script.setObjectName(u"label_script")
+        self.label_execute_interval = QLabel(self.groupBox_2)
+        self.label_execute_interval.setObjectName(u"label_execute_interval")
 
-        self.gridLayout_4.addWidget(self.label_script, 0, 0, 1, 1)
+        self.gridLayout_4.addWidget(self.label_execute_interval, 3, 0, 1, 1)
+
+        self.label_theme = QLabel(self.groupBox_2)
+        self.label_theme.setObjectName(u"label_theme")
+
+        self.gridLayout_4.addWidget(self.label_theme, 4, 0, 1, 1)
 
         self.label_run_times = QLabel(self.groupBox_2)
         self.label_run_times.setObjectName(u"label_run_times")
@@ -235,10 +223,35 @@ class Ui_UIView(object):
 
         self.gridLayout_4.addWidget(self.stimes, 1, 1, 1, 1)
 
+        self.choice_theme = QComboBox(self.groupBox_2)
+        self.choice_theme.setObjectName(u"choice_theme")
+        sizePolicy.setHeightForWidth(self.choice_theme.sizePolicy().hasHeightForWidth())
+        self.choice_theme.setSizePolicy(sizePolicy)
+
+        self.gridLayout_4.addWidget(self.choice_theme, 4, 1, 1, 1)
+
+        self.label_script = QLabel(self.groupBox_2)
+        self.label_script.setObjectName(u"label_script")
+
+        self.gridLayout_4.addWidget(self.label_script, 0, 0, 1, 1)
+
+        self.label_interval = QLabel(self.groupBox_2)
+        self.label_interval.setObjectName(u"label_interval")
+
+        self.gridLayout_4.addWidget(self.label_interval, 2, 0, 1, 1)
+
+        self.interval = QSpinBox(self.groupBox_2)
+        self.interval.setObjectName(u"interval")
+        sizePolicy.setHeightForWidth(self.interval.sizePolicy().hasHeightForWidth())
+        self.interval.setSizePolicy(sizePolicy)
+        self.interval.setMaximum(1000000000)
+
+        self.gridLayout_4.addWidget(self.interval, 2, 1, 1, 1)
+
         UIView.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(UIView)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 651, 24))
+        self.menubar.setGeometry(QRect(0, 0, 651, 21))
         UIView.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(UIView)
         self.statusbar.setObjectName(u"statusbar")
@@ -313,10 +326,11 @@ class Ui_UIView(object):
         self.label_cursor_pos.setText(QCoreApplication.translate("UIView", u"Cursor Position:", None))
         self.label_volume.setText(QCoreApplication.translate("UIView", u"Volume", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("UIView", u"Config", None))
+        self.bt_open_script_files.setText(QCoreApplication.translate("UIView", u"...", None))
         self.label_execute_interval.setText(QCoreApplication.translate("UIView", u"Mouse precision", None))
         self.label_theme.setText(QCoreApplication.translate("UIView", u"Theme", None))
-        self.bt_open_script_files.setText(QCoreApplication.translate("UIView", u"...", None))
-        self.label_script.setText(QCoreApplication.translate("UIView", u"Script", None))
         self.label_run_times.setText(QCoreApplication.translate("UIView", u"Run times", None))
+        self.label_script.setText(QCoreApplication.translate("UIView", u"Script", None))
+        self.label_interval.setText(QCoreApplication.translate("UIView", u"Interval", None))
     # retranslateUi
 
