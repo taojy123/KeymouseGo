@@ -265,30 +265,6 @@
       <number>0</number>
      </property>
      <item row="3" column="1">
-      <widget class="QComboBox" name="choice_theme">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_execute_interval">
-       <property name="text">
-        <string>Mouse precision</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_theme">
-       <property name="text">
-        <string>Theme</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
       <widget class="QSpinBox" name="mouse_move_interval_ms">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -337,10 +313,17 @@
        </item>
       </layout>
      </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_script">
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_execute_interval">
        <property name="text">
-        <string>Script</string>
+        <string>Mouse precision</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_theme">
+       <property name="text">
+        <string>Theme</string>
        </property>
       </widget>
      </item>
@@ -367,6 +350,43 @@
        </property>
       </widget>
      </item>
+     <item row="4" column="1">
+      <widget class="QComboBox" name="choice_theme">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_script">
+       <property name="text">
+        <string>Script</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_interval">
+       <property name="text">
+        <string>Interval</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QSpinBox" name="interval">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximum">
+        <number>1000000000</number>
+       </property>
+      </widget>
+     </item>
     </layout>
    </widget>
   </widget>
@@ -376,7 +396,7 @@
      <x>0</x>
      <y>0</y>
      <width>651</width>
-     <height>24</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
