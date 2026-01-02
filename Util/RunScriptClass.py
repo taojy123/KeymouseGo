@@ -97,7 +97,7 @@ class RunScriptClass(QThread, RunScriptMeta):
         self.playtuneSignal.emit('end.wav')
 
     @logger.catch
-    def run_script_from_path(self, script_path: str):
+    def run_script_from_path(self, script_path: str, is_subscript: bool = False):
         try:
             running_text = '%s running..' % script_path.split('/')[-1].split('\\')[-1]
             self.tnumrdSignal.emit(running_text)
@@ -120,14 +120,14 @@ class RunScriptClass(QThread, RunScriptMeta):
             j = 0
             nointerrupt = True
             logger.debug('Run script..')
-
-            while (j < self.runtimes or self.runtimes == 0) and nointerrupt:
+            runtimes = 1 if is_subscript else self.runtimes
+            while (j < runtimes or runtimes == 0) and nointerrupt:
                 logger.debug('===========%d==============' % j)
                 if j > 0 and self.interval > 0:
                     self.sleep(self.interval)
                 if self.state == State.IDLE:
                     break
-                self.tnumrdSignal.emit(f'{running_text}... Looptimes [{j + 1}/{self.runtimes}]')
+                self.tnumrdSignal.emit(f'{running_text}... Looptimes [{j + 1}/{runtimes}]')
                 nointerrupt = nointerrupt and self.run_script_from_objects(head_object)
                 j += 1
             if nointerrupt:
@@ -188,7 +188,7 @@ class RunScriptClass(QThread, RunScriptMeta):
             pass
         elif object_type == 'subroutine':
             for path in json_object.content['path']:
-                self.run_script_from_path(path)
+                self.run_script_from_path(path, True)
         else:
             # Not supposed to happen
             logger.error(f'Unexpected event type when running {json_object.content}')
@@ -214,7 +214,7 @@ class RunScriptCMDClass(QThread, RunScriptMeta):
         self.run_script_from_path(self.script_path)
 
     @logger.catch
-    def run_script_from_path(self, script_path):
+    def run_script_from_path(self, script_path, is_subscript: bool = False):
         for path in script_path:
             logger.info('Script path:%s' % path)
             logger.debug('Parse script..')
@@ -227,7 +227,8 @@ class RunScriptCMDClass(QThread, RunScriptMeta):
                 except Exception as e:
                     logger.error(e)
             j = 0
-            while j < self.run_times or self.run_times == 0:
+            runtimes = 1 if is_subscript else self.run_times
+            while j < runtimes or runtimes == 0:
                 logger.info('===========%d==============' % j)
                 self.run_script_from_objects(head_object)
                 if self.flag.value:
@@ -267,7 +268,7 @@ class RunScriptCMDClass(QThread, RunScriptMeta):
         elif object_type in ['goto', 'custom']:
             pass
         elif object_type == 'subroutine':
-            self.run_script_from_path(json_object.content['path'])
+            self.run_script_from_path(json_object.content['path'], True)
         else:
             # Not supposed to happen
             logger.error(f'Unexpected event type when running {json_object.content}')
