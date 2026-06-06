@@ -5,12 +5,10 @@ from loguru import logger
 from Plugin.Interface import PluginInterface
 from Util.Parser import JsonObject
 from importlib.machinery import SourceFileLoader
+import sys
 import json5
 
-
-def to_abs_path(*args):
-    return os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])),
-                        *args)
+from Util.Path import to_abs_path
 
 
 class PluginManager:

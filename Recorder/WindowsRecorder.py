@@ -149,9 +149,13 @@ def register_hm():
     return pyWinhook.HookManager()
 
 
+hm = None
+
+
 # @threadwrapper
 def setuphook(commandline=False):
-    hm = pyWinhook.HookManager()
+    global hm
+    hm = register_hm()
     if not commandline:
         # 使用一般的HookMouse无法捕获鼠标侧键操作，因此采用cpyHook捕获鼠标操作
         cpyHook.cSetHook(HookConstants.WH_MOUSE_LL, mouse_handler)
@@ -159,3 +163,11 @@ def setuphook(commandline=False):
     hm.HookKeyboard()
     # Wait Forever
     # pythoncom.PumpMessages()
+
+
+def stop_listeners():
+    global hm
+    if hm:
+        hm.UnhookKeyboard()
+        cpyHook.cUnhook(HookConstants.WH_MOUSE_LL)
+        hm = None

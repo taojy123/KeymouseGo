@@ -6,6 +6,10 @@ import Recorder.globals as globalv
 
 record_signals = globalv.RecordSignal()
 
+mouselistener = None
+keyboardlistener = None
+
+
 buttondic = {mouse.Button.left: 'left',
              mouse.Button.right: 'right',
              mouse.Button.middle: 'middle'
@@ -108,6 +112,7 @@ def on_release(key):
 
 
 def setuphook(commandline=False):
+    global mouselistener, keyboardlistener
     if not commandline:
         mouselistener = mouse.Listener(
             on_move=on_move,
@@ -120,3 +125,13 @@ def setuphook(commandline=False):
         on_release=on_release
     )
     keyboardlistener.start()
+
+
+def stop_listeners():
+    global mouselistener, keyboardlistener
+    if mouselistener:
+        mouselistener.stop()
+        mouselistener = None
+    if keyboardlistener:
+        keyboardlistener.stop()
+        keyboardlistener = None

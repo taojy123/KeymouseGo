@@ -7,10 +7,10 @@ from PySide6.QtCore import QCoreApplication
 from PySide6.QtWidgets import QDialog, QFileDialog, QInputDialog
 from PySide6.QtWidgets import QMainWindow, QMessageBox
 
-from UIFileDialogView import Ui_Dialog
-from UIFunc import scripts, scripts_map
+from .UIFileDialogView import Ui_Dialog
+from .UIFunc import scripts, scripts_map
 
-from KeymouseGo import to_abs_path
+from Util.Path import to_abs_path
 
 
 class FileDialog(Ui_Dialog):

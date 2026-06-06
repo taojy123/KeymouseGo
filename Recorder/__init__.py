@@ -21,6 +21,7 @@ def set_cursor_pose_change(callback):
     _Recorder.record_signals.cursor_pos_change.connect(callback)
 
 def dispose():
+    _Recorder.stop_listeners()
     _Recorder.record_signals.event_signal.disconnect()
 
 
