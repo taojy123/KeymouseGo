@@ -118,7 +118,7 @@ chmod -R 770 ~/.qt_material
 ## 脚本语法说明
 > 演示屏幕分辨率为`1920 * 1080`
 
-脚本为 `json5` 格式，每个最内层的jsonobject代表一个事件
+脚本为 `json5` 格式，按顺序每个最内层的 json object 代表一个事件
 ```json5
 {
   scripts: [
