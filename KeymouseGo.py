@@ -4,7 +4,7 @@ import math
 from PySide6.QtWidgets import QApplication, QWidget, QSpinBox
 from PySide6.QtCore import Qt, Slot, QRect
 
-import UIFunc
+from UI import UIFunc
 import Recorder
 import argparse
 from Event import ScriptEvent
@@ -14,9 +14,7 @@ from Plugin.Manager import PluginManager
 from Util.RunScriptClass import RunScriptCMDClass, StopFlag
 
 
-def to_abs_path(*args):
-    return os.path.join(os.path.dirname(os.path.realpath(sys.argv[0])),
-                        *args)
+from Util.Path import to_abs_path
 
 
 def resize_layout(ui, ratio_w, ratio_h):

@@ -19,13 +19,13 @@ from loguru import logger
 
 from Event import ScriptEvent, flag_multiplemonitor
 from Plugin.Manager import PluginManager
-from UIView import Ui_UIView
+from .UIView import Ui_UIView
 
-from KeymouseGo import to_abs_path
+from Util.Path import to_abs_path
 from Util.RunScriptClass import RunScriptClass
 from Util.Global import State
 from Util.ClickedLabel import Label
-
+from Util.Writer import ScriptWriter
 
 os.environ['QT_ENABLE_HIGHDPI_SCALING'] = "1"
 # if platform.system() == 'Windows':
@@ -100,6 +100,13 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.choice_language.setCurrentText(language)
         self.onchangelang()
 
+        for hour in range(24):
+            self.combo_start_hour.addItem(f"{hour:02d}")
+            self.combo_stop_hour.addItem(f"{hour:02d}")
+        for minute in range(0, 60, 1):
+            self.combo_start_min.addItem(f"{minute:02d}")
+            self.combo_stop_min.addItem(f"{minute:02d}")
+
         get_script_list_from_dir()
         update_script_map()
         self.scripts = scripts
@@ -114,11 +121,13 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.choice_theme.addItems(list_themes())
         # self.choice_theme.addItems(PluginManager.resources_paths)
         self.stimes.setValue(int(self.config.value("Config/LoopTimes")))
+        self.interval.setValue(int(self.config.value("Config/Interval")))
         self.mouse_move_interval_ms.setValue(int(self.config.value("Config/Precision")))
         self.choice_theme.setCurrentText(self.config.value("Config/Theme"))
         if self.config.value('Config/Script') is not None and self.config.value('Config/Script') in self.scripts:
             self.choice_script.setCurrentText(self.config.value('Config/Script'))
         self.stimes.valueChanged.connect(self.onconfigchange)
+        self.interval.valueChanged.connect(self.onconfigchange)
         self.mouse_move_interval_ms.valueChanged.connect(self.onconfigchange)
         self.mouse_move_interval_ms.valueChanged.connect(Recorder.set_interval)
         self.choice_theme.currentTextChanged.connect(self.onchangetheme)
@@ -126,7 +135,56 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
         self.hotkey_stop.setText(self.config.value("Config/StopHotKey"))
         self.hotkey_start.setText(self.config.value("Config/StartHotKey"))
         self.hotkey_record.setText(self.config.value("Config/RecordHotKey"))
+        start_time_config = self.config.value("Config/StartTime", "不定时")
+        if start_time_config == "不定时":
+            self.checkbox_no_timing_start.setChecked(True)
+        else:
+            hour, minute, _ = start_time_config.split(":")
+            self.combo_start_hour.setCurrentText(hour)
+            self.combo_start_min.setCurrentText(minute)
+            self.combo_start_hour.currentTextChanged.connect(self.onconfigchange)
+            self.combo_start_min.currentTextChanged.connect(self.onconfigchange)
+        stop_time_config = self.config.value("Config/StopTime", "不定时")
+        if stop_time_config == "不定时":
+            self.checkbox_no_timing_stop.setChecked(True)
+        else:
+            hour, minute, _ = stop_time_config.split(":")
+            self.combo_stop_hour.setCurrentText(hour)
+            self.combo_stop_min.setCurrentText(minute)
+            self.combo_stop_hour.currentTextChanged.connect(self.onconfigchange)
+            self.combo_stop_min.currentTextChanged.connect(self.onconfigchange)
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.check_time)
+        self.timer.start(1000)  # 每秒检查一次时间
+        self.last_start_triggered = None  # 记录最后一次启动触发时间（格式："HH:MM"）
+        self.last_stop_triggered = None   # 记录最后一次停止触发时间
 
+        self.checkbox_no_timing_start.stateChanged.connect(
+            lambda: self._toggle_time_controls(
+                self.checkbox_no_timing_start,
+                self.combo_start_hour,
+                self.combo_start_min
+            )
+        )
+        self.checkbox_no_timing_stop.stateChanged.connect(
+            lambda: self._toggle_time_controls(
+                self.checkbox_no_timing_stop,
+                self.combo_stop_hour,
+                self.combo_stop_min
+            )
+        )
+
+        # 初始化时根据配置设置控件状态
+        self._toggle_time_controls(
+            self.checkbox_no_timing_start,
+            self.combo_start_hour,
+            self.combo_start_min
+        )
+        self._toggle_time_controls(
+            self.checkbox_no_timing_stop,
+            self.combo_stop_hour,
+            self.combo_stop_min
+        )
 
         self.onchangetheme()
 
@@ -282,12 +340,23 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
 
     def onconfigchange(self):
         self.config.setValue("Config/LoopTimes", self.stimes.value())
+        self.config.setValue("Config/Interval", self.interval.value())
         self.config.setValue("Config/Precision", self.mouse_move_interval_ms.value())
         self.config.setValue("Config/Theme", self.choice_theme.currentText())
         self.config.setValue("Config/Script", self.choice_script.currentText())
         self.config.setValue("Config/StartHotKey", self.hotkey_start.text())
         self.config.setValue("Config/StopHotKey", self.hotkey_stop.text())
         self.config.setValue("Config/RecordHotKey", self.hotkey_record.text())
+        if self.checkbox_no_timing_start.isChecked():
+            start_time = "不定时"
+        else:
+            start_time = f"{self.combo_start_hour.currentText()}:{self.combo_start_min.currentText()}:00"
+        self.config.setValue("Config/StartTime", start_time)
+        if self.checkbox_no_timing_stop.isChecked():
+            stop_time = "不定时"
+        else:
+            stop_time = f"{self.combo_stop_hour.currentText()}:{self.combo_stop_min.currentText()}:00"
+        self.config.setValue("Config/StopTime", stop_time)
 
     def onchangelang(self):
         global scripts_map
@@ -344,6 +413,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
                         'StopHotKey=f9\n'
                         'RecordHotKey=f10\n'
                         'LoopTimes=1\n'
+                        'Interval=0\n'
                         'Precision=200\n'
                         'Language=zh-cn\n'
                         'Theme=Default\n')
@@ -387,7 +457,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
     def OnBtOpenScriptFilesButton(self):
         global scripts_map
 
-        import UIFileDialogFunc
+        from . import UIFileDialogFunc
 
         scripts_map['current_index'] = self.choice_script.currentIndex()
         file_dialog = UIFileDialogFunc.FileDialog()
@@ -412,8 +482,7 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
     def recordMethod(self):
         if self.state == State.RECORDING or self.state == State.PAUSE_RECORDING:
             logger.info('Record stop')
-            with open(self.new_script_path(), 'w', encoding='utf-8') as f:
-                json5.dump({"scripts": self.record}, indent=2, ensure_ascii=False, fp=f)
+            ScriptWriter.dump_to_path(self.new_script_path(), self.record)
             self.btrecord.setText(QCoreApplication.translate("UIView", 'Record', None))
             self.tnumrd.setText('finished')
             self.record = []
@@ -483,3 +552,34 @@ class UIFunc(QMainWindow, Ui_UIView, QtStyleTools):
     @Slot(tuple)
     def cursor_pos_change(self, pos):
         self.label_cursor_pos.setText(f'Cursor pos: {pos}')
+    
+    def check_time(self):
+        current_time = datetime.datetime.now().strftime("%H:%M")  # 仅比较小时和分钟
+        if self.checkbox_no_timing_start.isChecked():
+            start_time = "不定时"
+        else:
+            start_time = f"{self.combo_start_hour.currentText()}:{self.combo_start_min.currentText()}"
+
+        if self.checkbox_no_timing_stop.isChecked():
+            stop_time = "不定时"
+        else:
+            stop_time = f"{self.combo_stop_hour.currentText()}:{self.combo_stop_min.currentText()}"
+
+        if start_time != "不定时" and current_time == start_time and self.state == State.IDLE and self.last_start_triggered != current_time:
+            self.OnBtrunButton()
+            self.last_start_triggered = current_time
+
+        if stop_time != "不定时" and current_time == stop_time and (self.state == State.RUNNING or self.state == State.PAUSE_RUNNING) and self.last_stop_triggered != current_time:
+            self.tnumrd.setText('broken')
+            if self.runthread:
+                self.runthread.resume()
+            self.update_state(State.IDLE)
+            self.last_stop_triggered = current_time
+
+    def _toggle_time_controls(self, checkbox, combo_hour, combo_min):
+        if checkbox.isChecked():
+            combo_hour.setEnabled(False)
+            combo_min.setEnabled(False)
+        else:
+            combo_hour.setEnabled(True)
+            combo_min.setEnabled(True)

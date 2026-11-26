@@ -63,3 +63,8 @@ scripts/
 plugins/
 logs/
 !assets/
+
+# Nuitka
+KeymouseGo.build
+KeymouseGo.dist
+KeymouseGo.onefile-build
